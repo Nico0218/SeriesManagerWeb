@@ -1,0 +1,10 @@
+
+DBProviders/bin/
+
+MediaLibraryServer/bin/
+
+MediaLibraryServer/.vs/
+
+MySQLProvider/bin/
+
+SQLiteProvider/bin/

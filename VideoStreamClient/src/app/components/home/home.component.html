@@ -1,0 +1,19 @@
+<div class="container-fluid h-100">
+    <div class="row">
+        <breadcrum-component class="col" *ngIf="breadcrumbItems" [breadcrumbItems]="breadcrumbItems">
+        </breadcrum-component>
+    </div>
+    <div class="row">
+        <h3 class="col">Home</h3>
+    </div>
+    <div class="row">
+        <div class="col card-deck">
+            <custom-card-component [route]='"/image-gallery-list"' [title]='"Image Galleries"'
+                [description]='"View all the available image galleries"'>
+            </custom-card-component>
+            <custom-card-component [route]='"/series-gallery-list"' [title]='"Video Galleries"'
+                [description]='"View all the available video galleries"'>
+            </custom-card-component>
+        </div>
+    </div>
+</div>

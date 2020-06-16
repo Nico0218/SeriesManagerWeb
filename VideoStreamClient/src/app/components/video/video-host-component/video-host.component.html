@@ -1,0 +1,6 @@
+<div *ngIf="VideoURL">
+    <video width="480" height="320" autoplay controls type='video/x-matroska; codecs="theora, vorbis"' >
+        <!-- [error]="PlaybackError($event)" -->
+        <source [src]="VideoURL" />
+    </video>
+</div>

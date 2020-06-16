@@ -1,0 +1,18 @@
+<div class="container-fluid h-100">
+    <div class="row">
+        <breadcrum-component class="col" *ngIf="breadcrumbItems" [breadcrumbItems]="breadcrumbItems"></breadcrum-component>
+    </div>    
+    <div class="row">
+        <h3 class="col">Gallery Images</h3>
+    </div>    
+    <div class="row">
+        <div class="col-6 card-deck">
+            <custom-card-component *ngFor="let image of Images" [route]='"/image-list"' [title]='image.displayName'
+                [description]='' (click)="selectCard(image)">
+            </custom-card-component>
+        </div>
+        <div class="col-6">
+            <image-viewer-component class="h-100" [selectedImage]="selectedImage"></image-viewer-component>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,16 @@
+<div class="container-fluid h-100">
+    <div class="row">
+        <breadcrum-component class="col" *ngIf="breadcrumbItems" [breadcrumbItems]="breadcrumbItems">
+        </breadcrum-component>
+    </div>
+    <div class="row">
+        <h3 class="col">Image Galleries</h3>
+    </div>
+    <div class="row">
+        <div class="col card-deck">
+            <custom-card-component *ngFor="let gallery of Galleries" [route]='"/image-list"'
+                [title]='gallery.displayName' [description]='"Description Text"'>
+            </custom-card-component>
+        </div>
+    </div>
+</div>

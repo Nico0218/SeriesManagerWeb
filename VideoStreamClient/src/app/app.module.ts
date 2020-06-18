@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
@@ -19,6 +19,14 @@ import { VideoGalleryListComponent } from './components/video/video-gallery-list
 import { MissingPageComponent } from './components/missing-page-component/missing-page.component';
 import { CustomCardComponent } from './components/common/custom-card/custom-card.component';
 import { BreadcrumComponent } from './components/common/breadcrumb/breadcrum.component';
+import { ConfigMainComponent } from './components/config/config-main.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { AuthenticationService } from './services/authentication.service';
+import { UserService } from './services/user.service';
+import { JwtInterceptor } from './helpers/jwt.interceptor';
+import { ErrorInterceptor } from './helpers/error.interceptor';
+import { LoginComponent } from './components/login/login.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -32,19 +40,27 @@ import { BreadcrumComponent } from './components/common/breadcrumb/breadcrum.com
     ImageViewerComponent,
     MissingPageComponent,
     CustomCardComponent,
-    BreadcrumComponent
+    BreadcrumComponent,
+    ConfigMainComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    NgbModule
+    NgbModule,
+    ReactiveFormsModule,
+    FontAwesomeModule
   ],
   providers: [
     ConfigService,
     VideoGalleryService,
     VideoStreamService,
-    ImageGalleryService
+    ImageGalleryService,
+    AuthenticationService,
+    UserService,
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

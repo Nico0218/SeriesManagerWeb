@@ -2,16 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from "@angular/core";
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Video } from '../classes/Models/Video';
-import { ConfigService } from './config.service';
+import { Environment } from '../classes/environment';
 
 @Injectable()
 export class VideoStreamService {
     constructor(private httpClient: HttpClient,
-        private domSanitizer: DomSanitizer,
-        private configService: ConfigService) {
+        private domSanitizer: DomSanitizer) {
     }
 
     GetVideoStream(video: Video): SafeUrl {
-        return this.domSanitizer.bypassSecurityTrustUrl(`${this.configService.GetAppConfig().CoreURL}/VideoStream/GetVideoStream/${video.id}`);
+        return this.domSanitizer.bypassSecurityTrustUrl(`${Environment.apiUrl}/VideoStream/GetVideoStream/${video.id}`);
     }
 }

@@ -4,7 +4,8 @@
         </breadcrum-component>
     </div>
     <div class="row">
-        <h3 class="col">Home</h3>
+        <h3 *ngIf="user && user.displayName" class="col">Home - Welcome {{user.displayName}}</h3>
+        <h3 *ngIf="!user || !user.displayName" class="col">Home</h3>
     </div>
     <div class="row">
         <div class="col card-deck">

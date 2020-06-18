@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UIBase } from '../common/ui-base-component/ui-base.component';
+import { AuthenticationService } from 'src/app/services/authentication.service';
+import { User } from 'src/app/classes/security/user';
 
 @Component({
     selector: 'home-component',
@@ -7,9 +9,11 @@ import { UIBase } from '../common/ui-base-component/ui-base.component';
     styleUrls: ['./home.component.scss']
 })
 export class HomeComponent extends UIBase implements OnInit {
+    user: User;
 
-    constructor() {
+    constructor(private authenticationService: AuthenticationService) {
         super();        
+        this.user = authenticationService.userValue;
     }
 
     ngOnInit(): void {

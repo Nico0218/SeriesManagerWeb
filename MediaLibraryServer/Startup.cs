@@ -45,6 +45,7 @@ namespace MediaLibraryServer {
             }
 
             services.AddSingleton<IConfigService, ConfigService>();
+            services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IMemoryCache, MemoryCache>();
 
             services.AddSingleton<ILibraryManagerService, LibraryManagerService>();

@@ -4,3 +4,11 @@
             [routerLink]="[breadcrumbItem.path]" aria-current="page">{{breadcrumbItem.label}}</li>
     </ol>
 </nav>
+<div class="settings-gear">
+    <span class="gear-icon" [routerLink]="['/settings']">
+        <fa-icon [icon]="faUserCog" size="2x"></fa-icon>
+    </span>
+    <span class="gear-icon" (click)="Logout()">
+        <fa-icon [icon]="faSignOutAlt" size="2x"></fa-icon>
+    </span>
+</div>

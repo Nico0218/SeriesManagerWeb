@@ -1,3 +1,4 @@
 export class AppConfig {
-    public CoreURL: string;
+    public production: boolean;
+    public apiUrl: string;
 }

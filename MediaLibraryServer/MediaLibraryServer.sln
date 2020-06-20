@@ -13,9 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SQLiteProvider", "..\SQLite
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DBManagement", "DBManagement", "{500B21AF-D595-4DE8-A3B8-A1F477048D81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoEncoderService", "..\VideoEncoder\VideoEncoderService.csproj", "{EDD623A8-2D76-485B-852D-2A545005CAFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoEncoderService", "..\VideoEncoder\VideoEncoderService.csproj", "{EDD623A8-2D76-485B-852D-2A545005CAFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageComparisonService", "..\ImageComparisonService\ImageComparisonService.csproj", "{8BA0D0A6-4C33-411B-AF4A-555703CFB742}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageComparisonService", "..\ImageComparisonService\ImageComparisonService.csproj", "{8BA0D0A6-4C33-411B-AF4A-555703CFB742}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaLibaryCommon", "..\MediaLibaryCommon\MediaLibaryCommon.csproj", "{50B83726-D064-4DBE-BC03-CE842C0220FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{8BA0D0A6-4C33-411B-AF4A-555703CFB742}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8BA0D0A6-4C33-411B-AF4A-555703CFB742}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8BA0D0A6-4C33-411B-AF4A-555703CFB742}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50B83726-D064-4DBE-BC03-CE842C0220FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50B83726-D064-4DBE-BC03-CE842C0220FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50B83726-D064-4DBE-BC03-CE842C0220FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50B83726-D064-4DBE-BC03-CE842C0220FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

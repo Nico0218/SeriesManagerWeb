@@ -6,9 +6,7 @@ using Microsoft.Extensions.Options;
 using SQLiteProvider.Classes;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -18,7 +16,8 @@ namespace SQLiteProvider.Services {
         private const string msgErrorOnConnectionTest = "Connection test failed";
         private readonly ILogger<SQLiteClient> logger;
         private readonly IOptions<ConnectionSettings> connectionSettings;
-        private readonly SqliteConnection sqliteConnection;
+        //SQlite expects new connection for every action
+        private readonly string ConnectionString;
 
         public SQLiteClient(ILogger<SQLiteClient> logger, IOptions<ConnectionSettings> connectionSettings) {
             logger.LogDebug("Initializing SQLite Client");
@@ -34,19 +33,21 @@ namespace SQLiteProvider.Services {
             sqliteConnectionStringBuilder.Mode = SqliteOpenMode.ReadWriteCreate;
             //sqliteConnectionStringBuilder.Password = connectionSettings.Value.Password;
 
-            sqliteConnection = new SqliteConnection(sqliteConnectionStringBuilder.ConnectionString);
+            ConnectionString = sqliteConnectionStringBuilder.ConnectionString;
 
             logger.LogDebug("Initialized SQLite Client");
         }
 
         public void Dispose() {
-            sqliteConnection.Dispose();
+            //sqliteConnection.Dispose();
         }
 
         public void TestConnection() {
             try {
-                sqliteConnection.Open();
-                sqliteConnection.Close();
+                using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
+                    sqliteConnection.Open();
+                    sqliteConnection.Close();
+                }
             } catch (Exception ex) {
                 logger.LogError(msgErrorOnConnectionTest, ex);
                 throw;
@@ -59,29 +60,33 @@ namespace SQLiteProvider.Services {
 
             //Get list of tables and check if it exists
             bool tableExist = false;
-            using (SqliteCommand cmd = sqliteConnection.CreateCommand()) {
-                cmd.CommandText = $"SELECT name FROM sqlite_master WHERE type='table';";
-                sqliteConnection.Open();
-                using (SqliteDataReader tableReader = cmd.ExecuteReader()) {
-                    while (tableReader.Read() && !tableExist) {
-                        //Should probably cache this
-                        if (tableReader.GetString("name").Equals(obj.GetType().Name.ToLower(), StringComparison.OrdinalIgnoreCase)) {
-                            tableExist = true;
-                            break;
+            using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
+                using (SqliteCommand cmd = sqliteConnection.CreateCommand()) {
+                    cmd.CommandText = $"SELECT name FROM sqlite_master WHERE type='table';";
+                    sqliteConnection.Open();
+                    using (SqliteDataReader tableReader = cmd.ExecuteReader()) {
+                        while (tableReader.Read() && !tableExist) {
+                            //Should probably cache this
+                            if (tableReader.GetString("name").Equals(obj.GetType().Name.ToLower(), StringComparison.OrdinalIgnoreCase)) {
+                                tableExist = true;
+                                break;
+                            }
                         }
                     }
+                    sqliteConnection.Close();
                 }
-                sqliteConnection.Close();
             }
             //The table exist and we just need to modify it
             if (tableExist) {
                 //SQLLite does not have alter column functionality so we have to do some magic
                 DataTable schemaTable;
-                using (SqliteCommand cmd = sqliteConnection.CreateCommand()) {
-                    cmd.CommandText = $"SELECT * FROM {tableName};";
-                    sqliteConnection.Open();
-                    using (SqliteDataReader tableReader = cmd.ExecuteReader()) {
-                        schemaTable = tableReader.GetSchemaTable();
+                using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
+                    using (SqliteCommand cmd = sqliteConnection.CreateCommand()) {
+                        cmd.CommandText = $"SELECT * FROM {tableName};";
+                        sqliteConnection.Open();
+                        using (SqliteDataReader tableReader = cmd.ExecuteReader()) {
+                            schemaTable = tableReader.GetSchemaTable();
+                        }                        
                     }
                     sqliteConnection.Close();
                 }
@@ -118,7 +123,8 @@ namespace SQLiteProvider.Services {
                         //DataRow Index 13 = "DataType"
                         string dataType = GetSQLiteDataType(columnSet.Key);
                         if ((columnSet.Value[0].ToString() != columnSet.Key.Name) || (columnSet.Value[13].ToString() != dataType)) {
-                            if (columnSet.Value[13].ToString() != "TEXT" && columnSet.Value["ColumnSize"].ToString() != GetFieldSize(columnSet.Key).ToString()) {
+                            if (columnSet.Value[13].ToString() != "TEXT") {
+
                                 throw new NotImplementedException();
                             }
                             hasModification = true;
@@ -127,13 +133,13 @@ namespace SQLiteProvider.Services {
                     }
                 }
                 if (hasModification) {
-                    try {
+                    using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
                         sqliteConnection.Open();
                         using (SqliteTransaction sqliteTransaction = sqliteConnection.BeginTransaction()) {
                             try {
                                 //Rename the existing table
                                 string oldTableName = GetTableName(obj, "old");
-                                ExecuteNonQuery($"ALTER TABLE {tableName} RENAME TO {oldTableName}", false);
+                                ExecuteNonQuery($"ALTER TABLE {tableName} RENAME TO {oldTableName}", sqliteConnection);
 
                                 //Create the new table
                                 CreateNewTable<T>(obj, tableName, false);
@@ -149,10 +155,10 @@ namespace SQLiteProvider.Services {
                                 }
                                 insertPart = insertPart.Substring(0, insertPart.Length - 2) + ")";
                                 selectPart = selectPart.Substring(0, selectPart.Length - 2) + $" FROM {oldTableName}";
-                                ExecuteNonQuery($"{insertPart} {selectPart}", false);
+                                ExecuteNonQuery($"{insertPart} {selectPart}", sqliteConnection);
 
                                 //Delete old table
-                                ExecuteNonQuery($"DROP TABLE {oldTableName}", false);
+                                ExecuteNonQuery($"DROP TABLE {oldTableName}", sqliteConnection);
 
                                 sqliteTransaction.Commit();
                             } catch (Exception ex) {
@@ -161,10 +167,8 @@ namespace SQLiteProvider.Services {
                                 throw;
                             }
                         }
-                    } finally {
                         sqliteConnection.Close();
                     }
-
                 }
             }
             //Create the new table
@@ -190,31 +194,36 @@ namespace SQLiteProvider.Services {
                 }
             }
 
-            int rowsAffected = ExecuteNonQuery(deleteStringBuilder.ToString(), true);
-            logger.LogInformation($"Deleted {rowsAffected} items from {tableName}");
+            using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
+                sqliteConnection.Open();
+                int rowsAffected = ExecuteNonQuery(deleteStringBuilder.ToString(), sqliteConnection);
+                sqliteConnection.Close();
+                logger.LogInformation($"Deleted {rowsAffected} items from {tableName}");
+            }
         }
 
         public List<T> GetObjectData<T>(List<IParameter> parameters) {
             try {
                 T obj = (T)Activator.CreateInstance(typeof(T));
-                using (SqliteCommand selectCmd = sqliteConnection.CreateCommand()) {
-                    string tableName = GetTableName(obj);
-                    selectCmd.CommandText = $"SELECT * FROM {tableName}";
-                    if (parameters != null && parameters.Count > 0) {
-                        string whereClause = "";
-                        for (int i = 0; i < parameters.Count; i++) {                            
-                            ParameterSQLite parameterSQLite = ParameterSQLite.ToParam(parameters[i]);
-                            if (!string.IsNullOrWhiteSpace(whereClause))
-                                whereClause += " AND ";
-                            else
-                                whereClause = "WHERE ";
-                            whereClause += parameterSQLite.GetFormatedParam();
-                        }
-                        selectCmd.CommandText += whereClause;
-                    }
-                    sqliteConnection.Open();
+                using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
                     List<T> results = new List<T>();
-                    try {
+                    using (SqliteCommand selectCmd = sqliteConnection.CreateCommand()) {
+                        string tableName = GetTableName(obj);
+                        selectCmd.CommandText = $"SELECT * FROM {tableName}";
+                        if (parameters != null && parameters.Count > 0) {
+                            string whereClause = "";
+                            for (int i = 0; i < parameters.Count; i++) {
+                                ParameterSQLite parameterSQLite = ParameterSQLite.ToParam(parameters[i]);
+                                if (!string.IsNullOrWhiteSpace(whereClause))
+                                    whereClause += " AND ";
+                                else
+                                    whereClause = "WHERE ";
+                                whereClause += parameterSQLite.GetFormatedParam();
+                            }
+                            selectCmd.CommandText += whereClause;
+                        }
+                        sqliteConnection.Open();
+
                         using (SqliteDataReader result = selectCmd.ExecuteReader()) {
                             while (result.Read()) {
                                 obj = (T)Activator.CreateInstance(typeof(T));
@@ -226,10 +235,9 @@ namespace SQLiteProvider.Services {
                                 results.Add(obj);
                             }
                         }
-                        return results;
-                    } finally {
-                        sqliteConnection.Close();
                     }
+                    sqliteConnection.Close();
+                    return results;
                 }
             } catch (Exception ex) {
                 logger.LogError(msgErrorOnFetchData, ex);
@@ -266,7 +274,11 @@ namespace SQLiteProvider.Services {
             }
             insertStringBuilder.AppendLine(valuesString.ToString());
 
-            ExecuteNonQuery(insertStringBuilder.ToString(), true);
+            using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
+                sqliteConnection.Open();
+                ExecuteNonQuery(insertStringBuilder.ToString(), sqliteConnection);
+                sqliteConnection.Close();
+            }
         }
 
         public void UpdateObjectData<T>(T obj) {
@@ -279,13 +291,13 @@ namespace SQLiteProvider.Services {
 
             PropertyInfo[] properties = obj.GetType().GetProperties();
             for (int i = 0; i < properties.Length; i++) {
-                string value = "";
+                string value;
                 if (properties[i].PropertyType == typeof(string)) {
-                    value = $"\"{properties[i].GetValue(obj).ToString()}\"";
+                    value = $"\"{properties[i].GetValue(obj)}\"";
                 } else if (properties[i].PropertyType == typeof(int)) {
-                    value = $"{properties[i].GetValue(obj).ToString()}";
+                    value = $"{properties[i].GetValue(obj)}";
                 } else {
-                    value = $"`{properties[i].GetValue(obj).ToString()}`";
+                    value = $"`{properties[i].GetValue(obj)}`";
                 }
                 updateStringBuilder.AppendLine($"`{properties[i].Name}` = {value}");
                 if (i != properties.Length - 1) {
@@ -293,9 +305,13 @@ namespace SQLiteProvider.Services {
                 }
             }
 
-            updateStringBuilder.AppendLine($"WHERE `ID` = \"{obj.GetType().GetProperty("ID").GetValue(obj).ToString()}\"");
+            updateStringBuilder.AppendLine($"WHERE `ID` = \"{obj.GetType().GetProperty("ID").GetValue(obj)}\"");
 
-            ExecuteNonQuery(updateStringBuilder.ToString(), true);
+            using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
+                sqliteConnection.Open();
+                ExecuteNonQuery(updateStringBuilder.ToString(), sqliteConnection);
+                sqliteConnection.Close();
+            }
         }
 
         private string GetTableName<T>(T obj, string prefix = "") => $"`{prefix + obj.GetType().Name.ToLower()}`";
@@ -313,29 +329,30 @@ namespace SQLiteProvider.Services {
 
         private string GetSQLiteDataType(PropertyInfo propertyInfo) {
             string mySqlDataType;
-            if (propertyInfo.PropertyType == typeof(string)) {
+            if (propertyInfo.PropertyType == typeof(string) || propertyInfo.PropertyType == typeof(DateTime)) {
                 mySqlDataType = $"TEXT";
             } else if (propertyInfo.PropertyType == typeof(int)) {
                 mySqlDataType = "INTEGER";
             } else if (propertyInfo.PropertyType == typeof(float)) {
                 mySqlDataType = "REAL";
             } else {
-                mySqlDataType = "TEXT";
+                mySqlDataType = "BLOB";
             }
 
-            if (!mySqlDataType.Equals("TEXT")) {
-                mySqlDataType = $"{mySqlDataType}({GetFieldSize(propertyInfo)})";
-            }
+            //SQL Lite does not care about field sizes
+            //if (!mySqlDataType.Equals("TEXT")) {
+            //    mySqlDataType = $"{mySqlDataType}({GetFieldSize(propertyInfo)})";
+            //}
             return mySqlDataType;
         }
 
-        private int GetFieldSize(PropertyInfo propertyInfo) {
-            int MaxLength = 250;
-            var attribute = propertyInfo.GetCustomAttributes().FirstOrDefault();
-            if (attribute != null)
-                MaxLength = (attribute as StringValidatorAttribute).MaxLength;
-            return MaxLength;
-        }
+        //private int GetFieldSize(PropertyInfo propertyInfo) {
+        //    int MaxLength = 250;
+        //    var attribute = propertyInfo.GetCustomAttributes().FirstOrDefault();
+        //    if (attribute != null)
+        //        MaxLength = (attribute as StringValidatorAttribute).MaxLength;
+        //    return MaxLength;
+        //}
 
         private void CreateNewTable<T>(T obj, string tableName, bool manageConnection) {
             StringBuilder quertyStringBuilder = new StringBuilder();
@@ -345,22 +362,36 @@ namespace SQLiteProvider.Services {
             }
             quertyStringBuilder.AppendLine($"PRIMARY KEY (`ID`));");
 
-            ExecuteNonQuery(quertyStringBuilder.ToString(), manageConnection);
+            using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
+                sqliteConnection.Open();
+                ExecuteNonQuery(quertyStringBuilder.ToString(), sqliteConnection);
+                sqliteConnection.Close();
+            }
         }
 
-        private int ExecuteNonQuery(string statement, bool manageConnection) {
+        private int ExecuteNonQuery(string statement, SqliteConnection sqliteConnection = null) {
             int rowsAffected = 0;
-            using (SqliteCommand alterCmd = sqliteConnection.CreateCommand()) {
-                alterCmd.CommandText = statement;
-                if (manageConnection)
+            if (sqliteConnection == null) {
+                using (sqliteConnection = new SqliteConnection(ConnectionString)) {
                     sqliteConnection.Open();
-                try {
-                    rowsAffected = alterCmd.ExecuteNonQuery();
-                } catch (Exception ex) {
-                    throw new Exception($"Failed to execute non query", ex);
-                } finally {
-                    if (manageConnection)
-                        sqliteConnection.Close();
+                    using (SqliteCommand alterCmd = sqliteConnection.CreateCommand()) {
+                        alterCmd.CommandText = statement;
+                        try {
+                            rowsAffected = alterCmd.ExecuteNonQuery();
+                        } catch (Exception ex) {
+                            throw new Exception($"Failed to execute non query", ex);
+                        }
+                    }
+                    sqliteConnection.Close();
+                }
+            } else {
+                using (SqliteCommand alterCmd = sqliteConnection.CreateCommand()) {
+                    alterCmd.CommandText = statement;
+                    try {
+                        rowsAffected = alterCmd.ExecuteNonQuery();
+                    } catch (Exception ex) {
+                        throw new Exception($"Failed to execute non query", ex);
+                    }
                 }
             }
             return rowsAffected;

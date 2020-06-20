@@ -8,3 +8,25 @@ MediaLibraryServer/.vs/
 MySQLProvider/bin/
 
 SQLiteProvider/bin/
+
+VideoEncoder/bin/
+
+VideoEncoder/obj/
+
+SQLiteProvider/obj/
+
+MySQLProvider/obj/
+
+MediaLibraryServer/obj/
+
+MediaLibaryCommon/.vs/
+
+MediaLibaryCommon/bin/
+
+MediaLibaryCommon/obj/
+
+ImageComparisonService/bin/
+
+ImageComparisonService/obj/
+
+DBProviders/obj/

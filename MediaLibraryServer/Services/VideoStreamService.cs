@@ -1,4 +1,4 @@
-﻿using MediaLibraryServer.Classes.LogicModels;
+﻿using MediaLibraryCommon.Classes.LogicModels;
 using MediaLibraryServer.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;

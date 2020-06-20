@@ -1,4 +1,4 @@
-﻿using MediaLibraryServer.Classes.DataModels;
+﻿using MediaLibraryCommon.Classes.DataModels;
 using MediaLibraryServer.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -11,27 +11,10 @@ namespace MediaLibraryServer.Services {
             logger.LogDebug("Starting LibraryManagerService");
             this.logger = logger;
             this.dataService = dataService;
-
+            //Test DB connection
             dataService.TestConnection();
-
+            //Ensure DB is in the correct state
             DBTableMaintenace();
-
-            //string ID = Guid.NewGuid().ToString();
-            //FolderLibraryData folderLibraryData = new FolderLibraryData()
-            //{
-            //    ID = ID,
-            //    Name = "TestLib",
-            //    DisplayName = "Test Lib",
-            //    DirectoryPath = "E:/"
-            //};
-            //dataService.InsertObjectData(folderLibraryData);
-            //folderLibraryData.Name = "Test Update";
-            //dataService.UpdateObjectData(folderLibraryData);
-
-            //List<FolderLibraryData> results = dataService.GetObjectData<FolderLibraryData>();
-            //dataService.DeleteObjectData(results.ToArray());
-            //FolderLibrary folderLibrary = (FolderLibrary)folderLibraryData;
-            //logger.LogDebug(folderLibrary.Name);
             logger.LogDebug("Started LibraryManagerService");
         }
 
@@ -42,6 +25,7 @@ namespace MediaLibraryServer.Services {
             dataService.CreatOrAlterObjectTable<VideoData>();
             dataService.CreatOrAlterObjectTable<GalleryData>();
             dataService.CreatOrAlterObjectTable<ImageData>();
+            dataService.CreatOrAlterObjectTable<UserData>();
             logger.LogDebug("Completed table maintenance.");
         }
     }

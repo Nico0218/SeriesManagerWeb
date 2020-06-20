@@ -1,5 +1,5 @@
-﻿using MediaLibraryServer.Classes.LogicModels;
-using MediaLibraryServer.Classes.Security;
+﻿using MediaLibraryCommon.Classes.LogicModels;
+using MediaLibraryCommon.Classes.Security;
 using MediaLibraryServer.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
@@ -19,7 +19,7 @@ namespace MediaLibraryServer.Services {
                 Name = "admin",
                 DisplayName = "admin",
                 Password = "admin",
-                Role = Enums.UserRoles.Admin,
+                Role = MediaLibraryCommon.Enums.UserRoles.Admin,
                 Token = "AdminTokenString"
             });
             testUsers.Add(new User() {
@@ -27,7 +27,7 @@ namespace MediaLibraryServer.Services {
                 Name = "standard",
                 DisplayName = "standard",
                 Password = "standard",
-                Role = Enums.UserRoles.Standard,
+                Role = MediaLibraryCommon.Enums.UserRoles.Standard,
                 Token = "StandardTokenString"
             });
         }

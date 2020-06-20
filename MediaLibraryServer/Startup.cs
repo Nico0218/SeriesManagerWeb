@@ -1,5 +1,6 @@
 using DBProviderBase.Classes;
 using DBProviderBase.Enums;
+using ImageComparisonService.Interfaces;
 using MediaLibraryServer.Interfaces;
 using MediaLibraryServer.Services;
 using Microsoft.AspNetCore.Builder;
@@ -47,15 +48,17 @@ namespace MediaLibraryServer {
             services.AddSingleton<IConfigService, ConfigService>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IMemoryCache, MemoryCache>();
+            
 
-            services.AddSingleton<ILibraryManagerService, LibraryManagerService>();
-            services.AddSingleton<IFileProcessorService, FileProcessorService>();
+            services.AddScoped<ILibraryManagerService, LibraryManagerService>();
+            services.AddScoped<IFileProcessorService, FileProcessorService>();
 
-            services.AddSingleton<IVideoLibraryService, VideoGalleryService>();
+            services.AddScoped<IVideoLibraryService, VideoGalleryService>();
             services.AddScoped<IVideoStreamService, VideoStreamService>();
 
-            services.AddSingleton<IImageGalleryService, ImageGalleryService>();
-            
+            services.AddScoped<IImageGalleryService, ImageGalleryService>();
+            services.AddScoped<IImageComparisonService, ImageComparisonService.Services.ImageComparisonService>();
+
             services.AddControllers();
 
             services.AddSwaggerGen(c => {

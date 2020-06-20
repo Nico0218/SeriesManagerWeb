@@ -1,4 +1,4 @@
-﻿using MediaLibraryServer.Classes.LogicModels;
+﻿using MediaLibraryCommon.Classes.LogicModels;
 using System.Collections.Generic;
 
 namespace MediaLibraryServer.Interfaces {

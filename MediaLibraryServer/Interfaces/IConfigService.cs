@@ -1,4 +1,4 @@
-﻿using MediaLibraryServer.Classes;
+﻿using MediaLibraryCommon.Classes;
 
 namespace MediaLibraryServer.Interfaces
 {

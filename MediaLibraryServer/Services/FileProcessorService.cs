@@ -1,5 +1,6 @@
-﻿using MediaLibraryServer.Classes.LogicModels;
-using MediaLibraryServer.Enums;
+﻿using ImageComparisonService.Interfaces;
+using MediaLibraryCommon.Classes.LogicModels;
+using MediaLibraryCommon.Enums;
 using MediaLibraryServer.Helpers;
 using MediaLibraryServer.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -7,7 +8,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Timers;
 
 namespace MediaLibraryServer.Services {
@@ -16,6 +16,7 @@ namespace MediaLibraryServer.Services {
         private readonly IConfigService configService;
         private readonly IVideoLibraryService videoLibraryService;
         private readonly IImageGalleryService imageLibraryService;
+        private readonly IImageComparisonService imageComparisonService;
         private readonly string constSeasonString = "Season";
         Timer fileWatcherTimer;
         Regex SeasonandNoSpaceMatch;
@@ -25,11 +26,14 @@ namespace MediaLibraryServer.Services {
 
         private char[] numbers = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-        public FileProcessorService(ILogger<FileProcessorService> logger, IConfigService configService, IVideoLibraryService videoLibraryService, IImageGalleryService imageLibraryService) {
+        public FileProcessorService(ILogger<FileProcessorService> logger, IConfigService configService, IVideoLibraryService videoLibraryService, IImageGalleryService imageLibraryService,
+            IImageComparisonService imageComparisonService) {
             this.logger = logger;
             this.configService = configService;
             this.videoLibraryService = videoLibraryService;
             this.imageLibraryService = imageLibraryService;
+            this.imageComparisonService = imageComparisonService;
+
             logger.LogInformation("Starting file processor service.");
             SeasonandNoSpaceMatch = new Regex(@"(Season[0-9]+)", RegexOptions.IgnoreCase);
             SeasonandSpaceMatch = new Regex(@"(Season [0-9]+)", RegexOptions.IgnoreCase);
@@ -57,17 +61,19 @@ namespace MediaLibraryServer.Services {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void FileWatcherTimer_Elapsed(object sender, ElapsedEventArgs e) {
+            fileWatcherTimer.Enabled = false;
             string[] filePaths = Directory.GetFiles(configService.IngestSettings.IngestFolderPath, "*.*");
             foreach (string filePath in filePaths) {
                 FileUtils.IsFileLocked(filePath);
                 string destPath = Path.Combine(configService.IngestSettings.InterimFolderPath, Path.GetFileName(filePath));
                 try {
                     File.Move(filePath, destPath);
-                    ProcessFile(destPath);
                 } catch (IOException ex) {
                     logger.LogError($"Failed to move the file {filePath} to the interim location", ex);
                 }
+                ProcessFile(destPath);
             }
+            fileWatcherTimer.Enabled = true;
         }
 
         private void ProcessFile(string FilePath) {
@@ -86,7 +92,7 @@ namespace MediaLibraryServer.Services {
                 fileName = FileUtils.NameFix(fileName, configService.FileTypeSettings.GetRemoveStrings());
                 string oldFilePath = FilePath;
                 FilePath = Path.Combine(Path.GetDirectoryName(oldFilePath), fileName + fileExtension);
-                File.Move(oldFilePath, FilePath);
+                File.Move(oldFilePath, FilePath, true);
             } catch (IOException ex) {
                 logger.LogError($"Failed to sanitize file {Path.GetFileName(FilePath)}", ex);
             }
@@ -170,10 +176,30 @@ namespace MediaLibraryServer.Services {
 
             //Move the file
             string oldFilePath = FilePath;
-            FilePath = Path.Combine(defaultGallery.FileStore, Path.GetFileName(FilePath));
+            //Do a physical duplicate check
+            string imgCompData = imageComparisonService.GetImageComparisonData(FilePath);
+            if (imageComparisonService.isDuplicate(imgCompData)) {
+                FilePath = Path.Combine(configService.IngestSettings.RejectedPath, Path.GetFileName(FilePath));
+                File.Move(oldFilePath, FilePath, true);
+                logger.LogInformation($"Found duplicate image {Path.GetFileName(FilePath)} and moved in to the rejected folder");
+                return;
+            }
+            Image image = new Image(oldFilePath);
+            FilePath = Path.Combine(defaultGallery.FileStore, image.Name);
+            //Store in the file library
+            int count = 0;
+            while (File.Exists(FilePath)) {
+                count++;
+                string fileName = Path.GetFileName(FilePath);
+                fileName = Path.GetFileName(fileName) + count + Path.GetExtension(fileName);                
+                image = new Image(FilePath.Replace(Path.GetFileName(FilePath), fileName));
+                FilePath = Path.Combine(defaultGallery.FileStore, image.Name);
+            }
             File.Move(oldFilePath, FilePath);
-            //Index the file into the DB
-            Image image = new Image(FilePath);
+
+            image.FilePath = FilePath;
+            //Index the file into the DB            
+            image.ImageComparisonHash = imgCompData;
             image.GalleryID = defaultGallery.ID;
             imageLibraryService.SaveImage(image);
         }

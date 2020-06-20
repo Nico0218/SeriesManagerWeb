@@ -1,5 +1,5 @@
-﻿using MediaLibraryServer.Classes.LogicModels;
-using MediaLibraryServer.Classes.Security;
+﻿using MediaLibraryCommon.Classes.LogicModels;
+using MediaLibraryCommon.Classes.Security;
 using MediaLibraryServer.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

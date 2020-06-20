@@ -277,13 +277,13 @@ namespace MySQLProvider.Services {
 
             PropertyInfo[] properties = obj.GetType().GetProperties();
             for (int i = 0; i < properties.Length; i++) {
-                string value = "";
+                string value;
                 if (properties[i].PropertyType == typeof(string)) {
-                    value = $"\"{properties[i].GetValue(obj).ToString()}\"";
+                    value = $"\"{properties[i].GetValue(obj)}\"";
                 } else if (properties[i].PropertyType == typeof(int)) {
-                    value = $"{properties[i].GetValue(obj).ToString()}";
+                    value = $"{properties[i].GetValue(obj)}";
                 } else {
-                    value = $"`{properties[i].GetValue(obj).ToString()}`";
+                    value = $"`{properties[i].GetValue(obj)}`";
                 }
                 updateStringBuilder.AppendLine($"`{properties[i].Name}` = {value}");
                 if (i != properties.Length - 1) {

@@ -22,6 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ImageComparisonService\ImageComparisonService.csproj" />
+    <ProjectReference Include="..\MediaLibaryCommon\MediaLibaryCommon.csproj" />
     <ProjectReference Include="..\MySQLProvider\MySQLProvider.csproj">
       <Private>true</Private>
     </ProjectReference>

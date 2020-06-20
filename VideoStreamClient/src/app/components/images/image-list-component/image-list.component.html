@@ -6,12 +6,12 @@
         <h3 class="col">Gallery Images</h3>
     </div>    
     <div class="row">
-        <div class="col-6 card-deck">
+        <div class="col-7 card-deck custom-card-deck">
             <custom-card-component *ngFor="let image of Images" [route]='"/image-list"' [title]='image.displayName'
                 [description]='' (click)="selectCard(image)">
             </custom-card-component>
         </div>
-        <div class="col-6">
+        <div class="col-5">
             <image-viewer-component class="h-100" [selectedImage]="selectedImage"></image-viewer-component>
         </div>
     </div>

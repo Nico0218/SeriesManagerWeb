@@ -1,6 +1,6 @@
 <div class="container-fluid h-100">
     <div *ngIf="selectedImage && this.selectedImage.data" class="h-100 w-100">
-        <img [attr.src]="selectedImage.data" alt="{{selectedImage.displayName}}" width="500px" height="500px" />
+        <img class="w-100 image-box" [attr.src]="selectedImage.data" alt="{{selectedImage.displayName}}" />
     </div>
     <div *ngIf="!selectedImage || !this.selectedImage.data" class="h-100 w-100">
         No image selected

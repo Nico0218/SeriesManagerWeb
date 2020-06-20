@@ -35,7 +35,8 @@ namespace MediaLibraryServer.Services {
             logger.LogDebug($"Getting series {seriesName}");
 
             List<IParameter> parameters = new List<IParameter>();
-            parameters.Add(new Parameter() { ColumnName = "Name", DataType = "System.String", Operator = DBProviderBase.Enums.ParamOperator.Equals, Value = seriesName });
+
+            parameters.Add(new Parameter() { ColumnName = "Name", DataType = "System.String", Operator = DBProviderBase.Enums.ParamOperator.Equals, Value = seriesName.Replace(" ", "").Trim() });
             SeriesInformationData seriesInformationData = dataService.GetObjectData<SeriesInformationData>(parameters).FirstOrDefault();
             if (seriesInformationData == null) {
                 logger.LogDebug($"Could not find series {seriesName}");

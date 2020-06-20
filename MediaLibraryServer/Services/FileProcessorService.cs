@@ -66,12 +66,15 @@ namespace MediaLibraryServer.Services {
             foreach (string filePath in filePaths) {
                 FileUtils.IsFileLocked(filePath);
                 string destPath = Path.Combine(configService.IngestSettings.InterimFolderPath, Path.GetFileName(filePath));
+                bool fileMoved = false;
                 try {
                     File.Move(filePath, destPath);
+                    fileMoved = true;
                 } catch (IOException ex) {
                     logger.LogError($"Failed to move the file {filePath} to the interim location", ex);
                 }
-                ProcessFile(destPath);
+                if (fileMoved)
+                    ProcessFile(destPath);
             }
             fileWatcherTimer.Enabled = true;
         }
@@ -158,11 +161,18 @@ namespace MediaLibraryServer.Services {
             if (!Directory.Exists(Path.GetDirectoryName(FilePath))) {
                 Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
             }
-            File.Move(oldFilePath, FilePath);
-            //Index the file in the DB
-            Video episode = new Video(FilePath);
-            episode.SeriesID = seriesInformation.ID;
-            videoLibraryService.SaveEpisode(episode);
+            //Duplicate check
+            if (FileUtils.IsFileLocked(FilePath)) {
+                File.Move(oldFilePath, FilePath);
+                //Index the file in the DB
+                Video episode = new Video(FilePath);
+                episode.SeriesID = seriesInformation.ID;
+                videoLibraryService.SaveEpisode(episode);
+            } else {
+                FilePath = Path.Combine(configService.IngestSettings.RejectedPath, "Video", Path.GetFileName(FilePath));
+                File.Move(oldFilePath, FilePath, true);
+                logger.LogInformation($"Found duplicate video {Path.GetFileName(FilePath)} and moved in to the rejected folder");
+            }
         }
 
         private void ProcessImageFile(string FilePath) {
@@ -179,7 +189,7 @@ namespace MediaLibraryServer.Services {
             //Do a physical duplicate check
             string imgCompData = imageComparisonService.GetImageComparisonData(FilePath);
             if (imageComparisonService.isDuplicate(imgCompData)) {
-                FilePath = Path.Combine(configService.IngestSettings.RejectedPath, Path.GetFileName(FilePath));
+                FilePath = Path.Combine(configService.IngestSettings.RejectedPath, "Image", Path.GetFileName(FilePath));
                 File.Move(oldFilePath, FilePath, true);
                 logger.LogInformation($"Found duplicate image {Path.GetFileName(FilePath)} and moved in to the rejected folder");
                 return;
@@ -188,10 +198,10 @@ namespace MediaLibraryServer.Services {
             FilePath = Path.Combine(defaultGallery.FileStore, image.Name);
             //Store in the file library
             int count = 0;
-            while (File.Exists(FilePath)) {
+            while (FileUtils.IsFileLocked(FilePath)) {
                 count++;
                 string fileName = Path.GetFileName(FilePath);
-                fileName = Path.GetFileName(fileName) + count + Path.GetExtension(fileName);                
+                fileName = Path.GetFileName(fileName) + count + Path.GetExtension(fileName);
                 image = new Image(FilePath.Replace(Path.GetFileName(FilePath), fileName));
                 FilePath = Path.Combine(defaultGallery.FileStore, image.Name);
             }

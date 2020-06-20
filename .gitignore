@@ -30,3 +30,5 @@ ImageComparisonService/bin/
 ImageComparisonService/obj/
 
 DBProviders/obj/
+
+MediaLibraryServer/medialibrary.db

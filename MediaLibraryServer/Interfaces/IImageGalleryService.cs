@@ -1,14 +1,9 @@
-﻿using MediaLibraryCommon.Classes.LogicModels;
-using System.Collections.Generic;
+﻿using MediaLibraryCommon.Classes.DataModels;
+using MediaLibraryCommon.Classes.LogicModels;
 
 namespace MediaLibraryServer.Interfaces {
-    public interface IImageGalleryService {
-        void SaveGallery(Gallery gallery);
-        List<Gallery> GetAllGalleries();        
+    public interface IImageGalleryService: IAbstractLibraryService<Gallery, GalleryData> {             
         Gallery GetGalleryByName(string GalleryName);
-        List<Image> GetAllImagesByGaleryID(string GalleryID);
-        Image GetImageByID(string imageID);
-        void SaveImage(Image image);
-        string GetImageDataByID(string imageID);
+        
     }
 }

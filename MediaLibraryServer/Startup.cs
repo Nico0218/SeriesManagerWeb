@@ -56,7 +56,8 @@ namespace MediaLibraryServer {
             services.AddScoped<IVideoLibraryService, VideoGalleryService>();
             services.AddScoped<IVideoStreamService, VideoStreamService>();
 
-            services.AddScoped<IImageGalleryService, ImageGalleryService>();
+            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IImageGalleryService, ImageGalleryService>();            
             services.AddScoped<IImageComparisonService, ImageComparisonService.Services.ImageComparisonService>();
 
             services.AddControllers();
@@ -70,6 +71,7 @@ namespace MediaLibraryServer {
                     builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
                 });
             });
+            services.AddApplicationInsightsTelemetry();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

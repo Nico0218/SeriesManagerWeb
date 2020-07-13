@@ -1,4 +1,5 @@
 import { environment } from '../../environments/environment';
+
 export class Environment {
     public static get production(): boolean {
         return environment.production;
@@ -15,4 +16,6 @@ export class Environment {
     public static set apiUrl(v: string) {
         environment.apiUrl = v;
     }
+
+
 }

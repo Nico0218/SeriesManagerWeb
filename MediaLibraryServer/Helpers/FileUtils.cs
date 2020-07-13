@@ -28,8 +28,10 @@ namespace MediaLibraryServer.Helpers
                     stream.Close();
                 }
             }
-            catch (IOException)
+            catch (IOException ex)
             {
+                if (ex.Message.ToUpper().StartsWith("Could not find file".ToUpper()))
+                    return false;
                 //the file is unavailable because it is:
                 //still being written to
                 //or being processed by another thread

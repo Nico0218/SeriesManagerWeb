@@ -16,6 +16,7 @@ namespace MediaLibraryServer.Services {
         private readonly IConfigService configService;
         private readonly IVideoLibraryService videoLibraryService;
         private readonly IImageGalleryService imageLibraryService;
+        private readonly IImageService imageService;
         private readonly IImageComparisonService imageComparisonService;
         private readonly string constSeasonString = "Season";
         Timer fileWatcherTimer;
@@ -27,11 +28,12 @@ namespace MediaLibraryServer.Services {
         private char[] numbers = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
         public FileProcessorService(ILogger<FileProcessorService> logger, IConfigService configService, IVideoLibraryService videoLibraryService, IImageGalleryService imageLibraryService,
-            IImageComparisonService imageComparisonService) {
+            IImageService imageService, IImageComparisonService imageComparisonService) {
             this.logger = logger;
             this.configService = configService;
             this.videoLibraryService = videoLibraryService;
             this.imageLibraryService = imageLibraryService;
+            this.imageService = imageService;
             this.imageComparisonService = imageComparisonService;
 
             logger.LogInformation("Starting file processor service.");
@@ -162,7 +164,7 @@ namespace MediaLibraryServer.Services {
                 Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
             }
             //Duplicate check
-            if (FileUtils.IsFileLocked(FilePath)) {
+            if (!FileUtils.IsFileLocked(FilePath)) {
                 File.Move(oldFilePath, FilePath);
                 //Index the file in the DB
                 Video episode = new Video(FilePath);
@@ -181,7 +183,7 @@ namespace MediaLibraryServer.Services {
             if (defaultGallery == null) {
                 defaultGallery = new Gallery("Walls");
                 defaultGallery.FileStore = @"E:\TestImgLib";
-                imageLibraryService.SaveGallery(defaultGallery);
+                imageLibraryService.Save(defaultGallery);
             }
 
             //Move the file
@@ -190,6 +192,9 @@ namespace MediaLibraryServer.Services {
             string imgCompData = imageComparisonService.GetImageComparisonData(FilePath);
             if (imageComparisonService.isDuplicate(imgCompData)) {
                 FilePath = Path.Combine(configService.IngestSettings.RejectedPath, "Image", Path.GetFileName(FilePath));
+                if (!Directory.Exists(Path.GetDirectoryName(FilePath))) {
+                    Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
+                }
                 File.Move(oldFilePath, FilePath, true);
                 logger.LogInformation($"Found duplicate image {Path.GetFileName(FilePath)} and moved in to the rejected folder");
                 return;
@@ -211,7 +216,7 @@ namespace MediaLibraryServer.Services {
             //Index the file into the DB            
             image.ImageComparisonHash = imgCompData;
             image.GalleryID = defaultGallery.ID;
-            imageLibraryService.SaveImage(image);
+            imageService.Save(image);
         }
     }
 }

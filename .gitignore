@@ -32,3 +32,5 @@ ImageComparisonService/obj/
 DBProviders/obj/
 
 MediaLibraryServer/medialibrary.db
+
+VideoStreamClient/package-lock.json

@@ -15,6 +15,8 @@ namespace MediaLibraryServer.Services {
             dataService.TestConnection();
             //Ensure DB is in the correct state
             DBTableMaintenace();
+            //Load Libraries
+
             logger.LogDebug("Started LibraryManagerService");
         }
 
@@ -27,6 +29,16 @@ namespace MediaLibraryServer.Services {
             dataService.CreatOrAlterObjectTable<ImageData>();
             dataService.CreatOrAlterObjectTable<UserData>();
             logger.LogDebug("Completed table maintenance.");
+        }
+
+        public void GetAllLibraries() { 
+        }
+
+        public void LoadLibrary() { 
+        }
+
+        public void SaveLibrary() { 
+
         }
     }
 }

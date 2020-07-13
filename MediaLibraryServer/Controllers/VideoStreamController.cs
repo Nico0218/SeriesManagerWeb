@@ -11,7 +11,7 @@ namespace MediaLibraryServer.Controllers {
         private readonly ILogger<VideoStreamController> _logger;
         private readonly IVideoStreamService videoStreamService;
 
-        public VideoStreamController(ILogger<VideoStreamController> logger, IVideoStreamService videoStreamService, IVideoLibraryService videoLibraryService)
+        public VideoStreamController(ILogger<VideoStreamController> logger, IVideoStreamService videoStreamService, IVideoGalleryService videoLibraryService)
         {
             _logger = logger;
             this.videoStreamService = videoStreamService;

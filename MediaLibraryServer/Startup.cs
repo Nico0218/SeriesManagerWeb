@@ -53,7 +53,8 @@ namespace MediaLibraryServer {
             services.AddScoped<ILibraryManagerService, LibraryManagerService>();
             services.AddScoped<IFileProcessorService, FileProcessorService>();
 
-            services.AddScoped<IVideoLibraryService, VideoGalleryService>();
+            services.AddScoped<IVideoService, VideoService>();
+            services.AddScoped<IVideoGalleryService, VideoGalleryService>();
             services.AddScoped<IVideoStreamService, VideoStreamService>();
 
             services.AddScoped<IImageService, ImageService>();

@@ -3,15 +3,14 @@ using MediaLibraryServer.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
-using System.Text;
 
 namespace MediaLibraryServer.Services {
     public class VideoStreamService : IVideoStreamService {
         private const string msgStreamError = "Stream Failed";
         private readonly ILogger<VideoStreamService> logger;
-        private readonly IVideoLibraryService videoLibraryService;
+        private readonly IVideoGalleryService videoLibraryService;
 
-        public VideoStreamService(ILogger<VideoStreamService> logger, IVideoLibraryService videoLibraryService) {
+        public VideoStreamService(ILogger<VideoStreamService> logger, IVideoGalleryService videoLibraryService) {
             this.logger = logger;
             this.videoLibraryService = videoLibraryService;
         }

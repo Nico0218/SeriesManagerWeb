@@ -14,6 +14,7 @@ namespace MediaLibraryServer
 
             using (IServiceScope serviceScope = host.Services.CreateScope())
             {
+                //Services that need to run at application start
                 ILibraryManagerService libraryManagerService = serviceScope.ServiceProvider.GetRequiredService<ILibraryManagerService>();
                 IFileProcessorService fileProcessorService = serviceScope.ServiceProvider.GetRequiredService<IFileProcessorService>();
                 await host.RunAsync();

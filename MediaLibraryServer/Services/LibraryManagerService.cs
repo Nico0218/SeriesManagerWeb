@@ -30,15 +30,5 @@ namespace MediaLibraryServer.Services {
             dataService.CreatOrAlterObjectTable<UserData>();
             logger.LogDebug("Completed table maintenance.");
         }
-
-        public void GetAllLibraries() { 
-        }
-
-        public void LoadLibrary() { 
-        }
-
-        public void SaveLibrary() { 
-
-        }
     }
 }

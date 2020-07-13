@@ -14,10 +14,11 @@ namespace MediaLibraryServer.Services {
     public class FileProcessorService : IFileProcessorService, IDisposable {
         private readonly ILogger<FileProcessorService> logger;
         private readonly IConfigService configService;
-        private readonly IVideoLibraryService videoLibraryService;
+        private readonly IVideoGalleryService videoGalleryService;
         private readonly IImageGalleryService imageLibraryService;
         private readonly IImageService imageService;
         private readonly IImageComparisonService imageComparisonService;
+        private readonly IVideoService videoService;
         private readonly string constSeasonString = "Season";
         Timer fileWatcherTimer;
         Regex SeasonandNoSpaceMatch;
@@ -27,15 +28,15 @@ namespace MediaLibraryServer.Services {
 
         private char[] numbers = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-        public FileProcessorService(ILogger<FileProcessorService> logger, IConfigService configService, IVideoLibraryService videoLibraryService, IImageGalleryService imageLibraryService,
-            IImageService imageService, IImageComparisonService imageComparisonService) {
+        public FileProcessorService(ILogger<FileProcessorService> logger, IConfigService configService, IVideoGalleryService videoGalleryService, IImageGalleryService imageLibraryService,
+            IImageService imageService, IImageComparisonService imageComparisonService, IVideoService videoService) {
             this.logger = logger;
             this.configService = configService;
-            this.videoLibraryService = videoLibraryService;
+            this.videoGalleryService = videoGalleryService;
             this.imageLibraryService = imageLibraryService;
             this.imageService = imageService;
             this.imageComparisonService = imageComparisonService;
-
+            this.videoService = videoService;
             logger.LogInformation("Starting file processor service.");
             SeasonandNoSpaceMatch = new Regex(@"(Season[0-9]+)", RegexOptions.IgnoreCase);
             SeasonandSpaceMatch = new Regex(@"(Season [0-9]+)", RegexOptions.IgnoreCase);
@@ -151,10 +152,10 @@ namespace MediaLibraryServer.Services {
             }
 
             //Create the season entry
-            SeriesInformation seriesInformation = videoLibraryService.GetSeriesByName(SeriesName);
+            SeriesInformation seriesInformation = videoGalleryService.GetSeriesByName(SeriesName);
             if (seriesInformation == null) {
                 seriesInformation = new SeriesInformation(SeriesName);
-                videoLibraryService.SaveSeries(seriesInformation);
+                videoGalleryService.Save(seriesInformation);
             }
 
             //Move the file to the library
@@ -169,7 +170,7 @@ namespace MediaLibraryServer.Services {
                 //Index the file in the DB
                 Video episode = new Video(FilePath);
                 episode.SeriesID = seriesInformation.ID;
-                videoLibraryService.SaveEpisode(episode);
+                videoService.Save(episode);
             } else {
                 FilePath = Path.Combine(configService.IngestSettings.RejectedPath, "Video", Path.GetFileName(FilePath));
                 File.Move(oldFilePath, FilePath, true);

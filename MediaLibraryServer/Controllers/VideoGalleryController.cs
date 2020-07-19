@@ -8,10 +8,12 @@ namespace MediaLibraryServer.Controllers {
     public class VideoGalleryController : ControllerBase {
         private readonly ILogger<VideoGalleryController> logger;
         private readonly IVideoGalleryService videoGalleryService;
+        private readonly IVideoService videoService;
 
-        public VideoGalleryController(ILogger<VideoGalleryController> logger, IVideoGalleryService videoGalleryService) {
+        public VideoGalleryController(ILogger<VideoGalleryController> logger, IVideoGalleryService videoGalleryService, IVideoService videoService) {
             this.logger = logger;
             this.videoGalleryService = videoGalleryService;
+            this.videoService = videoService;
         }
 
         [HttpGet("GetAllSeries")]
@@ -31,7 +33,7 @@ namespace MediaLibraryServer.Controllers {
 
         [HttpGet("GetEpisodesForSeries/{seriesID}")]
         public ObjectResult GetEpisodesForSeries(string seriesID) {
-            return new ObjectResult(videoGalleryService.GetEpisodesForSeries(seriesID));
+            return new ObjectResult(videoService.GetEpisodesForSeries(seriesID));
         }
     }
 }

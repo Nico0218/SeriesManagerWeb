@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoEncoderService", "..\V
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageComparisonService", "..\ImageComparisonService\ImageComparisonService.csproj", "{8BA0D0A6-4C33-411B-AF4A-555703CFB742}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaLibaryCommon", "..\MediaLibaryCommon\MediaLibaryCommon.csproj", "{50B83726-D064-4DBE-BC03-CE842C0220FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaLibraryCommon", "..\MediaLibaryCommon\MediaLibraryCommon.csproj", "{50B83726-D064-4DBE-BC03-CE842C0220FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

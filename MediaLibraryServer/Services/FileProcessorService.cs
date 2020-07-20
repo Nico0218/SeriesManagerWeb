@@ -65,11 +65,11 @@ namespace MediaLibraryServer.Services {
         private void ProcessFile(string FilePath) {
             //Get File Type
             string fileExtension = Path.GetExtension(FilePath);
-            FileType fileType = FileType.UnknownFile;
+            FolderType fileType = FolderType.UnknownFile;
             if (configService.FileTypeSettings.GetVideoFileTypes().Contains(fileExtension)) {
-                fileType = FileType.VideoFile;
+                fileType = FolderType.VideoFile;
             } else if (configService.FileTypeSettings.GetImageFileTypes().Contains(fileExtension)) {
-                fileType = FileType.ImageFile;
+                fileType = FolderType.ImageFile;
             }
 
             //Sanitize file
@@ -83,15 +83,15 @@ namespace MediaLibraryServer.Services {
                 logger.LogError($"Failed to sanitize file {Path.GetFileName(FilePath)}", ex);
             }
             switch (fileType) {
-                case FileType.VideoFile: {
+                case FolderType.VideoFile: {
                         videoGalleryService.ProcessNewVideoFile(FilePath);
                         break;
                     }
-                case FileType.ImageFile: {
+                case FolderType.ImageFile: {
                         imageGalleryService.ProcessNewImageFile(FilePath);
                         break;
                     }
-                case FileType.UnknownFile:
+                case FolderType.UnknownFile:
                 default:
                     string rejectFile = Path.Combine(configService.IngestSettings.RejectedPath, Path.GetFileName(FilePath));
                     File.Move(FilePath, rejectFile);

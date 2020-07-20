@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DBProviders\DBProviderBase.csproj" />
-    <ProjectReference Include="..\MediaLibaryCommon\MediaLibaryCommon.csproj" />
+    <ProjectReference Include="..\MediaLibaryCommon\MediaLibraryCommon.csproj" />
   </ItemGroup>
 
 </Project>

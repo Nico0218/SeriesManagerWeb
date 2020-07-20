@@ -1,23 +1,36 @@
-﻿using System;
-using MediaLibraryCommon.Enums;
+﻿using MediaLibraryCommon.Enums;
+using System;
+using System.Configuration;
 using System.IO;
 
-namespace MediaLibraryServer.Classes {
-    public class Folder {
-        public FileType FileType { get; set; }
+namespace MediaLibraryCommon.Classes.LogicModels.Config {
+    public class FolderLibrary : LogicModelBase {
+        public FolderType FileType { get; set; }
+        [StringValidator(MaxLength = 1000)]
         public string BasePath { get; set; }
         //Handled like a %
         public double MinFreeSpace { get; set; } = 5;
+
+        public ObjectStatus Status { get; set; } = ObjectStatus.None;
+
+        public FolderLibrary() {
+            
+        }
+
+        public FolderLibrary(string name) : base(name) {
+            
+        }
 
         public string GetFreeSpace {
             get {
                 return GetDisplayString(GetFreeBytes);
             }
         }
+
         public string GetAvailableSpace {
             get {
                 long freeSpace = GetFreeBytes;
-                long availableSpace = freeSpace - (long)(freeSpace * (MinFreeSpace/100));
+                long availableSpace = freeSpace - (long)(freeSpace * (MinFreeSpace / 100));
                 return GetDisplayString(availableSpace);
             }
         }

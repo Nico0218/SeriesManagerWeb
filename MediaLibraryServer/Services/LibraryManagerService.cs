@@ -1,4 +1,5 @@
 ﻿using MediaLibraryCommon.Classes.DataModels;
+using MediaLibraryCommon.Classes.DataModels.Config;
 using MediaLibraryServer.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -22,7 +23,8 @@ namespace MediaLibraryServer.Services {
 
         private void DBTableMaintenace() {
             logger.LogDebug("Running table maintenance.");
-            dataService.CreatOrAlterObjectTable<FolderLibraryData>();
+            dataService.CreatOrAlterObjectTable<MainConfigData>();
+            dataService.CreatOrAlterObjectTable<FolderLibraryData>();            
             dataService.CreatOrAlterObjectTable<SeriesInformationData>();
             dataService.CreatOrAlterObjectTable<VideoData>();
             dataService.CreatOrAlterObjectTable<GalleryData>();

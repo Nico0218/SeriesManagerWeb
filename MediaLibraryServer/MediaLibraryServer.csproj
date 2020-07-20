@@ -26,13 +26,17 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ImageComparisonService\ImageComparisonService.csproj" />
-    <ProjectReference Include="..\MediaLibaryCommon\MediaLibaryCommon.csproj" />
+    <ProjectReference Include="..\MediaLibaryCommon\MediaLibraryCommon.csproj" />
     <ProjectReference Include="..\MySQLProvider\MySQLProvider.csproj">
       <Private>true</Private>
     </ProjectReference>
     <ProjectReference Include="..\SQLiteProvider\SQLiteProvider.csproj">
       <Private>true</Private>
     </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Classes\" />
   </ItemGroup>
 
 

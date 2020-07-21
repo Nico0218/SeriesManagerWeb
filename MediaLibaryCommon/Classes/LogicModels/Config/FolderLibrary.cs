@@ -14,24 +14,30 @@ namespace MediaLibraryCommon.Classes.LogicModels.Config {
         public ObjectStatus Status { get; set; } = ObjectStatus.None;
 
         public FolderLibrary() {
-            
+
         }
 
         public FolderLibrary(string name) : base(name) {
-            
+
         }
 
-        public string GetFreeSpace {
+        /// <summary>
+        /// Gets the available space on the folder disk in Mb
+        /// </summary>
+        public long GetFreeSpace {
             get {
-                return GetDisplayString(GetFreeBytes);
+                return GetFreeBytes / 1024;
             }
         }
 
-        public string GetAvailableSpace {
+        /// <summary>
+        /// Gets the available space in the folder in Mb
+        /// </summary>
+        public long GetAvailableSpace {
             get {
                 long freeSpace = GetFreeBytes;
                 long availableSpace = freeSpace - (long)(freeSpace * (MinFreeSpace / 100));
-                return GetDisplayString(availableSpace);
+                return availableSpace / 1024;
             }
         }
 
@@ -46,19 +52,32 @@ namespace MediaLibraryCommon.Classes.LogicModels.Config {
             }
         }
 
-        private string GetDisplayString(long bytes) {
-            long value = bytes / 1024;
-            if (value > 1024) {
-                value = value / 1024;
-                if (value > 1024) {
-                    value = value / 1024;
-                    return $"{value} TB";
+        /// <summary>
+        /// Converts a Mb disk size to a display friendly string
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public string FormatDisplayString(long Mb) {
+            if (Mb > 1024) {
+                Mb = Mb / 1024;
+                if (Mb > 1024) {
+                    Mb = Mb / 1024;
+                    return $"{Mb} TB";
                 } else {
-                    return $"{value} GB";
+                    return $"{Mb} GB";
                 }
             } else {
-                return $"{value} MB";
+                return $"{Mb} MB";
             }
+        }
+
+        public bool IsReady() {
+            if (!Directory.Exists(BasePath))
+                return false;
+            //Critical low space. Things are not OK
+            if (GetFreeSpace < 1024)
+                return false;
+            return true;
         }
     }
 }

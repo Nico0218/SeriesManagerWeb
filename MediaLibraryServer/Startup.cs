@@ -2,7 +2,9 @@ using DBProviderBase.Classes;
 using DBProviderBase.Enums;
 using ImageComparisonService.Interfaces;
 using MediaLibraryServer.Interfaces;
+using MediaLibraryServer.Interfaces.Config;
 using MediaLibraryServer.Services;
+using MediaLibraryServer.Services.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Memory;
@@ -46,6 +48,7 @@ namespace MediaLibraryServer {
             }
 
             services.AddSingleton<IConfigService, ConfigService>();
+            services.AddSingleton<IFolderService, FolderService>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IMemoryCache, MemoryCache>();
             

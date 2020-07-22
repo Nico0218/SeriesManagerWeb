@@ -1,12 +1,11 @@
-import { Injectable } from '@angular/core';
-import { User } from '../classes/security/user';
-import { UserRoles } from '../enums/security/user-roles';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { Environment } from '../classes/environment';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Environment } from '../classes/environment';
 import { LoginRequest } from '../classes/security/login-request';
+import { User } from '../classes/security/user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
@@ -19,6 +18,10 @@ export class AuthenticationService {
         this.user = this.userSubject.asObservable();
     }
 
+    public get controllerURL() : string {
+        return `${Environment.apiUrl}/User`;
+    }
+
     public get userValue(): User {
         return this.userSubject.value;
     }
@@ -27,7 +30,7 @@ export class AuthenticationService {
         //Password should be encrypted at this point
         let loginRequest: LoginRequest = { userName : username, password: password};
         console.log(Environment.apiUrl);
-        return this.http.post<any>(`${Environment.apiUrl}/User/authenticate`, loginRequest)
+        return this.http.post<any>(`${this.controllerURL}/authenticate`, loginRequest)
             .pipe(map(user => {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
                 localStorage.setItem('user', JSON.stringify(user));

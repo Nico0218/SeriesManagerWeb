@@ -9,13 +9,14 @@ import { MissingPageComponent } from './components/missing-page-component/missin
 import { ConfigMainComponent } from './components/config/config-main.component';
 import { AuthGuard } from './helpers/auth.guard';
 import { LoginComponent } from './components/login/login.component';
+import { ConfigGuard } from './helpers/config.guard';
 
 const routes: Routes = [
-  { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
-  { path: 'image-gallery-list', component: ImageGalleryListComponent, canActivate: [AuthGuard] },
+  { path: 'home', component: HomeComponent, canActivate: [AuthGuard, ConfigGuard] },
+  { path: 'image-gallery-list', component: ImageGalleryListComponent, canActivate: [AuthGuard, ConfigGuard] },
   { path: 'image-list', component: ImageListComponent, canActivate: [AuthGuard] },
-  { path: 'series-gallery-list', component: VideoGalleryListComponent, canActivate: [AuthGuard] },
-  { path: 'series-episode-list/:seriesID', component: VideoListComponent, canActivate: [AuthGuard] },
+  { path: 'series-gallery-list', component: VideoGalleryListComponent, canActivate: [AuthGuard, ConfigGuard] },
+  { path: 'series-episode-list/:seriesID', component: VideoListComponent, canActivate: [AuthGuard, ConfigGuard] },
   { path: 'settings', component: ConfigMainComponent, canActivate: [AuthGuard], data: { role: [0] } },
   { path: 'login', component: LoginComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' },

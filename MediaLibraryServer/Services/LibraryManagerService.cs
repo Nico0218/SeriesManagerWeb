@@ -8,13 +8,11 @@ namespace MediaLibraryServer.Services {
     public class LibraryManagerService : ILibraryManagerService {
         private readonly ILogger<LibraryManagerService> logger;
         private readonly IDataService dataService;
-        private readonly IConfigService configService;
 
-        public LibraryManagerService(ILogger<LibraryManagerService> logger, IDataService dataService, IConfigService configService) {
+        public LibraryManagerService(ILogger<LibraryManagerService> logger, IDataService dataService) {
             logger.LogDebug("Starting LibraryManagerService");
             this.logger = logger;
             this.dataService = dataService;
-            this.configService = configService;
             //Test DB connection
             dataService.TestConnection();
             //Ensure DB is in the correct state

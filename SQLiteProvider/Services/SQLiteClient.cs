@@ -86,7 +86,7 @@ namespace SQLiteProvider.Services {
                         sqliteConnection.Open();
                         using (SqliteDataReader tableReader = cmd.ExecuteReader()) {
                             schemaTable = tableReader.GetSchemaTable();
-                        }                        
+                        }
                     }
                     sqliteConnection.Close();
                 }
@@ -135,15 +135,23 @@ namespace SQLiteProvider.Services {
                 if (hasModification) {
                     using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
                         sqliteConnection.Open();
+                        string oldTableName = GetTableName(obj, "old");
                         using (SqliteTransaction sqliteTransaction = sqliteConnection.BeginTransaction()) {
                             try {
                                 //Rename the existing table
-                                string oldTableName = GetTableName(obj, "old");
                                 ExecuteNonQuery($"ALTER TABLE {tableName} RENAME TO {oldTableName}", sqliteConnection);
+                                sqliteTransaction.Commit();
+                            } catch (Exception ex) {
+                                logger.LogError("CreateAlterTable event failed.", ex);
+                                sqliteTransaction.Rollback();
+                                throw;
+                            }
+                        }
 
+                        using (SqliteTransaction sqliteTransaction = sqliteConnection.BeginTransaction()) {
+                            try {
                                 //Create the new table
                                 CreateNewTable<T>(obj, tableName, false);
-
                                 //Copy data from old table to new table
                                 string insertPart = $"INSERT INTO {tableName} (";
                                 string selectPart = $"SELECT ";
@@ -159,12 +167,20 @@ namespace SQLiteProvider.Services {
 
                                 //Delete old table
                                 ExecuteNonQuery($"DROP TABLE {oldTableName}", sqliteConnection);
-
-                                sqliteTransaction.Commit();
                             } catch (Exception ex) {
                                 logger.LogError("CreateAlterTable event failed.", ex);
                                 sqliteTransaction.Rollback();
-                                throw;
+                                using (SqliteTransaction rollbackTransaction = sqliteConnection.BeginTransaction()) {
+                                    try {
+                                        //Rename the existing table
+                                        ExecuteNonQuery($"ALTER TABLE {oldTableName} RENAME TO {tableName}", sqliteConnection);
+                                        rollbackTransaction.Commit();
+                                    } catch (Exception ex2) {
+                                        logger.LogError("CreateAlterTable event failed.", ex2);
+                                        rollbackTransaction.Rollback();
+                                        throw;
+                                    }
+                                }
                             }
                         }
                         sqliteConnection.Close();

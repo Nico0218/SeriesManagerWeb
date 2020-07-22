@@ -1,5 +1,5 @@
 ﻿namespace MediaLibraryCommon.Classes.LogicModels.Config {
-    public class MainConfig {
+    public class MainConfig : LogicModelBase {
         public bool IsConfigured = false;
     }
 }

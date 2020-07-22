@@ -13,8 +13,12 @@ export class ImageGalleryService {
         private domSanitizer: DomSanitizer) {
     }
 
+    public get controllerURL() : string {
+        return `${Environment.apiUrl}/ImageGallery`;
+    }
+
     GetAllGalleries(): Observable<ImageGallery[]> {
-        return this.httpClient.get(`${Environment.apiUrl}/ImageGallery/GetGalleries`)
+        return this.httpClient.get(`${this.controllerURL}/GetGalleries`)
             .pipe(
                 map((ii: ImageGallery[]) => {
                     return ii;
@@ -23,7 +27,7 @@ export class ImageGalleryService {
     }
 
     GetAllImagesByGaleryID(GalleryID: string): Observable<Image[]> {
-        return this.httpClient.get(`${Environment.apiUrl}/ImageGallery/GetAllImagesByGaleryID/${GalleryID}`)
+        return this.httpClient.get(`${this.controllerURL}/GetAllImagesByGaleryID/${GalleryID}`)
             .pipe(
                 map((ii: Image[]) => {
                     return ii;
@@ -32,7 +36,7 @@ export class ImageGalleryService {
     }
 
     GetGalleryByName(GalleryName: string): Observable<ImageGallery> {
-        return this.httpClient.get(`${Environment.apiUrl}/ImageGallery/GetGalleryByName/${GalleryName}`)
+        return this.httpClient.get(`${this.controllerURL}/GetGalleryByName/${GalleryName}`)
             .pipe(
                 map((ii: ImageGallery) => {
                     return ii;
@@ -41,7 +45,7 @@ export class ImageGalleryService {
     }
 
     GetImageByID(ImageID: string): Observable<Image> {
-        return this.httpClient.get(`${Environment.apiUrl}/ImageGallery/GetImageByID/${ImageID}`)
+        return this.httpClient.get(`${this.controllerURL}/GetImageByID/${ImageID}`)
             .pipe(
                 map((ii: Image) => {
                     return ii;
@@ -50,7 +54,7 @@ export class ImageGalleryService {
     }
 
     GetImageDataByID(ImageID: string): Observable<SafeUrl> {
-        return this.httpClient.get(`${Environment.apiUrl}/ImageGallery/GetImageDataByID/${ImageID}`)
+        return this.httpClient.get(`${this.controllerURL}/GetImageDataByID/${ImageID}`)
             .pipe(
                 map((ii: any) => {
                     let res = `data:image/jpg;base64,${ii.data as string}`;

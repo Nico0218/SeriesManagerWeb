@@ -1,11 +1,14 @@
 ﻿using MediaLibraryCommon.Classes.LogicModels.Config;
 
 namespace MediaLibraryCommon.Classes.DataModels.Config {
-    public class MainConfigData {
+    public class MainConfigData : DataModelBase {
         public bool IsConfigured = false;
 
         public static explicit operator MainConfig(MainConfigData source) {
             MainConfig destination = new MainConfig() {
+                ID = source.ID,
+                Name = source.Name,
+                DisplayName = source.DisplayName,
                 IsConfigured = source.IsConfigured
             };
             return destination;
@@ -13,6 +16,9 @@ namespace MediaLibraryCommon.Classes.DataModels.Config {
 
         public static explicit operator MainConfigData(MainConfig source) {
             MainConfigData destination = new MainConfigData() {
+                ID = source.ID,
+                Name = source.Name,
+                DisplayName = source.DisplayName,
                 IsConfigured = source.IsConfigured
             };
             return destination;

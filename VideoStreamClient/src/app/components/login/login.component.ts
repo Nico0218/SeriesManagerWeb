@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { first } from 'rxjs/operators';
+import { first, tap } from 'rxjs/operators';
 import { AuthenticationService } from '../../services/authentication.service';
+import { ConfigService } from 'src/app/services/config.service';
 
 @Component({
     selector: 'login-component',
@@ -20,7 +21,8 @@ export class LoginComponent implements OnInit {
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private router: Router,
-        private authenticationService: AuthenticationService
+        private authenticationService: AuthenticationService,
+        private configService: ConfigService
     ) {
         // redirect to home if already logged in
         if (this.authenticationService.userValue) {
@@ -44,6 +46,11 @@ export class LoginComponent implements OnInit {
     onSubmit() {
         this.submitted = true;
 
+        if (!this.f.username.value)
+            this.f.username.setValue("admin");
+        if (!this.f.password.value)
+            this.f.password.setValue("admin");
+
         // stop here if form is invalid
         if (this.loginForm.invalid) {
             return;
@@ -54,7 +61,17 @@ export class LoginComponent implements OnInit {
             .pipe(first())
             .subscribe(
                 data => {
-                    this.router.navigate([this.returnUrl]);
+                    this.configService.IsConfigured()
+                        .pipe(
+                            tap(isConfigured => {
+                                if (isConfigured) {
+                                    this.router.navigate([this.returnUrl]);
+                                } else {
+                                    this.router.navigate(["/settings"]);
+                                }
+                            })
+                        )
+                        .subscribe();
                 },
                 error => {
                     this.error = error;

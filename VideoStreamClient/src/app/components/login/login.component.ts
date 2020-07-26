@@ -41,15 +41,15 @@ export class LoginComponent implements OnInit {
     }
 
     // convenience getter for easy access to form fields
-    get f() { return this.loginForm.controls; }
+    get formField() { return this.loginForm.controls; }
 
     onSubmit() {
         this.submitted = true;
 
-        if (!this.f.username.value)
-            this.f.username.setValue("admin");
-        if (!this.f.password.value)
-            this.f.password.setValue("admin");
+        if (!this.formField.username.value)
+            this.formField.username.setValue("admin");
+        if (!this.formField.password.value)
+            this.formField.password.setValue("admin");
 
         // stop here if form is invalid
         if (this.loginForm.invalid) {
@@ -57,7 +57,7 @@ export class LoginComponent implements OnInit {
         }
 
         this.loading = true;
-        this.authenticationService.login(this.f.username.value, this.f.password.value)
+        this.authenticationService.login(this.formField.username.value, this.formField.password.value)
             .pipe(first())
             .subscribe(
                 data => {

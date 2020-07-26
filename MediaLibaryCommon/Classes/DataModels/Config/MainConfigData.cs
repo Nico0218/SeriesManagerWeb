@@ -2,7 +2,7 @@
 
 namespace MediaLibraryCommon.Classes.DataModels.Config {
     public class MainConfigData : DataModelBase {
-        public bool IsConfigured = false;
+        public bool IsConfigured { get; set; } = false;
 
         public static explicit operator MainConfig(MainConfigData source) {
             MainConfig destination = new MainConfig() {

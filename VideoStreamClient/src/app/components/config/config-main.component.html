@@ -4,11 +4,25 @@
         </breadcrum-component>
     </div>
     <div class="row">
-        <h3 class="col">Settings</h3>
-    </div>
-    <div class="row">
         <div class="col">
-            TODO
+            <div class="card">
+                <h4 class="card-header">Settings</h4>
+                <div class="card-body">
+                    <form [formGroup]="settingsForm" (ngSubmit)="onSubmit()">
+                        <label for="ingestFolder">Ingest Folder</label>
+                        <input type="text" formControlName="ingestFolder" class="form-control"
+                            [ngClass]="{ 'is-invalid': submitted && formField.ingestFolder.errors }" />
+                        <div *ngIf="submitted && formField.ingestFolder.errors" class="invalid-feedback">
+                            <div *ngIf="formField.ingestFolder.errors.required">Ingest folder is required</div>
+                        </div>
+                        <button [disabled]="loading" class="btn btn-primary">
+                            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                            Save Config
+                        </button>
+                        <div *ngIf="error" class="alert alert-danger mt-3 mb-0">{{error}}</div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

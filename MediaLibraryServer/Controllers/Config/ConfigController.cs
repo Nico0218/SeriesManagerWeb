@@ -3,11 +3,13 @@ using MediaLibraryServer.Interfaces.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MediaLibraryServer.Controllers {
     [ApiController]
     [Route("[controller]")]
-    public class ConfigController: ControllerBase {
+    public class ConfigController : ControllerBase {
         private readonly ILogger<ConfigController> logger;
         private readonly IConfigService configService;
         private readonly IFolderService folderService;
@@ -29,9 +31,15 @@ namespace MediaLibraryServer.Controllers {
             return new ObjectResult(true);
         }
 
-        [HttpGet("GetConfiguredFolders")]
-        public ObjectResult GetConfiguredFolders() {
+        [HttpGet("GetFolders")]
+        public ObjectResult GetFolders() {
             return new ObjectResult(folderService.GetAll());
+        }
+
+        [HttpGet("GetConfig")]
+        public ObjectResult GetConfig() {
+            logger.LogDebug("Getting main config");
+            return new ObjectResult(configService.GetAll().FirstOrDefault());
         }
 
         [HttpPost("SaveConfig")]
@@ -47,16 +55,18 @@ namespace MediaLibraryServer.Controllers {
             return new ObjectResult(true);
         }
 
-        [HttpPost("SaveFolder")]
-        public ObjectResult SaveFolder([FromBody]FolderLibrary folderLibrary) {
-            if (folderLibrary is null) {
-                Exception ex = new ArgumentNullException(nameof(folderLibrary)); ;
+        [HttpPost("SaveFolders")]
+        public ObjectResult SaveFolder([FromBody] List<FolderLibrary> folderLibraries) {
+            if (folderLibraries is null) {
+                Exception ex = new ArgumentNullException(nameof(folderLibraries)); ;
                 logger.LogError(ex.Message);
                 throw ex;
             }
 
-            logger.LogDebug($"Saving folder library {folderLibrary.DisplayName}");
-            folderService.Save(folderLibrary);
+            logger.LogDebug($"Saving {folderLibraries.Count} folders.");
+            foreach (var folderLibrary in folderLibraries) {
+                folderService.Save(folderLibrary);
+            }            
             return new ObjectResult(true);
         }
     }

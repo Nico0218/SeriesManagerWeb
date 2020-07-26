@@ -62,7 +62,7 @@ namespace SQLiteProvider.Services {
             bool tableExist = false;
             using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
                 using (SqliteCommand cmd = sqliteConnection.CreateCommand()) {
-                    cmd.CommandText = $"SELECT name FROM sqlite_master WHERE type='table';";
+                    cmd.CommandText = $"SELECT name FROM sqlite_master WHERE type='table' AND name={tableName};";
                     sqliteConnection.Open();
                     using (SqliteDataReader tableReader = cmd.ExecuteReader()) {
                         while (tableReader.Read() && !tableExist) {
@@ -123,10 +123,9 @@ namespace SQLiteProvider.Services {
                         //DataRow Index 13 = "DataType"
                         string dataType = GetSQLiteDataType(columnSet.Key);
                         if ((columnSet.Value[0].ToString() != columnSet.Key.Name) || (columnSet.Value[13].ToString() != dataType)) {
-                            if (columnSet.Value[13].ToString() != "TEXT") {
-
-                                throw new NotImplementedException();
-                            }
+                            //if (columnSet.Value[13].ToString() != "TEXT") {
+                            //    throw new NotImplementedException();
+                            //}
                             hasModification = true;
                             break;
                         }
@@ -136,6 +135,9 @@ namespace SQLiteProvider.Services {
                     using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
                         sqliteConnection.Open();
                         string oldTableName = GetTableName(obj, "old");
+                        //Delete old table if it somehow exists from a previous attempt
+                        ExecuteNonQuery($"DROP TABLE {oldTableName}", sqliteConnection);
+
                         using (SqliteTransaction sqliteTransaction = sqliteConnection.BeginTransaction()) {
                             try {
                                 //Rename the existing table
@@ -147,11 +149,11 @@ namespace SQLiteProvider.Services {
                                 throw;
                             }
                         }
+                        //Create the new table
+                        CreateNewTable<T>(obj, tableName, sqliteConnection);
 
                         using (SqliteTransaction sqliteTransaction = sqliteConnection.BeginTransaction()) {
                             try {
-                                //Create the new table
-                                CreateNewTable<T>(obj, tableName, false);
                                 //Copy data from old table to new table
                                 string insertPart = $"INSERT INTO {tableName} (";
                                 string selectPart = $"SELECT ";
@@ -164,9 +166,6 @@ namespace SQLiteProvider.Services {
                                 insertPart = insertPart.Substring(0, insertPart.Length - 2) + ")";
                                 selectPart = selectPart.Substring(0, selectPart.Length - 2) + $" FROM {oldTableName}";
                                 ExecuteNonQuery($"{insertPart} {selectPart}", sqliteConnection);
-
-                                //Delete old table
-                                ExecuteNonQuery($"DROP TABLE {oldTableName}", sqliteConnection);
                             } catch (Exception ex) {
                                 logger.LogError("CreateAlterTable event failed.", ex);
                                 sqliteTransaction.Rollback();
@@ -182,6 +181,8 @@ namespace SQLiteProvider.Services {
                                     }
                                 }
                             }
+                            //Delete old table
+                            ExecuteNonQuery($"DROP TABLE {oldTableName}", sqliteConnection);
                         }
                         sqliteConnection.Close();
                     }
@@ -189,7 +190,7 @@ namespace SQLiteProvider.Services {
             }
             //Create the new table
             else {
-                CreateNewTable<T>(obj, tableName, true);
+                CreateNewTable<T>(obj, tableName);
             }
         }
 
@@ -246,6 +247,10 @@ namespace SQLiteProvider.Services {
                                 foreach (PropertyInfo propertyInfo in obj.GetType().GetProperties()) {
                                     if (propertyInfo.PropertyType == typeof(string)) {
                                         propertyInfo.SetValue(obj, result.GetString(propertyInfo.Name));
+                                    } else if (propertyInfo.PropertyType == typeof(bool)) {
+                                        propertyInfo.SetValue(obj, result.GetBoolean(propertyInfo.Name));
+                                    } else {
+                                        throw new NotImplementedException($"Data type {propertyInfo.PropertyType} not handled.");
                                     }
                                 }
                                 results.Add(obj);
@@ -330,7 +335,7 @@ namespace SQLiteProvider.Services {
             }
         }
 
-        private string GetTableName<T>(T obj, string prefix = "") => $"`{prefix + obj.GetType().Name.ToLower()}`";
+        private string GetTableName<T>(T obj, string prefix = "") => $"'{prefix + obj.GetType().Name.ToLower()}'";
 
         private string BuildColumnAddString(PropertyInfo propertyInfo) {
             StringBuilder stringBuilder = new StringBuilder();
@@ -347,7 +352,7 @@ namespace SQLiteProvider.Services {
             string mySqlDataType;
             if (propertyInfo.PropertyType == typeof(string) || propertyInfo.PropertyType == typeof(DateTime)) {
                 mySqlDataType = $"TEXT";
-            } else if (propertyInfo.PropertyType == typeof(int)) {
+            } else if (propertyInfo.PropertyType == typeof(int) || propertyInfo.PropertyType == typeof(bool)) {
                 mySqlDataType = "INTEGER";
             } else if (propertyInfo.PropertyType == typeof(float)) {
                 mySqlDataType = "REAL";
@@ -370,7 +375,7 @@ namespace SQLiteProvider.Services {
         //    return MaxLength;
         //}
 
-        private void CreateNewTable<T>(T obj, string tableName, bool manageConnection) {
+        private void CreateNewTable<T>(T obj, string tableName, SqliteConnection sqliteConnection = null) {
             StringBuilder quertyStringBuilder = new StringBuilder();
             quertyStringBuilder.AppendLine($"CREATE TABLE {tableName} (");
             foreach (PropertyInfo propertyInfo in obj.GetType().GetProperties()) {
@@ -378,11 +383,7 @@ namespace SQLiteProvider.Services {
             }
             quertyStringBuilder.AppendLine($"PRIMARY KEY (`ID`));");
 
-            using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
-                sqliteConnection.Open();
-                ExecuteNonQuery(quertyStringBuilder.ToString(), sqliteConnection);
-                sqliteConnection.Close();
-            }
+            ExecuteNonQuery(quertyStringBuilder.ToString(), sqliteConnection);
         }
 
         private int ExecuteNonQuery(string statement, SqliteConnection sqliteConnection = null) {

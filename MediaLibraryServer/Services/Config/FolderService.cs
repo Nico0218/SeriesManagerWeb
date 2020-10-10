@@ -1,7 +1,7 @@
-﻿using MediaLibraryCommon.Classes.DataModels.Config;
+﻿using DBProviderBase.Interfaces;
+using MediaLibraryCommon.Classes.DataModels.Config;
 using MediaLibraryCommon.Classes.LogicModels.Config;
 using MediaLibraryCommon.Enums;
-using MediaLibraryServer.Interfaces;
 using MediaLibraryServer.Interfaces.Config;
 using Microsoft.Extensions.Logging;
 using System;

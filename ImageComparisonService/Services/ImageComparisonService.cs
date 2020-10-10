@@ -1,8 +1,8 @@
 ﻿using DBProviderBase.Classes;
+using DBProviderBase.Interfaces;
 using ImageComparisonService.Classes;
 using ImageComparisonService.Interfaces;
 using MediaLibraryCommon.Classes.DataModels;
-using MediaLibraryServer.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

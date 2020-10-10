@@ -1,4 +1,5 @@
-﻿using MediaLibraryCommon.Classes;
+﻿using DBProviderBase.Interfaces;
+using MediaLibraryCommon.Classes;
 using MediaLibraryCommon.Classes.DataModels.Config;
 using MediaLibraryCommon.Classes.LogicModels.Config;
 using MediaLibraryCommon.Enums;

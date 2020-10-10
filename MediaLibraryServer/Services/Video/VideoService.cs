@@ -1,4 +1,5 @@
 ﻿using DBProviderBase.Classes;
+using DBProviderBase.Interfaces;
 using MediaLibraryCommon.Classes.DataModels;
 using MediaLibraryCommon.Classes.LogicModels;
 using MediaLibraryServer.Interfaces;

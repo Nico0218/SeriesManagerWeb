@@ -1,5 +1,6 @@
 using DBProviderBase.Classes;
 using DBProviderBase.Enums;
+using DBProviderBase.Interfaces;
 using ImageComparisonService.Interfaces;
 using MediaLibraryServer.Interfaces;
 using MediaLibraryServer.Interfaces.Config;

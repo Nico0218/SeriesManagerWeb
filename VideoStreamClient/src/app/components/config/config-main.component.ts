@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UIBase } from '../common/ui-base-component/ui-base.component';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { ConfigService } from 'src/app/services/config.service';
 import { MainConfig } from 'src/app/classes/config/main-config';
 import { tap, first, catchError, map } from 'rxjs/operators';
@@ -53,7 +53,7 @@ export class ConfigMainComponent extends UIBase implements OnInit {
             .subscribe();
 
         this.settingsForm = this.formBuilder.group({
-            ingestFolder: ['', Validators.required]
+            ingestFolder: new FormControl('', Validators.required)
         });
     }
 
@@ -80,6 +80,7 @@ export class ConfigMainComponent extends UIBase implements OnInit {
         }
         this.loading = true;
         this.mainConfig.isConfigured = true;
+        var tmp = this.formField["ingestFolder"].value;
 
         this.configService.SaveFolders(this.folders)
             .pipe(

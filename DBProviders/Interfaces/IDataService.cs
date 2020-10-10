@@ -1,7 +1,6 @@
-﻿using DBProviderBase.Classes;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace MediaLibraryServer.Interfaces
+namespace DBProviderBase.Interfaces
 {
     public interface IDataService
     {

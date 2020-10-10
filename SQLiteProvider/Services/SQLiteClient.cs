@@ -1,5 +1,5 @@
 ﻿using DBProviderBase.Classes;
-using MediaLibraryServer.Interfaces;
+using DBProviderBase.Interfaces;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -54,12 +54,9 @@ namespace SQLiteProvider.Services {
             }
         }
 
-        public void CreatOrAlterObjectTable<T>() {
-            T obj = (T)Activator.CreateInstance(typeof(T));
-            string tableName = GetTableName(obj);
-
-            //Get list of tables and check if it exists
+        private bool TableExists(object obj, string tableName) {
             bool tableExist = false;
+            //Get list of tables and check if it exists
             using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
                 using (SqliteCommand cmd = sqliteConnection.CreateCommand()) {
                     cmd.CommandText = $"SELECT name FROM sqlite_master WHERE type='table' AND name={tableName};";
@@ -76,8 +73,15 @@ namespace SQLiteProvider.Services {
                     sqliteConnection.Close();
                 }
             }
+            return tableExist;
+        }
+
+        public void CreatOrAlterObjectTable<T>() {
+            T obj = (T)Activator.CreateInstance(typeof(T));
+            string tableName = GetTableName(obj);
+
             //The table exist and we just need to modify it
-            if (tableExist) {
+            if (TableExists(obj, tableName)) {
                 //SQLLite does not have alter column functionality so we have to do some magic
                 DataTable schemaTable;
                 using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
@@ -136,7 +140,8 @@ namespace SQLiteProvider.Services {
                         sqliteConnection.Open();
                         string oldTableName = GetTableName(obj, "old");
                         //Delete old table if it somehow exists from a previous attempt
-                        ExecuteNonQuery($"DROP TABLE {oldTableName}", sqliteConnection);
+                        if (TableExists(obj, oldTableName))
+                            ExecuteNonQuery($"DROP TABLE {oldTableName}", sqliteConnection);
 
                         using (SqliteTransaction sqliteTransaction = sqliteConnection.BeginTransaction()) {
                             try {
@@ -354,26 +359,14 @@ namespace SQLiteProvider.Services {
                 mySqlDataType = $"TEXT";
             } else if (propertyInfo.PropertyType == typeof(int) || propertyInfo.PropertyType == typeof(bool)) {
                 mySqlDataType = "INTEGER";
-            } else if (propertyInfo.PropertyType == typeof(float)) {
+            } else if (propertyInfo.PropertyType == typeof(float) || propertyInfo.PropertyType == typeof(double)) {
                 mySqlDataType = "REAL";
             } else {
                 mySqlDataType = "BLOB";
             }
 
-            //SQL Lite does not care about field sizes
-            //if (!mySqlDataType.Equals("TEXT")) {
-            //    mySqlDataType = $"{mySqlDataType}({GetFieldSize(propertyInfo)})";
-            //}
             return mySqlDataType;
         }
-
-        //private int GetFieldSize(PropertyInfo propertyInfo) {
-        //    int MaxLength = 250;
-        //    var attribute = propertyInfo.GetCustomAttributes().FirstOrDefault();
-        //    if (attribute != null)
-        //        MaxLength = (attribute as StringValidatorAttribute).MaxLength;
-        //    return MaxLength;
-        //}
 
         private void CreateNewTable<T>(T obj, string tableName, SqliteConnection sqliteConnection = null) {
             StringBuilder quertyStringBuilder = new StringBuilder();

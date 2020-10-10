@@ -1,4 +1,5 @@
 ﻿using DBProviderBase.Enums;
+using DBProviderBase.Interfaces;
 
 namespace DBProviderBase.Classes {
     public struct Parameter : IParameter {

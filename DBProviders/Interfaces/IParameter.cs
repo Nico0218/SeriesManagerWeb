@@ -1,6 +1,7 @@
 ﻿using DBProviderBase.Enums;
 
-namespace DBProviderBase.Classes {
+namespace DBProviderBase.Interfaces
+{
     public interface IParameter {
         string ColumnName { get; set; }
         ParamOperator Operator { get; set; }

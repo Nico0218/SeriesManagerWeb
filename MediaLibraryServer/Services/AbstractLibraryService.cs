@@ -1,4 +1,5 @@
 ﻿using DBProviderBase.Classes;
+using DBProviderBase.Interfaces;
 using MediaLibraryServer.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;

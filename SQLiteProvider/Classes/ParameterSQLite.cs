@@ -1,5 +1,5 @@
-﻿using DBProviderBase.Classes;
-using DBProviderBase.Enums;
+﻿using DBProviderBase.Enums;
+using DBProviderBase.Interfaces;
 using System;
 
 namespace SQLiteProvider.Classes {

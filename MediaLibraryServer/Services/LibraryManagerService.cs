@@ -1,10 +1,11 @@
-﻿using MediaLibraryCommon.Classes.DataModels;
+﻿using DBProviderBase.Interfaces;
+using MediaLibraryCommon.Classes.DataModels;
 using MediaLibraryCommon.Classes.DataModels.Config;
 using MediaLibraryServer.Interfaces;
-using MediaLibraryServer.Interfaces.Config;
 using Microsoft.Extensions.Logging;
 
-namespace MediaLibraryServer.Services {
+namespace MediaLibraryServer.Services
+{
     public class LibraryManagerService : ILibraryManagerService {
         private readonly ILogger<LibraryManagerService> logger;
         private readonly IDataService dataService;
@@ -18,8 +19,6 @@ namespace MediaLibraryServer.Services {
             //Ensure DB is in the correct state
             DBTableMaintenace();
             
-            
-
             logger.LogDebug("Started LibraryManagerService");
         }
 

@@ -1,5 +1,5 @@
 ﻿using DBProviderBase.Classes;
-using MediaLibraryServer.Interfaces;
+using DBProviderBase.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;

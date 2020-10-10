@@ -1,4 +1,5 @@
-﻿using MediaLibraryCommon.Classes.DataModels;
+﻿using DBProviderBase.Interfaces;
+using MediaLibraryCommon.Classes.DataModels;
 using MediaLibraryCommon.Classes.LogicModels;
 using MediaLibraryServer.Interfaces;
 using Microsoft.Extensions.Logging;

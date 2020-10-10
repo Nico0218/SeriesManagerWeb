@@ -54,7 +54,7 @@ namespace SQLiteProvider.Services {
             }
         }
 
-        private bool TableExists(object obj, string tableName) {
+        private bool TableExists(string tableName) {
             bool tableExist = false;
             //Get list of tables and check if it exists
             using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
@@ -63,11 +63,8 @@ namespace SQLiteProvider.Services {
                     sqliteConnection.Open();
                     using (SqliteDataReader tableReader = cmd.ExecuteReader()) {
                         while (tableReader.Read() && !tableExist) {
-                            //Should probably cache this
-                            if (tableReader.GetString("name").Equals(obj.GetType().Name.ToLower(), StringComparison.OrdinalIgnoreCase)) {
-                                tableExist = true;
-                                break;
-                            }
+                            tableExist = true;
+                            break;
                         }
                     }
                     sqliteConnection.Close();
@@ -81,7 +78,7 @@ namespace SQLiteProvider.Services {
             string tableName = GetTableName(obj);
 
             //The table exist and we just need to modify it
-            if (TableExists(obj, tableName)) {
+            if (TableExists(tableName)) {
                 //SQLLite does not have alter column functionality so we have to do some magic
                 DataTable schemaTable;
                 using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
@@ -140,7 +137,7 @@ namespace SQLiteProvider.Services {
                         sqliteConnection.Open();
                         string oldTableName = GetTableName(obj, "old");
                         //Delete old table if it somehow exists from a previous attempt
-                        if (TableExists(obj, oldTableName))
+                        if (TableExists(oldTableName))
                             ExecuteNonQuery($"DROP TABLE {oldTableName}", sqliteConnection);
 
                         using (SqliteTransaction sqliteTransaction = sqliteConnection.BeginTransaction()) {
@@ -250,13 +247,7 @@ namespace SQLiteProvider.Services {
                             while (result.Read()) {
                                 obj = (T)Activator.CreateInstance(typeof(T));
                                 foreach (PropertyInfo propertyInfo in obj.GetType().GetProperties()) {
-                                    if (propertyInfo.PropertyType == typeof(string)) {
-                                        propertyInfo.SetValue(obj, result.GetString(propertyInfo.Name));
-                                    } else if (propertyInfo.PropertyType == typeof(bool)) {
-                                        propertyInfo.SetValue(obj, result.GetBoolean(propertyInfo.Name));
-                                    } else {
-                                        throw new NotImplementedException($"Data type {propertyInfo.PropertyType} not handled.");
-                                    }
+                                    GetCDataType(propertyInfo, obj, result);
                                 }
                                 results.Add(obj);
                             }
@@ -357,7 +348,7 @@ namespace SQLiteProvider.Services {
             string mySqlDataType;
             if (propertyInfo.PropertyType == typeof(string) || propertyInfo.PropertyType == typeof(DateTime)) {
                 mySqlDataType = $"TEXT";
-            } else if (propertyInfo.PropertyType == typeof(int) || propertyInfo.PropertyType == typeof(bool)) {
+            } else if (propertyInfo.PropertyType == typeof(int) || propertyInfo.PropertyType == typeof(bool) || propertyInfo.PropertyType.IsEnum) {
                 mySqlDataType = "INTEGER";
             } else if (propertyInfo.PropertyType == typeof(float) || propertyInfo.PropertyType == typeof(double)) {
                 mySqlDataType = "REAL";
@@ -366,6 +357,26 @@ namespace SQLiteProvider.Services {
             }
 
             return mySqlDataType;
+        }
+
+        private void GetCDataType(PropertyInfo propertyInfo, object obj, SqliteDataReader result) {
+            if (propertyInfo.PropertyType == typeof(string)) {
+                propertyInfo.SetValue(obj, result.GetString(propertyInfo.Name));
+            } else if (propertyInfo.PropertyType == typeof(DateTime)) {
+                propertyInfo.SetValue(obj, result.GetDateTime(propertyInfo.Name));
+            } else if (propertyInfo.PropertyType == typeof(int)) {
+                propertyInfo.SetValue(obj, result.GetInt32(propertyInfo.Name));
+            } else if (propertyInfo.PropertyType == typeof(bool)) {
+                propertyInfo.SetValue(obj, result.GetBoolean(propertyInfo.Name));
+            } else if (propertyInfo.PropertyType.IsEnum) {
+                propertyInfo.SetValue(obj, Enum.Parse(propertyInfo.PropertyType, result.GetString(propertyInfo.Name)));
+            } else if (propertyInfo.PropertyType == typeof(float)) {
+                propertyInfo.SetValue(obj, result.GetFloat(propertyInfo.Name));
+            } else if (propertyInfo.PropertyType == typeof(double)) {
+                propertyInfo.SetValue(obj, result.GetDouble(propertyInfo.Name));
+            } else {
+                throw new NotImplementedException($"Data type {propertyInfo.PropertyType} not handled.");
+            }
         }
 
         private void CreateNewTable<T>(T obj, string tableName, SqliteConnection sqliteConnection = null) {

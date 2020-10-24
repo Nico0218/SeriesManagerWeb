@@ -272,11 +272,12 @@ namespace SQLiteProvider.Services {
             for (int i = 0; i < properties.Length; i++) {
                 insertStringBuilder.AppendLine($"`{properties[i].Name}`");
 
-
                 if (properties[i].PropertyType == typeof(string)) {
                     valuesString.AppendLine($"\"{properties[i].GetValue(obj)}\"");
                 } else if (properties[i].PropertyType == typeof(int)) {
                     valuesString.AppendLine($"{properties[i].GetValue(obj)}");
+                } else if (properties[i].PropertyType == typeof(double) || properties[i].PropertyType == typeof(float) || properties[i].PropertyType == typeof(decimal)) {
+                    valuesString.AppendLine($"{properties[i].GetValue(obj).ToString().Replace(",", ".")}");
                 } else {
                     valuesString.AppendLine($"\"{properties[i].GetValue(obj)}\"");
                 }
@@ -313,6 +314,8 @@ namespace SQLiteProvider.Services {
                     value = $"\"{properties[i].GetValue(obj)}\"";
                 } else if (properties[i].PropertyType == typeof(int)) {
                     value = $"{properties[i].GetValue(obj)}";
+                } else if (properties[i].PropertyType == typeof(double) || properties[i].PropertyType == typeof(float) || properties[i].PropertyType == typeof(decimal)) {
+                    value = $"{properties[i].GetValue(obj).ToString().Replace(",",".")}";
                 } else {
                     value = $"`{properties[i].GetValue(obj)}`";
                 }

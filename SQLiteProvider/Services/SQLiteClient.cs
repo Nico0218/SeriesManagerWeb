@@ -267,9 +267,9 @@ namespace SQLiteProvider.Services {
             for (int i = 0; i < properties.Length; i++) {
                 insertStringBuilder.AppendLine($"`{properties[i].Name}`");
 
-                if (properties[i].PropertyType == typeof(string)) {
+                if (properties[i].PropertyType == typeof(string) || properties[i].PropertyType == typeof(DateTime)) {
                     valuesString.AppendLine($"\"{properties[i].GetValue(obj)}\"");
-                } else if (properties[i].PropertyType == typeof(int)) {
+                } else if (properties[i].PropertyType == typeof(int) || properties[i].PropertyType == typeof(bool) || properties[i].PropertyType.IsEnum) {
                     valuesString.AppendLine($"{properties[i].GetValue(obj)}");
                 } else if (properties[i].PropertyType == typeof(double) || properties[i].PropertyType == typeof(float) || properties[i].PropertyType == typeof(decimal)) {
                     valuesString.AppendLine($"{properties[i].GetValue(obj).ToString().Replace(",", ".")}");
@@ -305,14 +305,14 @@ namespace SQLiteProvider.Services {
             PropertyInfo[] properties = obj.GetType().GetProperties();
             for (int i = 0; i < properties.Length; i++) {
                 string value;
-                if (properties[i].PropertyType == typeof(string)) {
+                if (properties[i].PropertyType == typeof(string) || properties[i].PropertyType == typeof(DateTime)) {
                     value = $"\"{properties[i].GetValue(obj)}\"";
-                } else if (properties[i].PropertyType == typeof(int)) {
+                } else if (properties[i].PropertyType == typeof(int) || properties[i].PropertyType == typeof(bool) || properties[i].PropertyType.IsEnum) {
                     value = $"{properties[i].GetValue(obj)}";
                 } else if (properties[i].PropertyType == typeof(double) || properties[i].PropertyType == typeof(float) || properties[i].PropertyType == typeof(decimal)) {
                     value = $"{properties[i].GetValue(obj).ToString().Replace(",",".")}";
                 } else {
-                    value = $"`{properties[i].GetValue(obj)}`";
+                    value = $"\"{properties[i].GetValue(obj)}\"";
                 }
                 updateStringBuilder.AppendLine($"`{properties[i].Name}` = {value}");
                 if (i != properties.Length - 1) {
@@ -348,7 +348,7 @@ namespace SQLiteProvider.Services {
                 mySqlDataType = $"TEXT";
             } else if (propertyInfo.PropertyType == typeof(int) || propertyInfo.PropertyType == typeof(bool) || propertyInfo.PropertyType.IsEnum) {
                 mySqlDataType = "INTEGER";
-            } else if (propertyInfo.PropertyType == typeof(float) || propertyInfo.PropertyType == typeof(double)) {
+            } else if (propertyInfo.PropertyType == typeof(float) || propertyInfo.PropertyType == typeof(double) || propertyInfo.PropertyType == typeof(decimal)) {
                 mySqlDataType = "REAL";
             } else {
                 mySqlDataType = "BLOB";

@@ -4,11 +4,13 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SQLiteProvider.Classes;
+using SQLiteProvider.Enums;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Text;
+using System.Linq;
 
 namespace SQLiteProvider.Services {
     public class SQLiteClient : IDataService, IDisposable {
@@ -97,45 +99,37 @@ namespace SQLiteProvider.Services {
 
                 Dictionary<PropertyInfo, DataRow> columnSets = new Dictionary<PropertyInfo, DataRow>();
 
+                DataRowCollection tableColums = schemaTable.Rows;
+                bool hasModification = false;
                 foreach (PropertyInfo propertyInfo in obj.GetType().GetProperties()) {
                     bool colExisit = false;
-                    for (int i = 0; i < schemaTable.Rows.Count; i++) {
-                        if (propertyInfo.Name == schemaTable.Rows[i]["ColumnName"].ToString()) {
-                            columnSets.Add(propertyInfo, schemaTable.Rows[i]);
+                    for (int i = 0; i < tableColums.Count; i++) {
+                        if (propertyInfo.Name == tableColums[i][RowStructureColumn.ColumnName.ToString()].ToString()) {
+                            KeyValuePair<PropertyInfo, DataRow> columnSet = new KeyValuePair<PropertyInfo, DataRow>(propertyInfo, tableColums[i]);
+                            string dataType = GetSQLiteDataType(columnSet.Key);
+                            if ((columnSet.Value[RowStructureColumn.ColumnName.ToString()].ToString() != columnSet.Key.Name) || (columnSet.Value[RowStructureColumn.DataTypeName.ToString()].ToString() != dataType)) {
+                                hasModification = true;
+                                break;
+                            }
+                            columnSets.Add(columnSet.Key, columnSet.Value);
                             colExisit = true;
                             break;
                         }
                     }
-                    if (!colExisit)
+                    if (!colExisit) {
                         columnSets.Add(propertyInfo, null);
-                }
-
-
-                bool hasModification = false;
-                //Just check if we have any change
-                foreach (KeyValuePair<PropertyInfo, DataRow> columnSet in columnSets) {
-                    if (columnSet.Value == null) {
-                        //We don`t have this column lets update
                         hasModification = true;
-                        break;
-                    } else {
-                        //WE have to modify an existing column
-                        //DataRow Index 0 = "ColumnName"
-                        //DataRow Index 13 = "DataType"
-                        string dataType = GetSQLiteDataType(columnSet.Key);
-                        if ((columnSet.Value[0].ToString() != columnSet.Key.Name) || (columnSet.Value[13].ToString() != dataType)) {
-                            //if (columnSet.Value[13].ToString() != "TEXT") {
-                            //    throw new NotImplementedException();
-                            //}
-                            hasModification = true;
-                            break;
-                        }
                     }
                 }
+                if (obj.GetType().GetProperties().Length != tableColums.Count) {
+                    //A column has been dropped
+                    hasModification = true;
+                }
+
                 if (hasModification) {
                     using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
                         sqliteConnection.Open();
-                        string oldTableName = GetTableName(obj, "old");
+                        string oldTableName = GetTableName(obj, "_old");
                         //Delete old table if it somehow exists from a previous attempt
                         if (TableExists(oldTableName))
                             ExecuteNonQuery($"DROP TABLE {oldTableName}", sqliteConnection);
@@ -183,8 +177,9 @@ namespace SQLiteProvider.Services {
                                     }
                                 }
                             }
-                            //Delete old table
-                            ExecuteNonQuery($"DROP TABLE {oldTableName}", sqliteConnection);
+                            //Delete old table - Not removing the old table immediately in case migration mucks up.
+                            //ExecuteNonQuery($"DROP TABLE {oldTableName}", sqliteConnection);
+                            sqliteTransaction.Commit();
                         }
                         sqliteConnection.Close();
                     }
@@ -334,7 +329,7 @@ namespace SQLiteProvider.Services {
             }
         }
 
-        private string GetTableName<T>(T obj, string prefix = "") => $"'{prefix + obj.GetType().Name.ToLower()}'";
+        private string GetTableName<T>(T obj, string suffix = "") => $"'{obj.GetType().Name.ToLower()}{suffix}'";
 
         private string BuildColumnAddString(PropertyInfo propertyInfo) {
             StringBuilder stringBuilder = new StringBuilder();

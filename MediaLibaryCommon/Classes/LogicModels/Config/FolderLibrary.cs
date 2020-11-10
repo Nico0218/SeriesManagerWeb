@@ -11,8 +11,6 @@ namespace MediaLibraryCommon.Classes.LogicModels.Config {
         //Handled like a %
         public double MinFreeSpace { get; set; } = 5;
 
-        public ObjectStatus Status { get; set; } = ObjectStatus.None;
-
         public FolderLibrary() {
 
         }

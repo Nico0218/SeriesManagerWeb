@@ -5,6 +5,8 @@ import { ConfigService } from 'src/app/services/config.service';
 import { MainConfig } from 'src/app/classes/config/main-config';
 import { tap, first, catchError, map } from 'rxjs/operators';
 import { FolderLibrary } from 'src/app/classes/config/folder-library';
+import { FolderType } from 'src/app/enums/config/folder-type';
+import { ObjectStatus } from 'src/app/enums/config/object-status';
 
 @Component({
     selector: 'config-main-component',
@@ -15,6 +17,7 @@ export class ConfigMainComponent extends UIBase implements OnInit {
     settingsForm: FormGroup;
     submitted = false;
     loading = false;
+    saving = false;
     error = '';
     mainConfig: MainConfig;
     folders: FolderLibrary[];
@@ -24,10 +27,36 @@ export class ConfigMainComponent extends UIBase implements OnInit {
 
     }
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.loadBreadcrumb();
+        this.loading = true;
+        await this.loadMainConfig();
+        await this.loadConfiguredFolders();
 
-        this.configService.GetConfig()
+        this.settingsForm = this.formBuilder.group({
+            ingestFolder: new FormControl('', Validators.required)
+        });
+        this.settingsForm.patchValue({
+            ingestFolder: this.folders.find(ii => ii.fileType == FolderType.Ingest).basePath
+        });
+        this.loading = false;
+    }
+
+    private async loadConfiguredFolders() {
+        await this.configService.GetFolders()
+            .pipe(
+                tap(ii => {
+                    if (ii)
+                        this.folders = ii;
+                    else
+                        this.folders = [];
+                }),
+                first()
+            ).toPromise();
+    }
+
+    private async loadMainConfig() {
+        await this.configService.GetConfig()
             .pipe(
                 tap(ii => {
                     if (ii)
@@ -37,24 +66,7 @@ export class ConfigMainComponent extends UIBase implements OnInit {
                     }
                 }),
                 first()
-            )
-            .subscribe();
-
-        this.configService.GetFolders()
-            .pipe(
-                tap(ii => {
-                    if (ii)
-                        this.folders = ii;
-                    else
-                        this.folders = [];
-                }),
-                first()
-            )
-            .subscribe();
-
-        this.settingsForm = this.formBuilder.group({
-            ingestFolder: new FormControl('', Validators.required)
-        });
+            ).toPromise();
     }
 
     private loadBreadcrumb() {
@@ -78,16 +90,24 @@ export class ConfigMainComponent extends UIBase implements OnInit {
         if (this.settingsForm.invalid) {
             return;
         }
-        this.loading = true;
+        this.saving = true;
         this.mainConfig.isConfigured = true;
-        var tmp = this.formField["ingestFolder"].value;
+        var ingestLib: FolderLibrary = this.folders.find(ii => ii.name === "IngestFolder");
+        if (ingestLib.basePath != this.formField["ingestFolder"].value) {
+            ingestLib.basePath = this.formField["ingestFolder"].value;
+            ingestLib.status = ObjectStatus.Modified;
+        }
 
         this.configService.SaveFolders(this.folders)
             .pipe(
                 map(ii => {
                     this.UpdateConfig();
                 }),
-                catchError(ii => this.error = ii)
+                catchError(ii => {
+                    this.error = ii
+                    this.saving = false;
+                    return ii;
+                })
             )
             .subscribe();
 
@@ -97,9 +117,13 @@ export class ConfigMainComponent extends UIBase implements OnInit {
         this.configService.SaveConfig(this.mainConfig)
             .pipe(
                 map(ii => {
-                    this.loading = false;
+                    this.saving = false;
                 }),
-                catchError(ii => this.error = ii)
+                catchError(ii => {
+                    this.error = ii
+                    this.saving = false;
+                    return ii;
+                })
             )
             .subscribe();
     }

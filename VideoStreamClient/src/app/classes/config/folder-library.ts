@@ -5,6 +5,6 @@ import { ObjectStatus } from '../../enums/config/object-status';
 export class FolderLibrary extends LogicModelBase {
     fileType: FolderType;
     basePath: string;
-    minFreeSpace;
+    minFreeSpace: number;
     status: ObjectStatus;
 }

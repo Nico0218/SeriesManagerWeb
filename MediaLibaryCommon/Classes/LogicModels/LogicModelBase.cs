@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MediaLibraryCommon.Enums;
+using System;
 using System.Configuration;
 
 namespace MediaLibraryCommon.Classes.LogicModels {
@@ -11,6 +12,8 @@ namespace MediaLibraryCommon.Classes.LogicModels {
 
         [StringValidator(MaxLength = 250)]
         public string DisplayName { get; set; }
+
+        public ObjectStatus Status { get; set; } = ObjectStatus.None;
 
         public LogicModelBase() {
             ID = Guid.NewGuid().ToString();

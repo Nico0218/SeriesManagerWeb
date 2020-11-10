@@ -1,5 +1,6 @@
 ﻿using DBProviderBase.Classes;
 using DBProviderBase.Interfaces;
+using MediaLibraryCommon.Classes.LogicModels;
 using MediaLibraryServer.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
@@ -60,12 +61,29 @@ namespace MediaLibraryServer.Services {
             }
         }
 
-        public virtual void Save(TObject dataObject) {
-            if (dataObject is null) {
+        public virtual void Save(TObject logicObject) {
+            if (logicObject is null) {
                 throw new ArgumentNullException($"No {businessType.Name} provided to save.");
             }
             logger.LogInformation($"Saving new {businessType.Name}");
-            dataService.InsertObjectData((TDataObject)getConvertMethod(businessType).Invoke(dataObject, new object[1] { dataObject }) );
+            TDataObject dataObject = (TDataObject)getConvertMethod(businessType).Invoke(logicObject, new object[1] { logicObject });
+            switch ((logicObject as LogicModelBase).Status) {
+                case MediaLibraryCommon.Enums.ObjectStatus.Created:
+                    dataService.InsertObjectData(dataObject);
+                    break;
+                case MediaLibraryCommon.Enums.ObjectStatus.Modified:
+                    dataService.UpdateObjectData(dataObject);
+                    break;
+                case MediaLibraryCommon.Enums.ObjectStatus.Deleted:
+                    TDataObject[] dataObjects = new TDataObject[1];
+                    dataObjects[0] = dataObject;
+                    dataService.DeleteObjectData(dataObjects);
+                    break;
+                case MediaLibraryCommon.Enums.ObjectStatus.None:
+                default:
+                    break;
+            }
+            
         }
 
         private MethodInfo getConvertMethod(Type type) {

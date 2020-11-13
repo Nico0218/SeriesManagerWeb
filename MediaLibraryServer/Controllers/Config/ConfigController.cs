@@ -23,7 +23,7 @@ namespace MediaLibraryServer.Controllers {
         [HttpGet("IsConfigured")]
         public ObjectResult IsConfigured() {
             //Check if we did first time setup
-            if (!configService.IsConfigred)
+            if (!configService.IsConfigReady())
                 return new ObjectResult(false);
             //Check if the required config is still valid
             if (!configService.IsConfigReady())

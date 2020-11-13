@@ -3,6 +3,7 @@ using DBProviderBase.Interfaces;
 using ImageComparisonService.Interfaces;
 using MediaLibraryCommon.Classes.DataModels;
 using MediaLibraryCommon.Classes.LogicModels;
+using MediaLibraryCommon.Enums;
 using MediaLibraryServer.Helpers;
 using MediaLibraryServer.Interfaces;
 using MediaLibraryServer.Interfaces.Config;
@@ -17,11 +18,14 @@ namespace MediaLibraryServer.Services {
         private readonly IConfigService configService;
         private readonly IImageService imageService;
         private readonly IImageComparisonService imageComparisonService;
+        private readonly IFolderService folderService;
 
-        public ImageGalleryService(ILogger<ImageGalleryService> logger, IDataService dataService, IConfigService configService, IImageService imageService, IImageComparisonService imageComparisonService) : base(logger, dataService) {
+        public ImageGalleryService(ILogger<ImageGalleryService> logger, IDataService dataService, IConfigService configService, IImageService imageService, 
+            IImageComparisonService imageComparisonService, IFolderService folderService) : base(logger, dataService) {
             this.configService = configService;
             this.imageService = imageService;
             this.imageComparisonService = imageComparisonService;
+            this.folderService = folderService;
         }
 
         public Gallery GetGalleryByName(string GalleryName) {
@@ -52,7 +56,7 @@ namespace MediaLibraryServer.Services {
             defaultGallery = GetGalleryByName("Walls");
             if (defaultGallery == null) {
                 defaultGallery = new Gallery("Walls");
-                defaultGallery.FileStore = @"E:\TestImgLib";
+                defaultGallery.Status = ObjectStatus.Created;
                 Save(defaultGallery);
             }
 
@@ -61,16 +65,16 @@ namespace MediaLibraryServer.Services {
             //Do a physical duplicate check
             string imgCompData = imageComparisonService.GetImageComparisonData(FilePath);
             if (imageComparisonService.isDuplicate(imgCompData)) {
-                FilePath = Path.Combine(configService.IngestSettings.RejectedPath, "Image", Path.GetFileName(FilePath));
+                FilePath = Path.Combine(folderService.GetFolder(FolderType.ImageReject).BasePath, Path.GetFileName(FilePath));
                 if (!Directory.Exists(Path.GetDirectoryName(FilePath))) {
                     Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
                 }
                 File.Move(oldFilePath, FilePath, true);
-                logger.LogInformation($"Found duplicate image {Path.GetFileName(FilePath)} and moved in to the rejected folder");
+                logger.LogInformation($"Found duplicate image {Path.GetFileName(oldFilePath)} and moved in to the rejected folder");
                 return;
             }
             Image image = new Image(oldFilePath);
-            FilePath = Path.Combine(defaultGallery.FileStore, image.Name);
+            FilePath = Path.Combine(folderService.GetFolder(FolderType.ImageFile).BasePath, image.Name);
             //Store in the file library
             int count = 0;
             while (FileUtils.IsFileLocked(FilePath)) {
@@ -78,7 +82,7 @@ namespace MediaLibraryServer.Services {
                 string fileName = Path.GetFileName(FilePath);
                 fileName = Path.GetFileName(fileName) + count + Path.GetExtension(fileName);
                 image = new Image(FilePath.Replace(Path.GetFileName(FilePath), fileName));
-                FilePath = Path.Combine(defaultGallery.FileStore, image.Name);
+                FilePath = Path.Combine(folderService.GetFolder(FolderType.ImageFile).BasePath, image.Name);
             }
             File.Move(oldFilePath, FilePath);
 
@@ -86,6 +90,7 @@ namespace MediaLibraryServer.Services {
             //Index the file into the DB            
             image.ImageComparisonHash = imgCompData;
             image.GalleryID = defaultGallery.ID;
+            image.Status = ObjectStatus.Created;
             imageService.Save(image);
         }
     }

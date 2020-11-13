@@ -13,20 +13,19 @@ namespace MediaLibraryServer.Services {
         private readonly IConfigService configService;
         private readonly IVideoGalleryService videoGalleryService;
         private readonly IImageGalleryService imageGalleryService;
-        
+        private readonly IFolderService folderService;
         Timer fileWatcherTimer;
-        
-        public FileProcessorService(ILogger<FileProcessorService> logger, IConfigService configService, IVideoGalleryService videoGalleryService, IImageGalleryService imageGalleryService) {
+
+        public FileProcessorService(ILogger<FileProcessorService> logger, IConfigService configService, IVideoGalleryService videoGalleryService, IImageGalleryService imageGalleryService,
+            IFolderService folderService) {
             this.logger = logger;
             this.configService = configService;
             this.videoGalleryService = videoGalleryService;
             this.imageGalleryService = imageGalleryService;
+            this.folderService = folderService;
             logger.LogInformation("Starting file processor service.");
-            
-            FileUtils.CheckAndCreateDirectory(configService.IngestSettings.IngestFolderPath);
-            FileUtils.CheckAndCreateDirectory(configService.IngestSettings.InterimFolderPath);
 
-            fileWatcherTimer = new Timer(configService.IngestSettings.timerInterval);
+            fileWatcherTimer = new Timer(5000);
             fileWatcherTimer.Elapsed += FileWatcherTimer_Elapsed;
             fileWatcherTimer.Start();
 
@@ -46,19 +45,25 @@ namespace MediaLibraryServer.Services {
         /// <param name="e"></param>
         private void FileWatcherTimer_Elapsed(object sender, ElapsedEventArgs e) {
             fileWatcherTimer.Enabled = false;
-            string[] filePaths = Directory.GetFiles(configService.IngestSettings.IngestFolderPath, "*.*");
-            foreach (string filePath in filePaths) {
-                FileUtils.IsFileLocked(filePath);
-                string destPath = Path.Combine(configService.IngestSettings.InterimFolderPath, Path.GetFileName(filePath));
-                bool fileMoved = false;
-                try {
-                    File.Move(filePath, destPath);
-                    fileMoved = true;
-                } catch (IOException ex) {
-                    logger.LogError($"Failed to move the file {filePath} to the interim location", ex);
+
+            if (configService.IsConfigReady()) {
+                FileUtils.CheckAndCreateDirectory(folderService.GetFolder(FolderType.Ingest).BasePath);
+                FileUtils.CheckAndCreateDirectory(folderService.GetFolder(FolderType.Interim).BasePath);
+
+                string[] filePaths = Directory.GetFiles(folderService.GetFolder(FolderType.Ingest).BasePath, "*.*");
+                foreach (string filePath in filePaths) {
+                    FileUtils.IsFileLocked(filePath);
+                    string destPath = Path.Combine(folderService.GetFolder(FolderType.Interim).BasePath, Path.GetFileName(filePath));
+                    bool fileMoved = false;
+                    try {
+                        File.Move(filePath, destPath);
+                        fileMoved = true;
+                    } catch (IOException ex) {
+                        logger.LogError($"Failed to move the file {filePath} to the interim location", ex);
+                    }
+                    if (fileMoved)
+                        ProcessFile(destPath);
                 }
-                if (fileMoved)
-                    ProcessFile(destPath);
             }
             fileWatcherTimer.Enabled = true;
         }
@@ -94,7 +99,7 @@ namespace MediaLibraryServer.Services {
                     }
                 case FolderType.UnknownFile:
                 default:
-                    string rejectFile = Path.Combine(configService.IngestSettings.RejectedPath, Path.GetFileName(FilePath));
+                    string rejectFile = Path.Combine(folderService.GetFolder(FolderType.UnknownFile).BasePath, Path.GetFileName(FilePath));
                     File.Move(FilePath, rejectFile);
                     break;
             }

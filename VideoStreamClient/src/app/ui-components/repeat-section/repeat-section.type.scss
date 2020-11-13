@@ -1,0 +1,32 @@
+::ng-deep {
+  .custom-col {
+    // flex: 0 0 33.3333333333%;
+    max-width: 600px;
+    min-width: 300px;
+    display: inline-flex;
+    margin-right: 5px;
+  }
+
+  formly-field-input input{
+    display: inherit!important;
+  }
+}
+
+.repeater {
+  border: 1px solid;
+  border-radius: 13px;
+  margin-bottom: 5px;
+}
+
+.repeaterForm {
+  margin: 5px;
+}
+
+.remove-container{
+  float: right;
+  padding-top: 25px;
+}
+
+.addbutton {
+  margin: 30px 0;
+}

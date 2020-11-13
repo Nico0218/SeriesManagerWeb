@@ -1,30 +1,42 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { FormlyFieldConfig } from '@ngx-formly/core';
+import { Observable, ReplaySubject } from 'rxjs';
+import { catchError, debounceTime, first, map, takeUntil, tap } from 'rxjs/operators';
+import { FolderLibrary } from '../../classes/config/folder-library';
+import { MainConfig } from '../../classes/config/main-config';
+import { ObjectStatus } from '../../enums/config/object-status';
+import { Guid } from '../../helpers/guid';
+import { ConfigService } from '../../services/config.service';
 import { UIBase } from '../common/ui-base-component/ui-base.component';
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { ConfigService } from 'src/app/services/config.service';
-import { MainConfig } from 'src/app/classes/config/main-config';
-import { tap, first, catchError, map } from 'rxjs/operators';
-import { FolderLibrary } from 'src/app/classes/config/folder-library';
-import { FolderType } from 'src/app/enums/config/folder-type';
-import { ObjectStatus } from 'src/app/enums/config/object-status';
 
 @Component({
     selector: 'config-main-component',
     templateUrl: './config-main.component.html',
     styleUrls: ['./config-main.component.scss']
 })
-export class ConfigMainComponent extends UIBase implements OnInit {
-    settingsForm: FormGroup;
+export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
+    private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+
+    form: FormGroup = new FormGroup({});
     submitted = false;
-    loading = false;
+    loading = true;
     saving = false;
     error = '';
     mainConfig: MainConfig;
-    folders: FolderLibrary[];
+    model = {
+        folders: FolderLibrary[0]
+    };
+    oldModel = this.model;
+    fields: FormlyFieldConfig[];
 
-    constructor(private formBuilder: FormBuilder, private configService: ConfigService) {
+    constructor(private configService: ConfigService) {
         super();
+    }
 
+    ngOnDestroy(): void {
+        this.destroyed$.next(true);
+        this.destroyed$.complete();
     }
 
     async ngOnInit(): Promise<void> {
@@ -32,14 +44,91 @@ export class ConfigMainComponent extends UIBase implements OnInit {
         this.loading = true;
         await this.loadMainConfig();
         await this.loadConfiguredFolders();
+        this.buildFieldConfig();
+        this.oldModel = JSON.parse(JSON.stringify(this.model))
 
-        this.settingsForm = this.formBuilder.group({
-            ingestFolder: new FormControl('', Validators.required)
-        });
-        this.settingsForm.patchValue({
-            ingestFolder: this.folders.find(ii => ii.fileType == FolderType.Ingest).basePath
-        });
+        this.form.valueChanges.pipe(
+            debounceTime(500),
+            tap(() => {
+                if (this.model.folders && this.oldModel) {
+                    (this.model.folders as FolderLibrary[]).forEach(newFolder => {
+                        const oldFolderIndex = (this.oldModel.folders as FolderLibrary[]).findIndex(ii => ii.id == newFolder.id);
+                        if (oldFolderIndex == -1) {
+                            newFolder.status = ObjectStatus.Created;
+                            if (newFolder.displayName) {
+                                newFolder.name = newFolder.displayName.replace(" ", "");
+                                newFolder.id = Guid.newGuid();
+                                this.oldModel.folders.push(newFolder);
+                            }
+                        } else if (JSON.stringify(newFolder) != JSON.stringify(this.oldModel.folders[oldFolderIndex])) {
+                            newFolder.status = ObjectStatus.Modified;
+                            this.oldModel.folders[oldFolderIndex] = newFolder;
+                        }
+                    });
+                    (this.oldModel.folders as FolderLibrary[]).forEach(oldFolder => {
+                        var newFolder = (this.model.folders as FolderLibrary[]).find(ii => ii.id == oldFolder.id);
+                        if (newFolder == null) {
+                            oldFolder.status = ObjectStatus.Deleted;
+                        }
+                    });
+                }
+            }),
+            takeUntil(this.destroyed$)
+        ).subscribe();
+
         this.loading = false;
+    }
+
+    private buildFieldConfig() {
+        this.fields = [
+            {
+                key: 'folders',
+                type: 'repeat',
+                templateOptions: {
+                    addText: 'Add another library locaton',
+                },
+                fieldArray: {
+                    fieldGroup: [
+                        {
+                            type: 'input',
+                            key: 'displayName',
+                            className: 'custom-col',
+                            templateOptions: {
+                                label: 'Folder Name:',
+                                required: true,
+                            }
+                        },
+                        {
+                            className: 'custom-col',
+                            type: 'input',
+                            key: 'basePath',
+                            templateOptions: {
+                                label: 'Folder Directory:',
+                                required: true,
+                            },
+                        },
+                        {
+                            className: 'custom-col',
+                            type: 'select',
+                            key: 'fileType',
+                            templateOptions: {
+                                label: 'Folder Type:',
+                                required: true,
+                                options: [
+                                    { value: 0, label: 'UnknownFile' },
+                                    { value: 1, label: 'VideoFile' },
+                                    { value: 2, label: 'ImageFile' },
+                                    { value: 3, label: 'Interim' },
+                                    { value: 4, label: 'Ingest' },
+                                    { value: 5, label: 'ImageReject' },
+                                    { value: 6, label: 'VideoReject' },
+                                ],
+                            },
+                        },
+                    ],
+                },
+            },
+        ];
     }
 
     private async loadConfiguredFolders() {
@@ -47,9 +136,9 @@ export class ConfigMainComponent extends UIBase implements OnInit {
             .pipe(
                 tap(ii => {
                     if (ii)
-                        this.folders = ii;
+                        this.model.folders = ii;
                     else
-                        this.folders = [];
+                        this.model.folders = [];
                 }),
                 first()
             ).toPromise();
@@ -84,21 +173,21 @@ export class ConfigMainComponent extends UIBase implements OnInit {
         ];
     }
 
+    test: Observable<any>;
+    modelChange() {
+
+    }
+
     onSubmit() {
         this.submitted = true;
         // stop here if form is invalid
-        if (this.settingsForm.invalid) {
+        if (this.form.invalid) {
             return;
         }
         this.saving = true;
         this.mainConfig.isConfigured = true;
-        var ingestLib: FolderLibrary = this.folders.find(ii => ii.name === "IngestFolder");
-        if (ingestLib.basePath != this.formField["ingestFolder"].value) {
-            ingestLib.basePath = this.formField["ingestFolder"].value;
-            ingestLib.status = ObjectStatus.Modified;
-        }
 
-        this.configService.SaveFolders(this.folders)
+        this.configService.SaveFolders(this.oldModel.folders)
             .pipe(
                 map(ii => {
                     this.UpdateConfig();
@@ -110,13 +199,16 @@ export class ConfigMainComponent extends UIBase implements OnInit {
                 })
             )
             .subscribe();
-
     }
 
     private UpdateConfig() {
         this.configService.SaveConfig(this.mainConfig)
             .pipe(
                 map(ii => {
+                    (this.model.folders as FolderLibrary[]).forEach(folder => {
+                        folder.status = ObjectStatus.None;
+                    });
+                    this.oldModel = JSON.parse(JSON.stringify(this.model));
                     this.saving = false;
                 }),
                 catchError(ii => {
@@ -127,7 +219,4 @@ export class ConfigMainComponent extends UIBase implements OnInit {
             )
             .subscribe();
     }
-
-    // convenience getter for easy access to form fields
-    get formField() { return this.settingsForm.controls; }
 }

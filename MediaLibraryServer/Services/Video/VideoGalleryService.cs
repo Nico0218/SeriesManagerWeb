@@ -2,6 +2,7 @@
 using DBProviderBase.Interfaces;
 using MediaLibraryCommon.Classes.DataModels;
 using MediaLibraryCommon.Classes.LogicModels;
+using MediaLibraryCommon.Enums;
 using MediaLibraryServer.Helpers;
 using MediaLibraryServer.Interfaces;
 using MediaLibraryServer.Interfaces.Config;
@@ -16,7 +17,7 @@ namespace MediaLibraryServer.Services {
     public class VideoGalleryService : AbstractLibraryService<SeriesInformation, SeriesInformationData>, IVideoGalleryService {
         private readonly IConfigService configService;
         private readonly IVideoService videoService;
-
+        private readonly IFolderService folderService;
         private readonly string constSeasonString = "Season";
         Regex SeasonandNoSpaceMatch;
         Regex SeasonandSpaceMatch;
@@ -25,12 +26,13 @@ namespace MediaLibraryServer.Services {
 
         private readonly char[] numbers = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-        public VideoGalleryService(ILogger<VideoGalleryService> logger, IDataService dataService, IVideoService videoService) : base(logger, dataService) {
+        public VideoGalleryService(ILogger<VideoGalleryService> logger, IDataService dataService, IVideoService videoService, IFolderService folderService) : base(logger, dataService) {
             SeasonandNoSpaceMatch = new Regex(@"(Season[0-9]+)", RegexOptions.IgnoreCase);
             SeasonandSpaceMatch = new Regex(@"(Season [0-9]+)", RegexOptions.IgnoreCase);
             SandNoSpaceMatch = new Regex(@"(S[0-9]+)", RegexOptions.IgnoreCase);
             SandSpaceMatch = new Regex(@"(S [0-9]+)", RegexOptions.IgnoreCase);
             this.videoService = videoService;
+            this.folderService = folderService;
         }
 
         public SeriesInformation GetSeriesByName(string seriesName) {
@@ -53,7 +55,7 @@ namespace MediaLibraryServer.Services {
 
         public void ProcessNewVideoFile(string filePath) {
             //Decide which lib the file goes to
-            string libPath = configService.LibrarySettings.VideoLibraryPaths[0];
+            string libPath = folderService.GetFolder(FolderType.VideoFile).BasePath;
             //Decide the series folder name
             string fileName = Path.GetFileName(filePath);
             int index = fileName.LastIndexOfAny(numbers);
@@ -89,6 +91,7 @@ namespace MediaLibraryServer.Services {
             SeriesInformation seriesInformation = GetSeriesByName(SeriesName);
             if (seriesInformation == null) {
                 seriesInformation = new SeriesInformation(SeriesName);
+                seriesInformation.Status = ObjectStatus.Created;
                 Save(seriesInformation);
             }
 
@@ -104,9 +107,10 @@ namespace MediaLibraryServer.Services {
                 //Index the file in the DB
                 Video episode = new Video(filePath);
                 episode.SeriesID = seriesInformation.ID;
+                episode.Status = ObjectStatus.Created;
                 videoService.Save(episode);
             } else {
-                filePath = Path.Combine(configService.IngestSettings.RejectedPath, "Video", Path.GetFileName(filePath));
+                filePath = Path.Combine(folderService.GetFolder(FolderType.VideoReject).BasePath, Path.GetFileName(filePath));
                 File.Move(oldFilePath, filePath, true);
                 logger.LogInformation($"Found duplicate video {Path.GetFileName(filePath)} and moved in to the rejected folder");
             }

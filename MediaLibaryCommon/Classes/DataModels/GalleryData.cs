@@ -9,8 +9,7 @@ namespace MediaLibraryCommon.Classes.DataModels {
             Gallery destination = new Gallery() {
                 ID = source.ID,
                 Name = source.Name,
-                DisplayName = source.DisplayName,
-                FileStore = source.FileStore
+                DisplayName = source.DisplayName
             };
             return destination;
         }
@@ -19,8 +18,7 @@ namespace MediaLibraryCommon.Classes.DataModels {
             GalleryData destination = new GalleryData() {
                 ID = source.ID,
                 Name = source.Name,
-                DisplayName = source.DisplayName,
-                FileStore = source.FileStore
+                DisplayName = source.DisplayName
             };
             return destination;
         }

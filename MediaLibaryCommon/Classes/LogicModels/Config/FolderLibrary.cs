@@ -70,8 +70,13 @@ namespace MediaLibraryCommon.Classes.LogicModels.Config {
         }
 
         public bool IsReady() {
-            if (!Directory.Exists(BasePath))
-                return false;
+            if (!Directory.Exists(BasePath)) {
+                try {
+                    Directory.CreateDirectory(BasePath);
+                } catch (Exception ex) {
+                    return false;
+                }                
+            }
             //Critical low space. Things are not OK
             if (GetFreeSpace < 1024)
                 return false;

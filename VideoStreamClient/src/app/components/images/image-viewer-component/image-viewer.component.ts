@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { Image } from 'src/app/classes/Models/image';
+import { GalleryImage } from 'src/app/classes/Models/gallery-image';
 import { Subject } from 'rxjs';
 import { ImageGalleryService } from '../../../services/image-gallery.service';
 import { map, takeUntil } from 'rxjs/operators';
@@ -10,7 +10,7 @@ import { map, takeUntil } from 'rxjs/operators';
     styleUrls: ['./image-viewer.component.scss']
 })
 export class ImageViewerComponent implements OnInit, OnDestroy {
-    @Input() selectedImage: Image;
+    @Input() selectedImage: GalleryImage;
     private destroy$: Subject<boolean> = new Subject();
 
     constructor(private imageGalleryService: ImageGalleryService) {

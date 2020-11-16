@@ -1,44 +1,112 @@
-﻿using DBProviderBase.Interfaces;
+﻿using DBProviderBase.Classes;
+using DBProviderBase.Interfaces;
 using MediaLibraryCommon.Classes.DataModels;
 using MediaLibraryCommon.Classes.LogicModels;
+using MediaLibraryCommon.Classes.Models;
 using MediaLibraryServer.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 
 namespace MediaLibraryServer.Services {
-    public class ImageService : AbstractLibraryService<Image, ImageData>, IImageService {
+    public class ImageService : AbstractLibraryService<GalleryImage, ImageData>, IImageService {
         public ImageService(ILogger<ImageService> logger, IDataService dataService) : base(logger, dataService) {
         }
 
-        public List<Image> GetAllImagesByGaleryID(string GalleryID) {
+        public List<GalleryImage> GetAllImagesByGaleryID(string GalleryID) {
             if (GalleryID is null) {
                 throw new ArgumentNullException(nameof(GalleryID));
             }
 
             logger.LogInformation($"Getting images for gallery {GalleryID}");
-            List<ImageData> imageDatas = dataService.GetObjectData<ImageData>(null);
-            List<Image> images = new List<Image>();
+            List<IParameter> parameters = new List<IParameter>();
+            parameters.Add(new Parameter() { ColumnName = "GalleryID", DataType = "System.String", Operator = DBProviderBase.Enums.ParamOperator.Equals, Value = GalleryID });
+            List<ImageData> imageDatas = dataService.GetObjectData<ImageData>(parameters);
+            List<GalleryImage> images = new List<GalleryImage>();
             foreach (var item in imageDatas) {
-                images.Add((Image)item);
+                images.Add((GalleryImage)item);
             }
             logger.LogInformation($"Returning {images.Count} images for gallery {GalleryID}");
             return images;
         }
 
-        public string GetImageDataByID(string imageID) {
+        public List<GalleryImage> GetImagesByPage(string GalleryID, int pageNo, int pageSize = 10) {
+            if (GalleryID is null) {
+                throw new ArgumentNullException(nameof(GalleryID));
+            }
+
+            logger.LogInformation($"Getting images for gallery {GalleryID}");
+            List<IParameter> parameters = new List<IParameter>();
+            parameters.Add(new Parameter() { ColumnName = "GalleryID", DataType = "System.String", Operator = DBProviderBase.Enums.ParamOperator.Equals, Value = GalleryID });
+            //Need to build a proper paginated select from DB
+            List<ImageData> imageDatas = dataService.GetObjectData<ImageData>(parameters);
+            List<GalleryImage> images = new List<GalleryImage>();
+            pageNo--;
+            if (imageDatas.Count > pageSize) {
+                int startIndex = pageSize * pageNo;
+                int range = imageDatas.Count - startIndex;
+                if (range > pageSize) {
+                    range = pageSize;
+                }                
+                foreach (var item in imageDatas.GetRange(startIndex, range)) {
+                    images.Add((GalleryImage)item);
+                }
+            } else {
+                foreach (var item in imageDatas) {
+                    images.Add((GalleryImage)item);
+                }
+            }
+            return images;
+        }
+
+        public ImageDataWrapper GetImageDataByID(string imageID) {
             if (imageID is null) {
                 throw new ArgumentNullException(nameof(imageID));
             }
             logger.LogInformation($"Getting image data for ID {imageID}");
-            Image image = GetByID(imageID);
-            string base64Data = getImageDataByID(image);
-            logger.LogInformation($"Returning image data for ID {imageID}");
-            return base64Data;
+            GalleryImage image = GetByID(imageID);
+            ImageDataWrapper imageDataWrapper = new ImageDataWrapper();
+            imageDataWrapper.ImageData = Convert.ToBase64String(getImageDataByID(image));
+            logger.LogInformation($"Returning image data for ID {imageID}");            
+            return imageDataWrapper;
         }
 
-        private string getImageDataByID(Image image) {
+        public ImageDataWrapper GetImageThumbnailByID(string imageID, int ThumbnailSize = 256) {
+            if (imageID is null) {
+                throw new ArgumentNullException(nameof(imageID));
+            }
+            try {
+                GalleryImage galleryImage = GetByID(imageID);
+                using (Stream imageData = new MemoryStream(getImageDataByID(galleryImage))) {
+                    Image image = Image.FromStream(imageData);
+                    Image thumb = image.GetThumbnailImage(ThumbnailSize, ThumbnailSize, () => false, IntPtr.Zero);
+                    using (MemoryStream m = new MemoryStream()) {
+                        thumb.Save(m, image.RawFormat);
+                        byte[] imageBytes = m.ToArray();
+
+                        ImageDataWrapper imageDataWrapper = new ImageDataWrapper();
+                        // Convert byte[] to Base64 String
+                        imageDataWrapper.ImageData = Convert.ToBase64String(imageBytes);                        
+                        return imageDataWrapper;
+                    }
+                }
+            } catch (IOException ex) {
+                throw ex;
+            }
+        }
+
+        public int GetGalleryImageCount(string GalleryID) {
+            if (GalleryID is null) {
+                throw new ArgumentNullException(nameof(GalleryID));
+            }
+            List<IParameter> parameters = new List<IParameter>();
+            parameters.Add(new Parameter() { ColumnName = "GalleryID", DataType = "System.String", Operator = DBProviderBase.Enums.ParamOperator.Equals, Value = GalleryID });
+            return dataService.GetObjectData<ImageData>(parameters).Count;
+        }
+
+        private byte[] getImageDataByID(GalleryImage image) {
             if (image is null) {
                 throw new ArgumentNullException(nameof(image));
             }
@@ -49,7 +117,7 @@ namespace MediaLibraryServer.Services {
                 throw new IOException(message);
             }
 
-            return Convert.ToBase64String(File.ReadAllBytes(image.FilePath));
+            return File.ReadAllBytes(image.FilePath);
         }
     }
 }

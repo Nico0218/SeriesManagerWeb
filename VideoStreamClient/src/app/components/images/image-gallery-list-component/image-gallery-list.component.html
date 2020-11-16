@@ -8,7 +8,7 @@
     </div>
     <div class="row">
         <div class="col card-deck">
-            <custom-card-component *ngFor="let gallery of Galleries" [route]='"/image-list"'
+            <custom-card-component *ngFor="let gallery of Galleries" [route]='["/image-list", gallery.id]'
                 [title]='gallery.displayName' [description]='"Description Text"'>
             </custom-card-component>
         </div>

@@ -2,12 +2,12 @@
 using System.IO;
 
 namespace MediaLibraryCommon.Classes.LogicModels {
-    public class Image : LogicModelBase, IFileItem {
+    public class GalleryImage : LogicModelBase, IFileItem {
         public string GalleryID { get; set; }
-        public Image() : base() {
+        public GalleryImage() : base() {
         }
 
-        public Image(string filePath, string name = null) : base(name) {
+        public GalleryImage(string filePath, string name = null) : base(name) {
             if (string.IsNullOrEmpty(filePath)) throw new NullReferenceException("Image File Path");
             ID = Guid.NewGuid().ToString();
             DisplayName = Path.GetFileNameWithoutExtension(filePath);

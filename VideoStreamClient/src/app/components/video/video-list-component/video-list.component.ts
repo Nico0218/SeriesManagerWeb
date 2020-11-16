@@ -31,8 +31,8 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
                 map((params: ParamMap) =>
                     this.videoGalleryService.GetSeriesByID(params.get('seriesID'))
                         .pipe(
-                            map(res => {
-                                this.onSeriesInfoReady(res);
+                            map(seriesInformation => {
+                                this.onSeriesInfoReady(seriesInformation);
                             }),
                             take(1)
                         )

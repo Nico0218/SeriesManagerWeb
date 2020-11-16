@@ -1,15 +1,22 @@
 <div class="container-fluid h-100">
     <div class="row">
-        <breadcrum-component class="col" *ngIf="breadcrumbItems" [breadcrumbItems]="breadcrumbItems"></breadcrum-component>
-    </div>    
+        <breadcrum-component class="col" *ngIf="breadcrumbItems" [breadcrumbItems]="breadcrumbItems">
+        </breadcrum-component>
+    </div>
     <div class="row">
         <h3 class="col">Gallery Images</h3>
-    </div>    
+    </div>
     <div class="row">
-        <div class="col-7 card-deck custom-card-deck">
-            <custom-card-component *ngFor="let image of Images" [route]='"/image-list"' [title]='image.displayName'
-                [description]='' (click)="selectCard(image)">
-            </custom-card-component>
+        <div *ngIf="!loading" class="col-7 card-deck custom-card-deck">
+            <div class="w-100 row d-flex justify-content-center">
+                <ngb-pagination [(page)]="page" [pageSize]="pageSize" [collectionSize]="collectionSize" [maxSize]="10"
+                    [rotate]="true" (pageChange)="pageChange()"></ngb-pagination>
+            </div>
+            <div class="row">
+                <custom-card-component *ngFor="let image of Images" [route]='["/image-list", GalleryID]' [title]=''
+                    [description]='image.displayName' [thumbnail]="image.imageThumbnail" (click)="selectCard(image)">
+                </custom-card-component>
+            </div>
         </div>
         <div class="col-5">
             <image-viewer-component class="h-100" [selectedImage]="selectedImage"></image-viewer-component>

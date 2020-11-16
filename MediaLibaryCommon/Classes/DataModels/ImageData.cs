@@ -14,9 +14,9 @@ namespace MediaLibraryCommon.Classes.DataModels
         [StringValidator(MaxLength = 64)]
         public string ImageComparisonHash { get; set; }
 
-        public static explicit operator Image(ImageData source)
+        public static explicit operator GalleryImage(ImageData source)
         {
-            Image destination = new Image()
+            GalleryImage destination = new GalleryImage()
             {
                 ID = source.ID,
                 Name = source.Name,
@@ -29,7 +29,7 @@ namespace MediaLibraryCommon.Classes.DataModels
             return destination;
         }
 
-        public static explicit operator ImageData(Image source)
+        public static explicit operator ImageData(GalleryImage source)
         {
             ImageData destination = new ImageData()
             {

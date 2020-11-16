@@ -73,7 +73,7 @@ namespace MediaLibraryServer.Services {
                 logger.LogInformation($"Found duplicate image {Path.GetFileName(oldFilePath)} and moved in to the rejected folder");
                 return;
             }
-            Image image = new Image(oldFilePath);
+            GalleryImage image = new GalleryImage(oldFilePath);
             FilePath = Path.Combine(folderService.GetFolder(FolderType.ImageFile).BasePath, image.Name);
             //Store in the file library
             int count = 0;
@@ -81,7 +81,7 @@ namespace MediaLibraryServer.Services {
                 count++;
                 string fileName = Path.GetFileName(FilePath);
                 fileName = Path.GetFileName(fileName) + count + Path.GetExtension(fileName);
-                image = new Image(FilePath.Replace(Path.GetFileName(FilePath), fileName));
+                image = new GalleryImage(FilePath.Replace(Path.GetFileName(FilePath), fileName));
                 FilePath = Path.Combine(folderService.GetFolder(FolderType.ImageFile).BasePath, image.Name);
             }
             File.Move(oldFilePath, FilePath);

@@ -4,6 +4,7 @@ using MediaLibraryCommon.Classes.DataModels.Config;
 using MediaLibraryCommon.Classes.LogicModels.Config;
 using MediaLibraryCommon.Enums;
 using MediaLibraryServer.Interfaces.Config;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace MediaLibraryServer.Services.Config {
         private static FileTypeSettings fileTypeSettings;
         private readonly IFolderService folderService;
 
-        public ConfigService(ILogger<ConfigService> logger, IDataService dataService, IFolderService folderService) : base(logger, dataService) {
+        public ConfigService(ILogger<ConfigService> logger, IDataService dataService, IFolderService folderService, IMemoryCache memoryCache) : base(logger, dataService, memoryCache) {
             fileTypeSettings = new FileTypeSettings();
 
             this.folderService = folderService;

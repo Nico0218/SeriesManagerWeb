@@ -1,15 +1,20 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
 import { AppConfig } from '../classes/app-config';
 import { Environment } from '../classes/environment';
 import { MainConfig } from '../classes/config/main-config';
 import { FolderLibrary } from '../classes/config/folder-library';
+import { APP_BASE_HREF } from '@angular/common';
 
 @Injectable()
 export class ConfigService {
-    constructor(private httpClient: HttpClient) {
+    applicationPath = "../..";
+    constructor(private httpClient: HttpClient, @Inject(APP_BASE_HREF) baseHref: string) {
+        if (baseHref && baseHref != '/') {
+            this.applicationPath = baseHref;
+        }
     }
 
     public get controllerURL(): string {
@@ -17,7 +22,7 @@ export class ConfigService {
     }
 
     public loadAppsettings(): Promise<any> {
-        return this.httpClient.get("../../assets/appsettings.json").pipe(
+        return this.httpClient.get(this.applicationPath + "/assets/appsettings.json").pipe(
             map((result: AppConfig) => {
                 Environment.apiUrl = result.apiUrl;
                 Environment.production = result.production;

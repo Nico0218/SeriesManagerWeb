@@ -1,3 +1,4 @@
+import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -26,6 +27,7 @@ import { JwtInterceptor } from './helpers/jwt.interceptor';
 import { AuthenticationService } from './services/authentication.service';
 import { ConfigService } from './services/config.service';
 import { ImageGalleryService } from './services/image-gallery.service';
+import { ImageService } from './services/image.service';
 import { UserService } from './services/user.service';
 import { VideoGalleryService } from './services/video-gallery.service';
 import { VideoStreamService } from './services/video-stream.service';
@@ -67,6 +69,11 @@ import { RepeatTypeComponent } from './ui-components/repeat-section/repeat-secti
     FormlyBootstrapModule
   ],
   providers: [
+    {
+      provide: APP_BASE_HREF,
+      useFactory: (s: PlatformLocation) => s.getBaseHrefFromDOM(),
+      deps: [PlatformLocation]
+    },
     ConfigService,
     {
       provide: APP_INITIALIZER,
@@ -78,6 +85,7 @@ import { RepeatTypeComponent } from './ui-components/repeat-section/repeat-secti
     VideoGalleryService,
     VideoStreamService,
     ImageGalleryService,
+    ImageService,
     AuthenticationService,
     UserService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

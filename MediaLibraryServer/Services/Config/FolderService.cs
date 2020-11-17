@@ -3,15 +3,17 @@ using MediaLibraryCommon.Classes.DataModels.Config;
 using MediaLibraryCommon.Classes.LogicModels.Config;
 using MediaLibraryCommon.Enums;
 using MediaLibraryServer.Interfaces.Config;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
 namespace MediaLibraryServer.Services.Config {
     public class FolderService : AbstractLibraryService<FolderLibrary, FolderLibraryData>, IFolderService {
-        
-        public FolderService(ILogger<FolderService> logger, IDataService dataService) : base(logger, dataService) {            
-            
+        private static string AllFoldersKey = "AllFolders";
+
+        public FolderService(ILogger<FolderService> logger, IDataService dataService, IMemoryCache memoryCache) : base(logger, dataService, memoryCache) {
+
         }
 
         /// <summary>
@@ -21,7 +23,12 @@ namespace MediaLibraryServer.Services.Config {
         /// <param name="fileSizeMb">The size of the file to be stored, defaults to 0 Mb</param>
         /// <returns></returns>
         public FolderLibrary GetFolder(FolderType folderType, int fileSizeMb = 0) {
-            List<FolderLibrary> folders = GetAll().FindAll(ii => ii.FileType == folderType);
+            List<FolderLibrary> folders;
+            if (!memoryCache.TryGetValue(AllFoldersKey, out folders)) {
+                folders = GetAll().FindAll(ii => ii.FileType == folderType);
+                MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(2)).SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
+                memoryCache.Set(AllFoldersKey, folders, cacheEntryOptions);
+            }
             if (folders == null || folders.Count == 0) {
                 throw new Exception($"No folders of type {folderType} configured.");
             }

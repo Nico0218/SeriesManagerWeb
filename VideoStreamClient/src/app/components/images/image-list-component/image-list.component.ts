@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { ImageViewerComponent } from '../image-viewer-component/image-viewer.component';
 import { UIBase } from '../../common/ui-base-component/ui-base.component';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { ImageService } from 'src/app/services/image.service';
 
 @Component({
     selector: 'image-list-component',
@@ -24,6 +25,7 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
     public loading = true;
 
     constructor(private imageGalleryService: ImageGalleryService,
+        private imageService: ImageService,
         private router: Router,
         private activeRoute: ActivatedRoute) {
         super();
@@ -49,7 +51,7 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
     }
 
     private loadImagePage() {
-        this.imageGalleryService.GetImagesByPage(this.GalleryID, this.page, this.pageSize)
+        this.imageService.GetImagesByPage(this.GalleryID, this.page, this.pageSize)
             .pipe(
                 map(result => {
                     this.Images = result;
@@ -96,7 +98,7 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
 
     private async loadThumbnails() {
         this.Images.forEach(async image => {
-            image.imageThumbnail = await this.imageGalleryService.GetImageThumbnailByID(image.id, 200).toPromise();
+            image.imageThumbnail = await this.imageService.GetImageThumbnailByID(image.id, 200).toPromise();
         });
     }
 }

@@ -7,6 +7,7 @@ using MediaLibraryCommon.Enums;
 using MediaLibraryServer.Helpers;
 using MediaLibraryServer.Interfaces;
 using MediaLibraryServer.Interfaces.Config;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace MediaLibraryServer.Services {
         private readonly IFolderService folderService;
 
         public ImageGalleryService(ILogger<ImageGalleryService> logger, IDataService dataService, IConfigService configService, IImageService imageService, 
-            IImageComparisonService imageComparisonService, IFolderService folderService) : base(logger, dataService) {
+            IImageComparisonService imageComparisonService, IFolderService folderService, IMemoryCache memoryCache) : base(logger, dataService, memoryCache) {
             this.configService = configService;
             this.imageService = imageService;
             this.imageComparisonService = imageComparisonService;
@@ -92,6 +93,15 @@ namespace MediaLibraryServer.Services {
             image.GalleryID = defaultGallery.ID;
             image.Status = ObjectStatus.Created;
             imageService.Save(image);
+        }
+
+        public int GetGalleryImageCount(string GalleryID) {
+            if (GalleryID is null) {
+                throw new ArgumentNullException(nameof(GalleryID));
+            }
+            List<IParameter> parameters = new List<IParameter>();
+            parameters.Add(new Parameter() { ColumnName = "GalleryID", DataType = "System.String", Operator = DBProviderBase.Enums.ParamOperator.Equals, Value = GalleryID });
+            return dataService.GetObjectData<ImageData>(parameters).Count;
         }
     }
 }

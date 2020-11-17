@@ -1,4 +1,5 @@
-import { Component, Input } from '@angular/core';
+import { APP_BASE_HREF } from '@angular/common';
+import { Component, Inject, Input } from '@angular/core';
 
 @Component({
     selector: 'custom-card-component',
@@ -9,5 +10,13 @@ export class CustomCardComponent {
     @Input() route: any[];
     @Input() title: string;
     @Input() description: string;
-    @Input() thumbnail: string = '../../../assets/image-placeholder.png';
+    @Input() thumbnail: string;
+
+    constructor(@Inject(APP_BASE_HREF) baseHref: string) {
+        if (baseHref && baseHref != '/') {
+            this.thumbnail = baseHref + "/assets/image-placeholder.png";
+        } else {
+            this.thumbnail = '../../../assets/image-placeholder.png';
+        }
+    }
 }

@@ -3,13 +3,14 @@ using DBProviderBase.Interfaces;
 using MediaLibraryCommon.Classes.DataModels;
 using MediaLibraryCommon.Classes.LogicModels;
 using MediaLibraryServer.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
 namespace MediaLibraryServer.Services {
     public class VideoService : AbstractLibraryService<Video, VideoData>, IVideoService {
-        public VideoService(ILogger<VideoService> logger, IDataService dataService) : base(logger, dataService) {
+        public VideoService(ILogger<VideoService> logger, IDataService dataService, IMemoryCache memoryCache) : base(logger, dataService, memoryCache) {
 
         }
 

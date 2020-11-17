@@ -6,6 +6,7 @@ using MediaLibraryCommon.Enums;
 using MediaLibraryServer.Helpers;
 using MediaLibraryServer.Interfaces;
 using MediaLibraryServer.Interfaces.Config;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace MediaLibraryServer.Services {
 
         private readonly char[] numbers = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-        public VideoGalleryService(ILogger<VideoGalleryService> logger, IDataService dataService, IVideoService videoService, IFolderService folderService) : base(logger, dataService) {
+        public VideoGalleryService(ILogger<VideoGalleryService> logger, IDataService dataService, IVideoService videoService, IFolderService folderService, IMemoryCache memoryCache) : base(logger, dataService, memoryCache) {
             SeasonandNoSpaceMatch = new Regex(@"(Season[0-9]+)", RegexOptions.IgnoreCase);
             SeasonandSpaceMatch = new Regex(@"(Season [0-9]+)", RegexOptions.IgnoreCase);
             SandNoSpaceMatch = new Regex(@"(S[0-9]+)", RegexOptions.IgnoreCase);

@@ -13,7 +13,7 @@ namespace MediaLibraryServer.Services {
         private readonly ILogger<LibraryManagerService> logger;
         private readonly IDataService dataService;
 
-        public LibraryManagerService(ILogger<LibraryManagerService> logger, IDataService dataService) {
+        public LibraryManagerService(ILogger<LibraryManagerService> logger, IDataService dataService, IFileProcessorService fileProcessorService) {
             logger.LogDebug("Starting LibraryManagerService");
             this.logger = logger;
             this.dataService = dataService;
@@ -22,6 +22,7 @@ namespace MediaLibraryServer.Services {
             //Ensure DB is in the correct state
             DBTableMaintenace();
 
+            fileProcessorService.Start();
             logger.LogDebug("Started LibraryManagerService");
         }
 

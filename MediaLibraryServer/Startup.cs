@@ -37,7 +37,7 @@ namespace MediaLibraryServer {
 
             DBProviderType dataStoreType = (DBProviderType)Enum.Parse(typeof(DBProviderType), Configuration.GetSection($"{typeof(ConnectionSettings).Name}:DataStoreType").Value.ToString());
 
-            services.AddMvc();            
+            services.AddMvc();
             switch (dataStoreType) {
                 case DBProviderType.MySQLProvider:
                     services.AddSingleton<IDataService, MySqlDataClient>();
@@ -49,22 +49,22 @@ namespace MediaLibraryServer {
                     throw new Exception(msgDataStoreTypeError);
             }
 
+
             services.AddSingleton<IConfigService, ConfigService>();
             services.AddSingleton<IFolderService, FolderService>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IMemoryCache, MemoryCache>();
-            
 
-            services.AddScoped<ILibraryManagerService, LibraryManagerService>();
             services.AddScoped<IFileProcessorService, FileProcessorService>();
-
             services.AddScoped<IVideoService, VideoService>();
             services.AddScoped<IVideoGalleryService, VideoGalleryService>();
             services.AddScoped<IVideoStreamService, VideoStreamService>();
 
             services.AddScoped<IImageService, ImageService>();
-            services.AddScoped<IImageGalleryService, ImageGalleryService>();            
+            services.AddScoped<IImageGalleryService, ImageGalleryService>();
             services.AddScoped<IImageComparisonService, ImageComparisonService.Services.ImageComparisonService>();
+
+            services.AddScoped<ILibraryManagerService, LibraryManagerService>();
 
             services.AddControllers();
 
@@ -100,8 +100,8 @@ namespace MediaLibraryServer {
             app.UseRouting();
             app.UseCors(AllowAllCors);
 
-            //app.UseAuthorization();
             loggerFactory.AddLog4Net();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();

@@ -23,11 +23,12 @@ namespace MediaLibraryServer.Services.Config {
         /// <param name="fileSizeMb">The size of the file to be stored, defaults to 0 Mb</param>
         /// <returns></returns>
         public FolderLibrary GetFolder(FolderType folderType, int fileSizeMb = 0) {
+            string key = AllFoldersKey + ":" + folderType.ToString();
             List<FolderLibrary> folders;
-            if (!memoryCache.TryGetValue(AllFoldersKey, out folders)) {
+            if (!memoryCache.TryGetValue(key, out folders)) {
                 folders = GetAll().FindAll(ii => ii.FileType == folderType);
                 MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(2)).SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
-                memoryCache.Set(AllFoldersKey, folders, cacheEntryOptions);
+                memoryCache.Set(key, folders, cacheEntryOptions);
             }
             if (folders == null || folders.Count == 0) {
                 throw new Exception($"No folders of type {folderType} configured.");

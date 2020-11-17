@@ -4,6 +4,7 @@ using MediaLibraryServer.Interfaces;
 using MediaLibraryServer.Interfaces.Config;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Timers;
 
@@ -23,19 +24,18 @@ namespace MediaLibraryServer.Services {
             this.videoGalleryService = videoGalleryService;
             this.imageGalleryService = imageGalleryService;
             this.folderService = folderService;
-            logger.LogInformation("Starting file processor service.");
 
             fileWatcherTimer = new Timer(5000);
             fileWatcherTimer.Elapsed += FileWatcherTimer_Elapsed;
-            fileWatcherTimer.Start();
-
-            logger.LogInformation("File processor service started.");
-
-            FileWatcherTimer_Elapsed(null, null);
         }
 
         public void Dispose() {
             fileWatcherTimer.Dispose();
+        }
+
+        public void Start() {
+            fileWatcherTimer.Start();
+            logger.LogInformation("File processor service started.");
         }
 
         /// <summary>
@@ -46,26 +46,36 @@ namespace MediaLibraryServer.Services {
         private void FileWatcherTimer_Elapsed(object sender, ElapsedEventArgs e) {
             fileWatcherTimer.Enabled = false;
 
-            if (configService.IsConfigReady()) {
-                FileUtils.CheckAndCreateDirectory(folderService.GetFolder(FolderType.Ingest).BasePath);
-                FileUtils.CheckAndCreateDirectory(folderService.GetFolder(FolderType.Interim).BasePath);
+            try {
+                if (configService.IsConfigReady()) {
+                    logger.LogInformation("Checking for files in the ingest folder.");
+                    FileUtils.CheckAndCreateDirectory(folderService.GetFolder(FolderType.Ingest).BasePath);
+                    FileUtils.CheckAndCreateDirectory(folderService.GetFolder(FolderType.Interim).BasePath);
 
-                string[] filePaths = Directory.GetFiles(folderService.GetFolder(FolderType.Ingest).BasePath, "*.*");
-                foreach (string filePath in filePaths) {
-                    FileUtils.IsFileLocked(filePath);
-                    string destPath = Path.Combine(folderService.GetFolder(FolderType.Interim).BasePath, Path.GetFileName(filePath));
-                    bool fileMoved = false;
-                    try {
-                        File.Move(filePath, destPath);
-                        fileMoved = true;
-                    } catch (IOException ex) {
-                        logger.LogError($"Failed to move the file {filePath} to the interim location", ex);
+                    IEnumerable<string> enumerable = Directory.EnumerateFiles(folderService.GetFolder(FolderType.Ingest).BasePath, "*.*", SearchOption.AllDirectories);
+                    int count = 0;
+                    foreach (string filePath in enumerable) {
+                        FileUtils.IsFileLocked(filePath);
+                        string destPath = Path.Combine(folderService.GetFolder(FolderType.Interim).BasePath, Path.GetFileName(filePath));
+                        bool fileMoved = false;
+                        try {
+                            File.Move(filePath, destPath);
+                            fileMoved = true;
+                        } catch (IOException ex) {
+                            logger.LogError($"Failed to move the file {filePath} to the interim location", ex);
+                        }
+                        if (fileMoved)
+                            ProcessFile(destPath);
+                        count++;
+                        if (count >= 100)
+                            break;
                     }
-                    if (fileMoved)
-                        ProcessFile(destPath);
                 }
+            } catch (Exception ex) {
+                logger.LogError("File process failed.", ex);
+            } finally {
+                fileWatcherTimer.Enabled = true;
             }
-            fileWatcherTimer.Enabled = true;
         }
 
         private void ProcessFile(string FilePath) {

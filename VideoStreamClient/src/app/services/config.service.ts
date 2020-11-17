@@ -10,7 +10,7 @@ import { APP_BASE_HREF } from '@angular/common';
 
 @Injectable()
 export class ConfigService {
-    applicationPath = "../..";
+    applicationPath = "../../";
     constructor(private httpClient: HttpClient, @Inject(APP_BASE_HREF) baseHref: string) {
         if (baseHref && baseHref != '/') {
             this.applicationPath = baseHref;
@@ -22,7 +22,7 @@ export class ConfigService {
     }
 
     public loadAppsettings(): Promise<any> {
-        return this.httpClient.get(this.applicationPath + "/assets/appsettings.json").pipe(
+        return this.httpClient.get(this.applicationPath + "assets/appsettings.json").pipe(
             map((result: AppConfig) => {
                 Environment.apiUrl = result.apiUrl;
                 Environment.production = result.production;

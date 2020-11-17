@@ -14,7 +14,7 @@ export class CustomCardComponent {
 
     constructor(@Inject(APP_BASE_HREF) baseHref: string) {
         if (baseHref && baseHref != '/') {
-            this.thumbnail = baseHref + "/assets/image-placeholder.png";
+            this.thumbnail = baseHref + "assets/image-placeholder.png";
         } else {
             this.thumbnail = '../../../assets/image-placeholder.png';
         }

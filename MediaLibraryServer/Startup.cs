@@ -12,6 +12,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MySQLProvider.Services;
 using SQLiteProvider.Services;
@@ -80,7 +81,7 @@ namespace MediaLibraryServer {
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory) {
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
@@ -99,7 +100,8 @@ namespace MediaLibraryServer {
             app.UseRouting();
             app.UseCors(AllowAllCors);
 
-            app.UseAuthorization();
+            //app.UseAuthorization();
+            loggerFactory.AddLog4Net();
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();

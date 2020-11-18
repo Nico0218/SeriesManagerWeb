@@ -1,4 +1,13 @@
-.custom-card-deck{
-    overflow-y: scroll;
-    max-height: 80vh;
+$fixedHeight: 110px;
+
+.custom-card-deck {
+  overflow-y: scroll;
+  max-height: calc(100% - #{$fixedHeight} - 100px);
+  height: calc(100% - #{$fixedHeight}  - 100px);
+}
+
+.image-viewer {
+  max-height: calc(100% - #{$fixedHeight});
+  height: calc(100% - #{$fixedHeight});
+  overflow-y: scroll;
 }

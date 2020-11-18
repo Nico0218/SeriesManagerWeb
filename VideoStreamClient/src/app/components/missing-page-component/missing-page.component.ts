@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { UIBase } from '../common/ui-base-component/ui-base.component';
 
 @Component({
@@ -7,8 +8,8 @@ import { UIBase } from '../common/ui-base-component/ui-base.component';
     styleUrls: ['./missing-page.component.scss']
 })
 export class MissingPageComponent extends UIBase implements OnInit {
-    constructor() {
-        super();
+    constructor(private router: Router) {
+        super(router.config);
         
     }
 
@@ -17,12 +18,6 @@ export class MissingPageComponent extends UIBase implements OnInit {
     }
 
     private loadBreadcrumb() {
-        this.breadcrumbItems = [
-            {
-                id: 'Home',
-                label: 'Home',
-                path: '/home'
-            }
-        ];
+        this.AddBreadcrumItem("Home");
     }
 }

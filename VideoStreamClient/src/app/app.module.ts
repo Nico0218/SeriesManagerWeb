@@ -12,6 +12,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BreadcrumComponent } from './components/common/breadcrumb/breadcrum.component';
 import { CustomCardComponent } from './components/common/custom-card/custom-card.component';
+import { LoadIndicatorComponent } from './components/common/load-indicator/load-indicator.component';
 import { ConfigMainComponent } from './components/config/config-main.component';
 import { HomeComponent } from './components/home/home.component';
 import { ImageGalleryListComponent } from './components/images/image-gallery-list-component/image-gallery-list.component';
@@ -20,8 +21,8 @@ import { ImageViewerComponent } from './components/images/image-viewer-component
 import { LoginComponent } from './components/login/login.component';
 import { MissingPageComponent } from './components/missing-page-component/missing-page.component';
 import { VideoGalleryListComponent } from './components/video/video-gallery-list-component/video-gallery-list.component';
-import { VideoViewerComponent } from './components/video/video-viewer-component/video-viewer.component';
 import { VideoListComponent } from './components/video/video-list-component/video-list.component';
+import { VideoViewerComponent } from './components/video/video-viewer-component/video-viewer.component';
 import { ErrorInterceptor } from './helpers/error.interceptor';
 import { JwtInterceptor } from './helpers/jwt.interceptor';
 import { AuthenticationService } from './services/authentication.service';
@@ -49,7 +50,8 @@ import { RepeatTypeComponent } from './ui-components/repeat-section/repeat-secti
     BreadcrumComponent,
     ConfigMainComponent,
     LoginComponent,
-    RepeatTypeComponent
+    RepeatTypeComponent,
+    LoadIndicatorComponent
   ],
   imports: [
     BrowserModule,

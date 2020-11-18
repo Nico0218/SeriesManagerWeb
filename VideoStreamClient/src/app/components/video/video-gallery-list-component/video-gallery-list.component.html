@@ -4,13 +4,14 @@
         </breadcrum-component>
     </div>
     <div class="row">
-        <h3>Series Gallery</h3>
+        <h3>Video Galleries</h3>
     </div>
-    <div class="row">
+    <div *ngIf="!loading" class="row">
         <div class="col card-deck">
-            <custom-card-component *ngFor="let series of SeriesList" [route]="['/series-episode-list',series.id]"
-                [title]='series.displayName' [description]=''>
+            <custom-card-component *ngFor="let video of videoList" [route]="['/video-list',video.id]"
+                [title]='video.displayName' [description]=''>
             </custom-card-component>
         </div>
     </div>
+    <load-indicator-component *ngIf="loading" class="row"></load-indicator-component>
 </div>

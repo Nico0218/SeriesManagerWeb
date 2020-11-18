@@ -7,13 +7,13 @@
         <h3 class="col">Gallery Images</h3>
     </div>
     <div *ngIf="!loading" class="row">
-        <div class="col-7 card-deck custom-card-deck">
+        <div class="col-7">
             <div class="w-100 row d-flex justify-content-center">
                 <ngb-pagination [(page)]="page" [pageSize]="pageSize" [collectionSize]="collectionSize" [maxSize]="10"
                     [rotate]="true" (pageChange)="pageChange()"></ngb-pagination>
             </div>
-            <div class="row">
-                <custom-card-component *ngFor="let image of Images" [route]='["/image-list", GalleryID]' [title]=''
+            <div class="row card-deck custom-card-deck">
+                <custom-card-component *ngFor="let image of Images" [route]='["/image-list", imageGallery.id]' [title]=''
                     [description]='image.displayName' [thumbnail]="image.imageThumbnail" (click)="selectCard(image)">
                 </custom-card-component>
             </div>
@@ -22,7 +22,5 @@
             <image-viewer-component class="h-100" [selectedImage]="selectedImage"></image-viewer-component>
         </div>
     </div>
-    <div *ngIf="loading" class="row">
-        <h3 class="col">Loading...</h3>
-    </div>
+    <load-indicator-component *ngIf="loading" class="row"></load-indicator-component>
 </div>

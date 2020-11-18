@@ -14,19 +14,19 @@ import { ImageViewerComponent } from '../image-viewer-component/image-viewer.com
     styleUrls: ['./image-list.component.scss']
 })
 export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
-    @ViewChild(ImageViewerComponent) imageViewer: ImageViewerComponent;    
+    @ViewChild(ImageViewerComponent) imageViewer: ImageViewerComponent;
     public imageGallery: ImageGallery;
     public Images: GalleryImage[];
     public selectedImage: GalleryImage;
     public page = 1;
     public pageSize = 12;
-    public collectionSize = 0;    
+    public collectionSize = 0;
 
     constructor(private imageGalleryService: ImageGalleryService,
         private imageService: ImageService,
-        private router: Router,
-        private activeRoute: ActivatedRoute) {
-        super();
+        private activeRoute: ActivatedRoute,
+        private router: Router) {
+        super(router.config);
     }
 
     async ngOnInit() {
@@ -35,7 +35,7 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
             //redirect to not found
             this.activeRoute.paramMap.pipe(
                 map((params: ParamMap) =>
-                    this.imageGalleryService.GetByID(params.get('galleryID'))
+                    this.imageGalleryService.GetByID(params.get('objID'))
                         .pipe(
                             map(imageGallery => {
                                 this.onImageGalleryReady(imageGallery);
@@ -82,23 +82,9 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
     }
 
     private loadBreadcrumb() {
-        this.breadcrumbItems = [
-            {
-                id: 'Home',
-                label: 'Home',
-                path: '/home'
-            },
-            {
-                id: 'image-gallery-list',
-                label: 'Image Galleries',
-                path: '/image-gallery-list'
-            },
-            {
-                id: this.imageGallery.id,
-                label: this.imageGallery.displayName,
-                path: '/image-list'
-            }
-        ];
+        this.AddBreadcrumItem("Home");
+        this.AddBreadcrumItem("ImageGalleryList");
+        this.AddBreadcrumItem("ImageList", this.imageGallery.displayName, this.imageGallery.id);
     }
 
     selectCard(image: GalleryImage) {

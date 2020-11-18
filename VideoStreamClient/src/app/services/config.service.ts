@@ -26,7 +26,6 @@ export class ConfigService {
             map((result: AppConfig) => {
                 Environment.apiUrl = result.apiUrl;
                 Environment.production = result.production;
-                console.log(result);
                 return of(result)
             })).toPromise();
     }

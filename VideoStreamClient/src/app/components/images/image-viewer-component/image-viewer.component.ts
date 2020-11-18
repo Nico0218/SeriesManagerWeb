@@ -1,6 +1,5 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { Component, Input, OnInit } from '@angular/core';
+import { map, take } from 'rxjs/operators';
 import { GalleryImage } from '../../../classes/Models/gallery-image';
 import { ImageService } from '../../../services/image.service';
 
@@ -9,9 +8,9 @@ import { ImageService } from '../../../services/image.service';
     templateUrl: './image-viewer.component.html',
     styleUrls: ['./image-viewer.component.scss']
 })
-export class ImageViewerComponent implements OnInit, OnDestroy {
+export class ImageViewerComponent implements OnInit {
     @Input() selectedImage: GalleryImage;
-    private destroy$: Subject<boolean> = new Subject();
+    public loading = false;
 
     constructor(private imageService: ImageService) {
 
@@ -21,19 +20,16 @@ export class ImageViewerComponent implements OnInit, OnDestroy {
 
     }
 
-    ngOnDestroy(): void {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
     public LoadImage() {
         if (this.selectedImage) {
+            this.loading = true;
             this.imageService.GetDataByID(this.selectedImage.id)
                 .pipe(
                     map(ii => {
                         this.selectedImage.data = ii;
+                        this.loading = false;
                     }),
-                    takeUntil(this.destroy$)
+                    take(1)
                 )
                 .subscribe();
         }

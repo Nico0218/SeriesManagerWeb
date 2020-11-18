@@ -22,9 +22,9 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
 
     constructor(private videoGalleryService: VideoGalleryService,
         private videoService: VideoService,
-        private router: Router,
-        private activeRoute: ActivatedRoute) {
-        super();
+        private activeRoute: ActivatedRoute, 
+        private router: Router) {
+            super(router.config);
     }
 
     ngOnInit(): void {
@@ -33,7 +33,7 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
             //redirect to not found
             this.activeRoute.paramMap.pipe(
                 map((params: ParamMap) =>
-                    this.videoGalleryService.GetByID(params.get('galleryID'))
+                    this.videoGalleryService.GetByID(params.get('objID'))
                         .pipe(
                             map(videoGallery => {
                                 this.onVideoGalleryReady(videoGallery);
@@ -79,23 +79,9 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
     }
 
     private loadBreadcrumb() {
-        this.breadcrumbItems = [
-            {
-                id: 'Home',
-                label: 'Home',
-                path: '/home'
-            },
-            {
-                id: 'series-gallery-list',
-                label: 'Series Gallery',
-                path: '/series-gallery-list'
-            },
-            {
-                id: this.videoGallery.id,
-                label: this.videoGallery.displayName,
-                path: `/series-episode-list/${this.videoGallery.id}`
-            }
-        ];
+        this.AddBreadcrumItem("Home");
+        this.AddBreadcrumItem("VideoGalleryList");
+        this.AddBreadcrumItem("VideoList", this.videoGallery.displayName, this.videoGallery.id);
     }
 
     SelectFile(episode: Video) {

@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import { catchError, debounceTime, first, map, takeUntil, tap } from 'rxjs/operators';
@@ -30,8 +31,9 @@ export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
     oldModel = this.model;
     fields: FormlyFieldConfig[];
 
-    constructor(private configService: ConfigService) {
-        super();
+    constructor(private configService: ConfigService, 
+        private router: Router) {
+        super(router.config);
     }
 
     ngOnDestroy(): void {
@@ -159,18 +161,8 @@ export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
     }
 
     private loadBreadcrumb() {
-        this.breadcrumbItems = [
-            {
-                id: 'Home',
-                label: 'Home',
-                path: '/home'
-            },
-            {
-                id: 'Settings',
-                label: 'Settings',
-                path: '/settings'
-            }
-        ];
+        this.AddBreadcrumItem("Home");
+        this.AddBreadcrumItem("ConfigMain");
     }
 
     test: Observable<any>;

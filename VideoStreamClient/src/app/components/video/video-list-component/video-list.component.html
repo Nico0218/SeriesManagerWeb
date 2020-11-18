@@ -24,7 +24,5 @@
             </div>
         </div>
     </div>
-    <div *ngIf="loading" class="row">
-        <h3 class="col">Loading...</h3>
-    </div>
+    <load-indicator-component *ngIf="loading" class="row"></load-indicator-component>
 </div>

@@ -12,7 +12,7 @@ import { VideoStreamService } from '../../../services/video-stream.service';
 export class VideoViewerComponent implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();
   VideoURL: SafeUrl;
-  @Input() selectedEpisode: Video;
+  @Input() selectedVideo: Video;
 
   constructor(private videoGalleryService: VideoStreamService) { }
 
@@ -26,7 +26,7 @@ export class VideoViewerComponent implements OnInit, OnDestroy {
   }
 
   public GetVideoURL() {
-    this.VideoURL = this.videoGalleryService.GetVideoStream(this.selectedEpisode);
+    this.VideoURL = this.videoGalleryService.GetVideoStream(this.selectedVideo);
   }
 
   public PlaybackError(error) {

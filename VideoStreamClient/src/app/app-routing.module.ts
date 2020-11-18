@@ -14,9 +14,9 @@ import { ConfigGuard } from './helpers/config.guard';
 const routes: Routes = [
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard, ConfigGuard] },
   { path: 'image-gallery-list', component: ImageGalleryListComponent, canActivate: [AuthGuard, ConfigGuard] },
-  { path: 'image-list/:galleryID', component: ImageListComponent, canActivate: [AuthGuard] },
-  { path: 'series-gallery-list', component: VideoGalleryListComponent, canActivate: [AuthGuard, ConfigGuard] },
-  { path: 'series-episode-list/:galleryID', component: VideoListComponent, canActivate: [AuthGuard, ConfigGuard] },
+  { path: 'image-list/:objID', component: ImageListComponent, canActivate: [AuthGuard] },
+  { path: 'video-gallery-list', component: VideoGalleryListComponent, canActivate: [AuthGuard, ConfigGuard] },
+  { path: 'video-list/:objID', component: VideoListComponent, canActivate: [AuthGuard, ConfigGuard] },
   { path: 'settings', component: ConfigMainComponent, canActivate: [AuthGuard], data: { role: [0] } },
   { path: 'login', component: LoginComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' },

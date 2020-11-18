@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { UIBase } from '../common/ui-base-component/ui-base.component';
-import { AuthenticationService } from '../../services/authentication.service';
+import { Router } from "@angular/router";
 import { User } from '../../classes/security/user';
+import { AuthenticationService } from '../../services/authentication.service';
+import { UIBase } from '../common/ui-base-component/ui-base.component';
 
 @Component({
     selector: 'home-component',
@@ -11,22 +12,19 @@ import { User } from '../../classes/security/user';
 export class HomeComponent extends UIBase implements OnInit {
     user: User;
 
-    constructor(private authenticationService: AuthenticationService) {
-        super();        
+    constructor(private authenticationService: AuthenticationService,
+        private router: Router) {
+        super(router.config);
+        this.loading = true;
         this.user = authenticationService.userValue;
     }
 
     ngOnInit(): void {
         this.loadBreadcrumb();
+        this.loading = false;
     }
 
     private loadBreadcrumb() {
-        this.breadcrumbItems = [
-            {
-                id: 'Home',
-                label: 'Home',
-                path: '/home'
-            }
-        ];
+        this.AddBreadcrumItem("Home");
     }
 }

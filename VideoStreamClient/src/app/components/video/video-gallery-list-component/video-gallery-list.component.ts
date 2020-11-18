@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { map, takeUntil } from 'rxjs/operators';
 import { VideoGallery } from '../../../classes/Models/video-gallery';
 import { VideoGalleryService } from '../../../services/video-gallery.service';
@@ -10,18 +11,21 @@ import { UIBase } from '../../common/ui-base-component/ui-base.component';
     styleUrls: ['./video-gallery-list.component.scss']
 })
 export class VideoGalleryListComponent extends UIBase implements OnInit, OnDestroy {
-    SeriesList: VideoGallery[] = [];
+    videoList: VideoGallery[] = [];
 
-    constructor(private videoGalleryService: VideoGalleryService) {
-        super();
+    constructor(private videoGalleryService: VideoGalleryService, 
+        private router: Router) {
+        super(router.config);
     }
 
     ngOnInit(): void {
+        this.loading = true;
         this.loadBreadcrumb();
         this.videoGalleryService.GetAll()
             .pipe(
                 map(ii => {
-                    this.SeriesList = ii;
+                    this.videoList = ii;
+                    this.loading = false;
                 }),
                 takeUntil(this.destroy$)
             )
@@ -34,17 +38,7 @@ export class VideoGalleryListComponent extends UIBase implements OnInit, OnDestr
     }
 
     private loadBreadcrumb() {
-        this.breadcrumbItems = [
-            {
-                id: 'Home',
-                label: 'Home',
-                path: '/home'
-            },
-            {
-                id: 'series-gallery-list',
-                label: 'Series Gallery',
-                path: '/series-gallery-list'
-            }
-        ];
+        this.AddBreadcrumItem("Home");
+        this.AddBreadcrumItem("VideoGalleryList");
     }
 }

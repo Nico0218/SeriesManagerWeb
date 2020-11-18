@@ -24,6 +24,7 @@ export class LoginComponent implements OnInit {
         private authenticationService: AuthenticationService,
         private configService: ConfigService
     ) {
+        this.loading = true;
         // redirect to home if already logged in
         if (this.authenticationService.userValue) {
             this.router.navigate(['/']);
@@ -38,6 +39,7 @@ export class LoginComponent implements OnInit {
 
         // get return url from route parameters or default to '/'
         this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+        this.loading = false;
     }
 
     // convenience getter for easy access to form fields

@@ -7,14 +7,15 @@
         <h3 *ngIf="user && user.displayName" class="col">Home - Welcome {{user.displayName}}</h3>
         <h3 *ngIf="!user || !user.displayName" class="col">Home</h3>
     </div>
-    <div class="row">
+    <div *ngIf="!loading" class="row">
         <div class="col card-deck">
-            <custom-card-component [route]='"/image-gallery-list"' [title]='"Image Galleries"'
+            <custom-card-component [route]='["/image-gallery-list"]' [title]='"Image Galleries"'
                 [description]='"View all the available image galleries"'>
             </custom-card-component>
-            <custom-card-component [route]='"/series-gallery-list"' [title]='"Video Galleries"'
+            <custom-card-component [route]='["/video-gallery-list"]' [title]='"Video Galleries"'
                 [description]='"View all the available video galleries"'>
             </custom-card-component>
         </div>
     </div>
+    <load-indicator-component *ngIf="loading" class="row"></load-indicator-component>
 </div>

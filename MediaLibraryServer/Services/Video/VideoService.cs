@@ -14,21 +14,65 @@ namespace MediaLibraryServer.Services {
 
         }
 
-        public List<Video> GetEpisodesForSeries(string seriesID) {
-            if (seriesID is null) {
-                throw new ArgumentNullException(nameof(seriesID));
+        public List<Video> GetByGallery(string galleryID) {
+            if (galleryID is null) {
+                throw new ArgumentNullException(nameof(galleryID));
             }
-            logger.LogDebug($"Getting episodes for series {seriesID}");
+            logger.LogDebug($"Getting videos for gallery {galleryID}");
 
             List<IParameter> parameters = new List<IParameter>();
-            parameters.Add(new Parameter() { ColumnName = "SeriesID", DataType = "System.String", Operator = DBProviderBase.Enums.ParamOperator.Equals, Value = seriesID });
+            parameters.Add(new Parameter() { ColumnName = "GalleryID", DataType = "System.String", Operator = DBProviderBase.Enums.ParamOperator.Equals, Value = galleryID });
             List<VideoData> videoDatas = dataService.GetObjectData<VideoData>(parameters);
-            List<Video> episodes = new List<Video>();
+            List<Video> videos = new List<Video>();
             foreach (var item in videoDatas) {
-                episodes.Add((Video)item);
+                videos.Add((Video)item);
             }
-            logger.LogDebug($"Returning {episodes.Count} episodes for series {seriesID}");
-            return episodes;
+            logger.LogDebug($"Returning {videos.Count} videos for gallery {galleryID}");
+            return videos;
+        }
+
+        public int GetCountByGallery(string galleryID) {
+            if (string.IsNullOrEmpty(galleryID)) {
+                throw new NullReferenceException(galleryID);
+            }
+            List<IParameter> parameters = new List<IParameter>();
+            parameters.Add(new Parameter() { ColumnName = "GalleryID", DataType = "System.String", Operator = DBProviderBase.Enums.ParamOperator.Equals, Value = galleryID });
+            return dataService.GetObjectData<VideoData>(parameters).Count;
+        }
+
+        public List<Video> GetByPage(string galleryID, int pageNo, int pageSize = 10) {
+            if (string.IsNullOrEmpty(galleryID)) {
+                throw new NullReferenceException(galleryID);
+            }
+
+            List<Video> videos;
+            string key = galleryID + pageNo + pageSize;
+            if (!memoryCache.TryGetValue(key, out videos)) {
+                logger.LogInformation($"Getting images for gallery {galleryID}");
+                List<IParameter> parameters = new List<IParameter>();
+                parameters.Add(new Parameter() { ColumnName = "GalleryID", DataType = "System.String", Operator = DBProviderBase.Enums.ParamOperator.Equals, Value = galleryID });
+                //Need to build a proper paginated select from DB
+                List<VideoData> videoDatas = dataService.GetObjectData<VideoData>(parameters);
+                videos = new List<Video>();
+                pageNo--;
+                if (videoDatas.Count > pageSize) {
+                    int startIndex = pageSize * pageNo;
+                    int range = videoDatas.Count - startIndex;
+                    if (range > pageSize) {
+                        range = pageSize;
+                    }
+                    foreach (var item in videoDatas.GetRange(startIndex, range)) {
+                        videos.Add((Video)item);
+                    }
+                } else {
+                    foreach (var item in videoDatas) {
+                        videos.Add((Video)item);
+                    }
+                }
+
+                AddItemToCache(key, videos);
+            }
+            return videos;
         }
     }
 }

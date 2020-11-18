@@ -2,7 +2,7 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-import { AppConfig } from 'src/app/classes/app-config';
+import { AppConfig } from '../app/classes/app-config';
 
 export const environment: AppConfig = {
   production: false,

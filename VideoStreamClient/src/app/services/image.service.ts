@@ -6,7 +6,6 @@ import { map } from 'rxjs/operators';
 import { Environment } from '../classes/environment';
 import { GalleryImage } from '../classes/Models/gallery-image';
 import { ImageDataWrapper } from '../classes/Models/image-data-wrapper';
-import { ImageGallery } from '../classes/Models/image-gallery';
 
 @Injectable()
 export class ImageService {
@@ -18,8 +17,17 @@ export class ImageService {
         return `${Environment.apiUrl}/Image`;
     }
 
-    GetAllImagesByGaleryID(GalleryID: string): Observable<GalleryImage[]> {
-        return this.httpClient.get(`${this.controllerURL}/GetAllImagesByGaleryID/${GalleryID}`)
+    GetCountByGallery(GalleryID: string): Observable<number> {
+        return this.httpClient.get(`${this.controllerURL}/GetCountByGallery/${GalleryID}`)
+            .pipe(
+                map((ii: any) => {
+                    return ii.data as number;
+                })
+            );
+    }
+
+    GetByPage(GalleryID: string, PageNo: number, PageSize: number): Observable<GalleryImage[]> {
+        return this.httpClient.get(`${this.controllerURL}/GetByPage/${GalleryID}/${PageNo}/${PageSize}`)
             .pipe(
                 map((ii: GalleryImage[]) => {
                     return ii;
@@ -27,17 +35,8 @@ export class ImageService {
             );
     }
 
-    GetImagesByPage(GalleryID: string, PageNo: number, PageSize: number): Observable<GalleryImage[]> {
-        return this.httpClient.get(`${this.controllerURL}/GetImagesByPage/${GalleryID}/${PageNo}/${PageSize}`)
-            .pipe(
-                map((ii: GalleryImage[]) => {
-                    return ii;
-                })
-            );
-    }
-
-    GetImageByID(ImageID: string): Observable<GalleryImage> {
-        return this.httpClient.get(`${this.controllerURL}/GetImageByID/${ImageID}`)
+    GetByID(ImageID: string): Observable<GalleryImage> {
+        return this.httpClient.get(`${this.controllerURL}/GetByID/${ImageID}`)
             .pipe(
                 map((ii: GalleryImage) => {
                     return ii;
@@ -45,8 +44,8 @@ export class ImageService {
             );
     }
 
-    GetImageThumbnailByID(ImageID: string, ThumbnailSize: number): Observable<SafeUrl> {
-        return this.httpClient.get(`${this.controllerURL}/GetImageThumbnailByID/${ImageID}/${ThumbnailSize}`)
+    GetThumbnailByID(ImageID: string, ThumbnailSize: number): Observable<SafeUrl> {
+        return this.httpClient.get(`${this.controllerURL}/GetThumbnailByID/${ImageID}/${ThumbnailSize}`)
             .pipe(
                 map((ii: ImageDataWrapper) => {
                     let res = `data:image/jpg;base64,${ii.imageData}`;
@@ -55,8 +54,8 @@ export class ImageService {
             );
     }
 
-    GetImageDataByID(ImageID: string): Observable<SafeUrl> {
-        return this.httpClient.get(`${this.controllerURL}/GetImageDataByID/${ImageID}`)
+    GetDataByID(ImageID: string): Observable<SafeUrl> {
+        return this.httpClient.get(`${this.controllerURL}/GetDataByID/${ImageID}`)
             .pipe(
                 map((ii: ImageDataWrapper) => {
                     let res = `data:image/jpg;base64,${ii.imageData}`;

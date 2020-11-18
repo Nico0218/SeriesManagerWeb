@@ -1,4 +1,4 @@
-import { ObjectStatus } from 'src/app/enums/config/object-status';
+import { ObjectStatus } from '../../enums/config/object-status';
 
 export abstract class LogicModelBase {
     public id: string;

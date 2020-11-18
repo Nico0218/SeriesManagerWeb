@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { Subject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { SeriesInformation } from 'src/app/classes/Models/series-information';
-import { Video } from 'src/app/classes/Models/Video';
-import { VideoGalleryService } from 'src/app/services/video-gallery.service';
+import { Video } from '../../../classes/Models/Video';
+import { VideoGallery } from '../../../classes/Models/video-gallery';
+import { VideoGalleryService } from '../../../services/video-gallery.service';
+import { VideoService } from '../../../services/video.service';
 import { UIBase } from '../../common/ui-base-component/ui-base.component';
 
 @Component({
@@ -13,26 +13,30 @@ import { UIBase } from '../../common/ui-base-component/ui-base.component';
     styleUrls: ['./video-list.component.scss']
 })
 export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
-    private destroy$: Subject<boolean> = new Subject();
-    seriesInformation: SeriesInformation;
-    episodes: Video[];
-    selectedEpisode: Video
+    videoGallery: VideoGallery;
+    videos: Video[];
+    selectedVideo: Video;
+    public page = 1;
+    public pageSize = 12;
+    public collectionSize = 0;
 
     constructor(private videoGalleryService: VideoGalleryService,
+        private videoService: VideoService,
         private router: Router,
         private activeRoute: ActivatedRoute) {
         super();
     }
 
     ngOnInit(): void {
-        if (!history.state.seriesInformation) {
+        this.loading = true;
+        if (!history.state.videoGallery) {
             //redirect to not found
             this.activeRoute.paramMap.pipe(
                 map((params: ParamMap) =>
-                    this.videoGalleryService.GetSeriesByID(params.get('seriesID'))
+                    this.videoGalleryService.GetByID(params.get('galleryID'))
                         .pipe(
-                            map(seriesInformation => {
-                                this.onSeriesInfoReady(seriesInformation);
+                            map(videoGallery => {
+                                this.onVideoGalleryReady(videoGallery);
                             }),
                             take(1)
                         )
@@ -41,7 +45,7 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
                 take(1)
             ).subscribe();
         } else {
-            this.onSeriesInfoReady(history.state.seriesInformation);
+            this.onVideoGalleryReady(history.state.videoGallery);
         }
     }
 
@@ -50,10 +54,28 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
-    private onSeriesInfoReady(seriesInformation: SeriesInformation) {
-        this.seriesInformation = seriesInformation;
+    private async onVideoGalleryReady(videoGallery: VideoGallery) {
+        this.videoGallery = videoGallery;
         this.loadBreadcrumb();
-        this.loadEpisoides();
+        this.collectionSize = await this.videoService.GetCountByGallery(this.videoGallery.id).toPromise();
+        this.loadVideoPage();
+    }
+
+    pageChange() {
+        this.loading = true;
+        this.loadVideoPage();
+    }
+
+    private loadVideoPage() {
+        this.videoService.GetByPage(this.videoGallery.id, this.page, this.pageSize)
+        .pipe(
+            map(result => {
+                this.videos = result;
+                this.loading = false;
+            }),
+            take(1)
+        )
+        .subscribe();
     }
 
     private loadBreadcrumb() {
@@ -69,29 +91,17 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
                 path: '/series-gallery-list'
             },
             {
-                id: this.seriesInformation.id,
-                label: this.seriesInformation.displayName,
-                path: `/series-episode-list/${this.seriesInformation.id}`
+                id: this.videoGallery.id,
+                label: this.videoGallery.displayName,
+                path: `/series-episode-list/${this.videoGallery.id}`
             }
         ];
     }
 
-    private loadEpisoides() {
-        this.videoGalleryService.GetEpisodesForSeries(this.seriesInformation.id)
-            .pipe(
-                take(1),
-                map(result => {
-                    this.episodes = result;
-                })
-            )
-            .subscribe();
-    }
-
     SelectFile(episode: Video) {
-        this.selectedEpisode = undefined;
+        this.selectedVideo = undefined;
         setTimeout(() => {
-            this.selectedEpisode = episode;
+            this.selectedVideo = episode;
         }, 500);
     }
-
 }

@@ -30,7 +30,7 @@ namespace MediaLibraryServer.Services {
             logger.LogDebug("Running table maintenance.");
             dataService.CreatOrAlterObjectTable<MainConfigData>();
             dataService.CreatOrAlterObjectTable<FolderLibraryData>();
-            dataService.CreatOrAlterObjectTable<SeriesInformationData>();
+            dataService.CreatOrAlterObjectTable<VideoGalleryData>();
             dataService.CreatOrAlterObjectTable<VideoData>();
             dataService.CreatOrAlterObjectTable<GalleryData>();
             dataService.CreatOrAlterObjectTable<ImageData>();

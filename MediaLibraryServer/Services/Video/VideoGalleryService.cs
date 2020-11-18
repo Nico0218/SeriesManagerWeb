@@ -15,7 +15,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace MediaLibraryServer.Services {
-    public class VideoGalleryService : AbstractLibraryService<SeriesInformation, SeriesInformationData>, IVideoGalleryService {
+    public class VideoGalleryService : AbstractLibraryService<VideoGallery, VideoGalleryData>, IVideoGalleryService {
         private readonly IConfigService configService;
         private readonly IVideoService videoService;
         private readonly IFolderService folderService;
@@ -36,34 +36,34 @@ namespace MediaLibraryServer.Services {
             this.folderService = folderService;
         }
 
-        public SeriesInformation GetSeriesByName(string seriesName) {
-            if (seriesName is null) {
-                throw new ArgumentNullException(nameof(seriesName));
+        public VideoGallery GetByName(string galleryName) {
+            if (galleryName is null) {
+                throw new ArgumentNullException(nameof(galleryName));
             }
-            logger.LogDebug($"Getting series {seriesName}");
+            logger.LogDebug($"Getting video gallery {galleryName}");
 
             List<IParameter> parameters = new List<IParameter>();
 
-            parameters.Add(new Parameter() { ColumnName = "Name", DataType = "System.String", Operator = DBProviderBase.Enums.ParamOperator.Equals, Value = seriesName.Replace(" ", "").Trim() });
-            SeriesInformationData seriesInformationData = dataService.GetObjectData<SeriesInformationData>(parameters).FirstOrDefault();
-            if (seriesInformationData == null) {
-                logger.LogDebug($"Could not find series {seriesName}");
+            parameters.Add(new Parameter() { ColumnName = "Name", DataType = "System.String", Operator = DBProviderBase.Enums.ParamOperator.Equals, Value = galleryName.Replace(" ", "").Trim() });
+            VideoGalleryData videoGalleryDatas = dataService.GetObjectData<VideoGalleryData>(parameters).FirstOrDefault();
+            if (videoGalleryDatas == null) {
+                logger.LogDebug($"Could not find video gallery {galleryName}");
                 return null;
             }
-            logger.LogDebug($"Returning series {seriesName}");
-            return (SeriesInformation)seriesInformationData;
+            logger.LogDebug($"Returning video gallery {galleryName}");
+            return (VideoGallery)videoGalleryDatas;
         }
 
         public void ProcessNewVideoFile(string filePath) {
             //Decide which lib the file goes to
             string libPath = folderService.GetFolder(FolderType.VideoFile).BasePath;
-            //Decide the series folder name
+            //Decide the video gallery folder name
             string fileName = Path.GetFileName(filePath);
             int index = fileName.LastIndexOfAny(numbers);
             while (numbers.Contains(fileName[index - 1])) {
                 index--;
             }
-            string SeriesName = fileName.Substring(0, index).Trim();
+            string videoGallerName = fileName.Substring(0, index).Trim();
 
             string season;
             Match regexMatch = SeasonandNoSpaceMatch.Match(fileName);
@@ -89,16 +89,16 @@ namespace MediaLibraryServer.Services {
             }
 
             //Create the season entry
-            SeriesInformation seriesInformation = GetSeriesByName(SeriesName);
-            if (seriesInformation == null) {
-                seriesInformation = new SeriesInformation(SeriesName);
-                seriesInformation.Status = ObjectStatus.Created;
-                Save(seriesInformation);
+            VideoGallery videoGallery = GetByName(videoGallerName);
+            if (videoGallery == null) {
+                videoGallery = new VideoGallery(videoGallerName);
+                videoGallery.Status = ObjectStatus.Created;
+                Save(videoGallery);
             }
 
             //Move the file to the library
             string oldFilePath = filePath;
-            filePath = Path.Combine(libPath, SeriesName, season, Path.GetFileName(filePath));
+            filePath = Path.Combine(libPath, videoGallerName, season, Path.GetFileName(filePath));
             if (!Directory.Exists(Path.GetDirectoryName(filePath))) {
                 Directory.CreateDirectory(Path.GetDirectoryName(filePath));
             }
@@ -107,7 +107,7 @@ namespace MediaLibraryServer.Services {
                 File.Move(oldFilePath, filePath);
                 //Index the file in the DB
                 Video episode = new Video(filePath);
-                episode.SeriesID = seriesInformation.ID;
+                episode.GalleryID = videoGallery.ID;
                 episode.Status = ObjectStatus.Created;
                 videoService.Save(episode);
             } else {

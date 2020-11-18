@@ -8,32 +8,30 @@ namespace MediaLibraryServer.Controllers {
     public class VideoGalleryController : ControllerBase {
         private readonly ILogger<VideoGalleryController> logger;
         private readonly IVideoGalleryService videoGalleryService;
-        private readonly IVideoService videoService;
 
-        public VideoGalleryController(ILogger<VideoGalleryController> logger, IVideoGalleryService videoGalleryService, IVideoService videoService) {
+        public VideoGalleryController(ILogger<VideoGalleryController> logger, IVideoGalleryService videoGalleryService) {
             this.logger = logger;
             this.videoGalleryService = videoGalleryService;
-            this.videoService = videoService;
         }
 
-        [HttpGet("GetAllSeries")]
-        public ObjectResult GetAllSeries() {
+        [HttpGet("GetAll")]
+        public ObjectResult GetAll() {
+            logger.LogInformation("Getting all Video Galleries");
             return new ObjectResult(videoGalleryService.GetAll());
         }
 
-        [HttpGet("GetSeriesByID/{SeriesID}")]
-        public ObjectResult GetSeriesByID(string SeriesID) {
-            return new ObjectResult(videoGalleryService.GetByID(SeriesID));
+        [HttpGet("GetByID/{GalleryID}")]
+        public ObjectResult GetByID(string GalleryID) {
+            logger.LogInformation($"Getting Video Gallery by ID: {GalleryID}");
+            return new ObjectResult(videoGalleryService.GetByID(GalleryID));
         }
 
-        [HttpGet("GetSeriesByName/{SeriesName}")]
-        public ObjectResult GetSeriesByName(string SeriesName) {
-            return new ObjectResult(videoGalleryService.GetSeriesByName(SeriesName));
+        [HttpGet("GetByName/{GalleryName}")]
+        public ObjectResult GetByName(string GalleryName) {
+            logger.LogInformation($"Getting Video Gallery by Name: {GalleryName}");
+            return new ObjectResult(videoGalleryService.GetByName(GalleryName));
         }
 
-        [HttpGet("GetEpisodesForSeries/{seriesID}")]
-        public ObjectResult GetEpisodesForSeries(string seriesID) {
-            return new ObjectResult(videoService.GetEpisodesForSeries(seriesID));
-        }
+        
     }
 }

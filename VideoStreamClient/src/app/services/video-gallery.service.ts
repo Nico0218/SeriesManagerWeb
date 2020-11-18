@@ -4,8 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Environment } from '../classes/environment';
-import { SeriesInformation } from '../classes/Models/series-information';
-import { Video } from '../classes/Models/Video';
+import { VideoGallery } from '../classes/Models/video-gallery';
 
 @Injectable()
 export class VideoGalleryService {
@@ -13,37 +12,32 @@ export class VideoGalleryService {
         private domSanitizer: DomSanitizer) {
     }
 
-    GetAllSeries(): Observable<SeriesInformation[]> {
-        return this.httpClient.get(`${Environment.apiUrl}/VideoGallery/GetAllSeries`)
+    public get controllerURL() : string {
+        return `${Environment.apiUrl}/VideoGallery`;
+    }
+
+    GetAll(): Observable<VideoGallery[]> {
+        return this.httpClient.get(`${this.controllerURL}/GetAll`)
             .pipe(
-                map((ii: SeriesInformation[]) => {
+                map((ii: VideoGallery[]) => {
                     return ii;
                 })
             );
     }
 
-    GetSeriesByID(SeriesID: string): Observable<SeriesInformation> {
-        return this.httpClient.get(`${Environment.apiUrl}/VideoGallery/GetSeriesByID/${SeriesID}`)
+    GetByID(GalleryID: string): Observable<VideoGallery> {
+        return this.httpClient.get(`${this.controllerURL}/GetByID/${GalleryID}`)
             .pipe(
-                map((ii: SeriesInformation) => {
+                map((ii: VideoGallery) => {
                     return ii;
                 })
             );
     }
 
-    GetSeriesByName(SeriesName: string): Observable<SeriesInformation> {
-        return this.httpClient.get(`${Environment.apiUrl}/VideoGallery/GetSeriesByName/${SeriesName}`)
+    GetByName(GalleryName: string): Observable<VideoGallery> {
+        return this.httpClient.get(`${this.controllerURL}/GetByName/${GalleryName}`)
             .pipe(
-                map((ii: SeriesInformation) => {
-                    return ii;
-                })
-            );
-    }
-
-    GetEpisodesForSeries(SeriesID: string): Observable<Video[]> {
-        return this.httpClient.get(`${Environment.apiUrl}/VideoGallery/GetEpisodesForSeries/${SeriesID}`)
-            .pipe(
-                map((ii: Video[]) => {
+                map((ii: VideoGallery) => {
                     return ii;
                 })
             );

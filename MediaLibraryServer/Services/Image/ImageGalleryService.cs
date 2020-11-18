@@ -29,7 +29,7 @@ namespace MediaLibraryServer.Services {
             this.folderService = folderService;
         }
 
-        public Gallery GetGalleryByName(string GalleryName) {
+        public Gallery GetByName(string GalleryName) {
             if (GalleryName is null) {
                 throw new ArgumentNullException(nameof(GalleryName));
             }
@@ -54,7 +54,7 @@ namespace MediaLibraryServer.Services {
 
         public void ProcessNewImageFile(string FilePath) {
             Gallery defaultGallery;
-            defaultGallery = GetGalleryByName("Walls");
+            defaultGallery = GetByName("Walls");
             if (defaultGallery == null) {
                 defaultGallery = new Gallery("Walls");
                 defaultGallery.Status = ObjectStatus.Created;
@@ -93,15 +93,6 @@ namespace MediaLibraryServer.Services {
             image.GalleryID = defaultGallery.ID;
             image.Status = ObjectStatus.Created;
             imageService.Save(image);
-        }
-
-        public int GetGalleryImageCount(string GalleryID) {
-            if (GalleryID is null) {
-                throw new ArgumentNullException(nameof(GalleryID));
-            }
-            List<IParameter> parameters = new List<IParameter>();
-            parameters.Add(new Parameter() { ColumnName = "GalleryID", DataType = "System.String", Operator = DBProviderBase.Enums.ParamOperator.Equals, Value = GalleryID });
-            return dataService.GetObjectData<ImageData>(parameters).Count;
         }
     }
 }

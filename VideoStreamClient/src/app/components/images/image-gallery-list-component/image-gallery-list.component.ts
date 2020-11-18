@@ -1,8 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ImageGalleryService } from 'src/app/services/image-gallery.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { map, takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
-import { ImageGallery } from 'src/app/classes/Models/image-gallery';
+import { ImageGallery } from '../../../classes/Models/image-gallery';
+import { ImageGalleryService } from '../../../services/image-gallery.service';
 import { UIBase } from '../../common/ui-base-component/ui-base.component';
 
 @Component({
@@ -11,7 +10,6 @@ import { UIBase } from '../../common/ui-base-component/ui-base.component';
     styleUrls: ['./image-gallery-list.component.scss']
 })
 export class ImageGalleryListComponent extends UIBase implements OnInit, OnDestroy {
-    private destroy$: Subject<boolean> = new Subject();
     Galleries: ImageGallery[] = [];
 
     constructor(private imageGalleryService: ImageGalleryService) {
@@ -21,7 +19,7 @@ export class ImageGalleryListComponent extends UIBase implements OnInit, OnDestr
 
     ngOnInit(): void {
         this.loadBreadcrumb();
-        this.imageGalleryService.GetAllGalleries()
+        this.imageGalleryService.GetAll()
             .pipe(
                 map(ii => {
                     this.Galleries = ii;

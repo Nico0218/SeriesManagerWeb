@@ -14,19 +14,24 @@ namespace MediaLibraryServer.Controllers {
             this.imageGalleryService = imageGalleryService;
         }
 
-        [HttpGet("GetGalleries")]
-        public ObjectResult GetGalleries() {
+        [HttpGet("GetAll")]
+        public ObjectResult GetAll() {
+            logger.LogInformation("Getting all image galleries");
             return new ObjectResult(imageGalleryService.GetAll());
         }
 
-        [HttpGet("GetGalleryByName/{GalleryName}")]
-        public ObjectResult GetGalleryByName(string GalleryName) {
-            return new ObjectResult(imageGalleryService.GetGalleryByName(GalleryName));
+        [HttpGet("GetByID/{GalleryID}")]
+        public ObjectResult GetByID(string GalleryID) {
+            logger.LogInformation($"Getting Video Gallery by ID: {GalleryID}");
+            return new ObjectResult(imageGalleryService.GetByID(GalleryID));
         }
 
-        [HttpGet("GetGalleryImageCount/{GalleryID}")]
-        public ObjectResult GetGalleryImageCount(string GalleryID) {
-            return new ObjectResult(new { data = imageGalleryService.GetGalleryImageCount(GalleryID) });
+        [HttpGet("GetByName/{GalleryName}")]
+        public ObjectResult GetByName(string GalleryName) {
+            logger.LogInformation($"Getting image gallery by name: {GalleryName}");
+            return new ObjectResult(imageGalleryService.GetByName(GalleryName));
         }
+
+        
     }
 }

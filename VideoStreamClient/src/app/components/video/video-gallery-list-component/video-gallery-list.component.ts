@@ -1,8 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
-import { SeriesInformation } from 'src/app/classes/Models/series-information';
-import { VideoGalleryService } from 'src/app/services/video-gallery.service';
+import { VideoGallery } from '../../../classes/Models/video-gallery';
+import { VideoGalleryService } from '../../../services/video-gallery.service';
 import { UIBase } from '../../common/ui-base-component/ui-base.component';
 
 @Component({
@@ -11,8 +10,7 @@ import { UIBase } from '../../common/ui-base-component/ui-base.component';
     styleUrls: ['./video-gallery-list.component.scss']
 })
 export class VideoGalleryListComponent extends UIBase implements OnInit, OnDestroy {
-    private destroy$: Subject<boolean> = new Subject();
-    SeriesList: SeriesInformation[] = [];
+    SeriesList: VideoGallery[] = [];
 
     constructor(private videoGalleryService: VideoGalleryService) {
         super();
@@ -20,7 +18,7 @@ export class VideoGalleryListComponent extends UIBase implements OnInit, OnDestr
 
     ngOnInit(): void {
         this.loadBreadcrumb();
-        this.videoGalleryService.GetAllSeries()
+        this.videoGalleryService.GetAll()
             .pipe(
                 map(ii => {
                     this.SeriesList = ii;

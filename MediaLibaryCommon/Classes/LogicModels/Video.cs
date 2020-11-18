@@ -3,7 +3,7 @@ using System.IO;
 
 namespace MediaLibraryCommon.Classes.LogicModels {
     public class Video : LogicModelBase, IFileItem {
-        public string SeriesID { get; set; }
+        public string GalleryID { get; set; }
         public Video() {
         }
 

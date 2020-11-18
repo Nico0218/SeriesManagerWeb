@@ -4,21 +4,27 @@
         </breadcrum-component>
     </div>
     <div class="row">
-        <h3 *ngIf="seriesInformation" class="col">Episodes - {{seriesInformation.displayName}}</h3>
+        <h3 *ngIf="videoGallery" class="col">Videos - {{videoGallery.displayName}}</h3>
     </div>
-    <div *ngIf="seriesInformation" class="row">
+    <div *ngIf="!loading" class="row">
         <div class="col-6 card-deck">
-            <custom-card-component *ngFor="let episode of episodes" [title]='episode.displayName' [description]=''
-                (click)="SelectFile(episode)">
-            </custom-card-component>
+            <div class="w-100 row d-flex justify-content-center">
+                <ngb-pagination [(page)]="page" [pageSize]="pageSize" [collectionSize]="collectionSize" [maxSize]="10"
+                    [rotate]="true" (pageChange)="pageChange()"></ngb-pagination>
+            </div>
+            <div class="row">
+                <custom-card-component *ngFor="let video of videos" [title]='video.displayName' [description]=''
+                    (click)="SelectFile(video)">
+                </custom-card-component>
+            </div>
         </div>
         <div class="col-6">
-            <div *ngIf="selectedEpisode" style="float: right;">
-                <video-host-component [selectedEpisode]="selectedEpisode"></video-host-component>
+            <div *ngIf="selectedVideo" style="float: right;">
+                <video-viewer-component [selectedVideo]="selectedVideo"></video-viewer-component>
             </div>
         </div>
     </div>
-    <div *ngIf="!seriesInformation" class="row">
+    <div *ngIf="loading" class="row">
         <h3 class="col">Loading...</h3>
     </div>
 </div>

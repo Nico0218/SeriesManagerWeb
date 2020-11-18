@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { BreadcrumbItem } from '../../../classes/breadcrumb-item';
 import { faUserCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
-import { AuthenticationService } from 'src/app/services/authentication.service';
+import { AuthenticationService } from '../../../services/authentication.service';
 
 @Component({
     selector: 'breadcrum-component',

@@ -20,7 +20,7 @@ import { ImageViewerComponent } from './components/images/image-viewer-component
 import { LoginComponent } from './components/login/login.component';
 import { MissingPageComponent } from './components/missing-page-component/missing-page.component';
 import { VideoGalleryListComponent } from './components/video/video-gallery-list-component/video-gallery-list.component';
-import { VideoHostComponent } from './components/video/video-host-component/video-host.component';
+import { VideoViewerComponent } from './components/video/video-viewer-component/video-viewer.component';
 import { VideoListComponent } from './components/video/video-list-component/video-list.component';
 import { ErrorInterceptor } from './helpers/error.interceptor';
 import { JwtInterceptor } from './helpers/jwt.interceptor';
@@ -31,6 +31,7 @@ import { ImageService } from './services/image.service';
 import { UserService } from './services/user.service';
 import { VideoGalleryService } from './services/video-gallery.service';
 import { VideoStreamService } from './services/video-stream.service';
+import { VideoService } from './services/video.service';
 import { RepeatTypeComponent } from './ui-components/repeat-section/repeat-section.type';
 
 @NgModule({
@@ -39,7 +40,7 @@ import { RepeatTypeComponent } from './ui-components/repeat-section/repeat-secti
     HomeComponent,
     VideoGalleryListComponent,
     VideoListComponent,
-    VideoHostComponent,
+    VideoViewerComponent,
     ImageGalleryListComponent,
     ImageListComponent,
     ImageViewerComponent,
@@ -83,6 +84,7 @@ import { RepeatTypeComponent } from './ui-components/repeat-section/repeat-secti
       multi: true
     },
     VideoGalleryService,
+    VideoService,
     VideoStreamService,
     ImageGalleryService,
     ImageService,

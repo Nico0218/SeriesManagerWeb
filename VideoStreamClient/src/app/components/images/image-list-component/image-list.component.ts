@@ -1,12 +1,12 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { map, take } from 'rxjs/operators';
+import { ImageGallery } from 'src/app/classes/Models/image-gallery';
 import { GalleryImage } from '../../../classes/Models/gallery-image';
 import { ImageGalleryService } from '../../../services/image-gallery.service';
-import { map, take, takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
-import { ImageViewerComponent } from '../image-viewer-component/image-viewer.component';
+import { ImageService } from '../../../services/image.service';
 import { UIBase } from '../../common/ui-base-component/ui-base.component';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { ImageService } from 'src/app/services/image.service';
+import { ImageViewerComponent } from '../image-viewer-component/image-viewer.component';
 
 @Component({
     selector: 'image-list-component',
@@ -14,15 +14,13 @@ import { ImageService } from 'src/app/services/image.service';
     styleUrls: ['./image-list.component.scss']
 })
 export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
-    @ViewChild(ImageViewerComponent) imageViewer: ImageViewerComponent;
-    private destroy$: Subject<boolean> = new Subject();
-    public GalleryID: string;
+    @ViewChild(ImageViewerComponent) imageViewer: ImageViewerComponent;    
+    public imageGallery: ImageGallery;
     public Images: GalleryImage[];
     public selectedImage: GalleryImage;
     public page = 1;
     public pageSize = 12;
-    public collectionSize = 0;
-    public loading = true;
+    public collectionSize = 0;    
 
     constructor(private imageGalleryService: ImageGalleryService,
         private imageService: ImageService,
@@ -32,16 +30,36 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
+        this.loading = true;
+        if (!history.state.imageGallery) {
+            //redirect to not found
+            this.activeRoute.paramMap.pipe(
+                map((params: ParamMap) =>
+                    this.imageGalleryService.GetByID(params.get('galleryID'))
+                        .pipe(
+                            map(imageGallery => {
+                                this.onImageGalleryReady(imageGallery);
+                            }),
+                            take(1)
+                        )
+                        .subscribe()
+                ),
+                take(1)
+            ).subscribe();
+        } else {
+            this.onImageGalleryReady(history.state.imageGallery);
+        }
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
+    private async onImageGalleryReady(imageGallery: ImageGallery) {
+        this.imageGallery = imageGallery;
         this.loadBreadcrumb();
-        this.GalleryID = await this.activeRoute.paramMap.pipe(
-            map((params: ParamMap) => {
-                return params.get('galleryID') as string;
-            }),
-            take(1)
-        ).toPromise();
-
-        this.collectionSize = await this.imageGalleryService.GetGalleryImageCount(this.GalleryID).toPromise();
-
+        this.collectionSize = await this.imageService.GetCountByGallery(this.imageGallery.id).toPromise();
         this.loadImagePage();
     }
 
@@ -51,7 +69,7 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
     }
 
     private loadImagePage() {
-        this.imageService.GetImagesByPage(this.GalleryID, this.page, this.pageSize)
+        this.imageService.GetByPage(this.imageGallery.id, this.page, this.pageSize)
             .pipe(
                 map(result => {
                     this.Images = result;
@@ -59,14 +77,8 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
                     this.loading = false;
                 }),
                 take(1)
-                // takeUntil(this.destroy$)
             )
             .subscribe();
-    }
-
-    ngOnDestroy(): void {
-        this.destroy$.next();
-        this.destroy$.complete();
     }
 
     private loadBreadcrumb() {
@@ -82,8 +94,8 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
                 path: '/image-gallery-list'
             },
             {
-                id: this.GalleryID,
-                label: 'Walls',
+                id: this.imageGallery.id,
+                label: this.imageGallery.displayName,
                 path: '/image-list'
             }
         ];
@@ -98,7 +110,7 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
 
     private async loadThumbnails() {
         this.Images.forEach(async image => {
-            image.imageThumbnail = await this.imageService.GetImageThumbnailByID(image.id, 200).toPromise();
+            image.imageThumbnail = await this.imageService.GetThumbnailByID(image.id, 200).toPromise();
         });
     }
 }

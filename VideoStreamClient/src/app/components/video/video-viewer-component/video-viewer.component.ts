@@ -1,15 +1,15 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
+import { Video } from '../../../classes/Models/Video';
 import { VideoStreamService } from '../../../services/video-stream.service';
-import { Video } from 'src/app/classes/Models/Video';
 
 @Component({
-  selector: 'video-host-component',
-  templateUrl: './video-host.component.html',
-  styleUrls: ['./video-host.component.scss']
+  selector: 'video-viewer-component',
+  templateUrl: './video-viewer.component.html',
+  styleUrls: ['./video-viewer.component.scss']
 })
-export class VideoHostComponent implements OnInit, OnDestroy {
+export class VideoViewerComponent implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject();
   VideoURL: SafeUrl;
   @Input() selectedEpisode: Video;

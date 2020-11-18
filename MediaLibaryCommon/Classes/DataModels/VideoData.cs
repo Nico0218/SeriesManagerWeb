@@ -7,7 +7,7 @@ namespace MediaLibraryCommon.Classes.DataModels {
         [StringValidator(MaxLength = 1000)]
         public string FilePath { get; set; }
         public DateTime IndexDate { get; set; }
-        public string SeriesID { get; set; }
+        public string GalleryID { get; set; }
 
         public static explicit operator Video(VideoData source) {
             Video destination = new Video() {
@@ -16,7 +16,7 @@ namespace MediaLibraryCommon.Classes.DataModels {
                 DisplayName = source.DisplayName,
                 FilePath = source.FilePath,
                 IndexDate = source.IndexDate,
-                SeriesID = source.SeriesID
+                GalleryID = source.GalleryID
             };
             return destination;
         }
@@ -28,7 +28,7 @@ namespace MediaLibraryCommon.Classes.DataModels {
                 DisplayName = source.DisplayName,
                 FilePath = source.FilePath,
                 IndexDate = source.IndexDate,
-                SeriesID = source.SeriesID
+                GalleryID = source.GalleryID
             };
             return destination;
         }

@@ -3,8 +3,7 @@ using MediaLibraryCommon.Classes.LogicModels;
 
 namespace MediaLibraryServer.Interfaces {
     public interface IImageGalleryService: IAbstractLibraryService<Gallery, GalleryData> {             
-        Gallery GetGalleryByName(string GalleryName);
+        Gallery GetByName(string GalleryName);
         void ProcessNewImageFile(string filePath);
-        int GetGalleryImageCount(string GalleryID);
     }
 }

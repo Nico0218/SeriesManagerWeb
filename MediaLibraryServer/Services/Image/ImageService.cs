@@ -16,24 +16,16 @@ namespace MediaLibraryServer.Services {
         public ImageService(ILogger<ImageService> logger, IDataService dataService, IMemoryCache memoryCache) : base(logger, dataService, memoryCache) {
         }
 
-        public List<GalleryImage> GetAllImagesByGaleryID(string GalleryID) {
+        public int GetCountByGallery(string GalleryID) {
             if (GalleryID is null) {
                 throw new ArgumentNullException(nameof(GalleryID));
             }
-
-            logger.LogInformation($"Getting images for gallery {GalleryID}");
             List<IParameter> parameters = new List<IParameter>();
             parameters.Add(new Parameter() { ColumnName = "GalleryID", DataType = "System.String", Operator = DBProviderBase.Enums.ParamOperator.Equals, Value = GalleryID });
-            List<ImageData> imageDatas = dataService.GetObjectData<ImageData>(parameters);
-            List<GalleryImage> images = new List<GalleryImage>();
-            foreach (var item in imageDatas) {
-                images.Add((GalleryImage)item);
-            }
-            logger.LogInformation($"Returning {images.Count} images for gallery {GalleryID}");
-            return images;
+            return dataService.GetObjectData<ImageData>(parameters).Count;
         }
 
-        public List<GalleryImage> GetImagesByPage(string GalleryID, int pageNo, int pageSize = 10) {
+        public List<GalleryImage> GetByPage(string GalleryID, int pageNo, int pageSize = 10) {
             if (GalleryID is null) {
                 throw new ArgumentNullException(nameof(GalleryID));
             }
@@ -68,7 +60,7 @@ namespace MediaLibraryServer.Services {
             return images;
         }
 
-        public ImageDataWrapper GetImageDataByID(string imageID) {
+        public ImageDataWrapper GetDataByID(string imageID) {
             if (imageID is null) {
                 throw new ArgumentNullException(nameof(imageID));
             }
@@ -80,7 +72,7 @@ namespace MediaLibraryServer.Services {
             return imageDataWrapper;
         }
 
-        public ImageDataWrapper GetImageThumbnailByID(string imageID, int ThumbnailSize = 256) {
+        public ImageDataWrapper GetThumbnailByID(string imageID, int ThumbnailSize = 256) {
             if (imageID is null) {
                 throw new ArgumentNullException(nameof(imageID));
             }
@@ -107,8 +99,6 @@ namespace MediaLibraryServer.Services {
                 throw ex;
             }
         }
-
-        
 
         private byte[] getImageDataByID(GalleryImage image) {
             if (image is null) {

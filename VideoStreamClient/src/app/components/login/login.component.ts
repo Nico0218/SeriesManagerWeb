@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { first, tap } from 'rxjs/operators';
 import { AuthenticationService } from '../../services/authentication.service';
-import { ConfigService } from 'src/app/services/config.service';
+import { ConfigService } from '../../services/config.service';
 
 @Component({
     selector: 'login-component',

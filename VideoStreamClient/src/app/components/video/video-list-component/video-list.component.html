@@ -8,20 +8,19 @@
     </div>
     <div *ngIf="!loading" class="row">
         <div class="col-6 card-deck">
-            <div class="w-100 row d-flex justify-content-center">
-                <ngb-pagination [(page)]="page" [pageSize]="pageSize" [collectionSize]="collectionSize" [maxSize]="10"
-                    [rotate]="true" (pageChange)="pageChange()"></ngb-pagination>
-            </div>
-            <div class="row">
+            <ngb-pagination class="w-100 custom-row d-flex justify-content-center" style="max-height: 40px;"
+                [(page)]="page" [pageSize]="pageSize" [collectionSize]="collectionSize" [maxSize]="10" [rotate]="true"
+                (pageChange)="pageChange()">
+            </ngb-pagination>
+            <div class="custom-row custom-card-deck d-flex justify-content-center">
                 <custom-card-component *ngFor="let video of videos" [title]='video.displayName' [description]=''
-                    (click)="SelectFile(video)">
+                    [showButtons]="true" [itemID]="video.id" (onImg)="SelectFile(video)"
+                    (onDownload)="download($event)">
                 </custom-card-component>
             </div>
         </div>
         <div class="col-6">
-            <div *ngIf="selectedVideo" style="float: right;">
-                <video-viewer-component [selectedVideo]="selectedVideo"></video-viewer-component>
-            </div>
+            <video-viewer-component *ngIf="selectedVideo" [selectedVideo]="selectedVideo"></video-viewer-component>
         </div>
     </div>
     <load-indicator-component *ngIf="loading" class="row"></load-indicator-component>

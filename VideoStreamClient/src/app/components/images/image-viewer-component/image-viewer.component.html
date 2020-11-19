@@ -1,9 +1,9 @@
-<div class="row d-flex justify-content-center text-center h-80">
-    <div *ngIf="selectedImage && this.selectedImage.data" class="h-100 w-100 d-flex justify-content-center">
-        <img class="w-100 image-box" [attr.src]="selectedImage.data" alt="{{selectedImage.displayName}}" />
+<div class="row d-flex justify-content-center text-center h-100">
+    <div *ngIf="selectedImage && this.selectedImage.data" class="h-100 d-flex justify-content-center">
+        <img class="image-box" [attr.src]="selectedImage.data" alt="{{selectedImage.displayName}}" />
     </div>
     <div *ngIf="!selectedImage" class="row d-flex flex-column justify-content-center h-100 align-center">
         No image selected
     </div>
-    <load-indicator-component *ngIf="loading" class="row"></load-indicator-component>
+    <load-indicator-component *ngIf="loading"></load-indicator-component>
 </div>

@@ -19,7 +19,7 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
     public Images: GalleryImage[];
     public selectedImage: GalleryImage;
     public page = 1;
-    public pageSize = 12;
+    public pageSize = 16;
     public collectionSize = 0;
 
     constructor(private imageGalleryService: ImageGalleryService,
@@ -88,15 +88,28 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
     }
 
     selectCard(image: GalleryImage) {
+        var modal = document.getElementById("myModal");
+        if (modal)
+            modal.style.display = "block";
         if (this.imageViewer) {
             this.imageViewer.selectedImage = image;
             this.imageViewer.LoadImage();
         }
     }
 
+    closePopupModal() {
+        var modal = document.getElementById("myModal");
+        if (modal)
+            modal.style.display = "none";
+    }
+
     private async loadThumbnails() {
         this.Images.forEach(async image => {
             image.imageThumbnail = await this.imageService.GetThumbnailByID(image.id, 200).toPromise();
         });
+    }
+
+    download(id: string) {
+        console.log(id);
     }
 }

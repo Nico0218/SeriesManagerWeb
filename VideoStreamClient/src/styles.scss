@@ -5,10 +5,13 @@
 @import '~bootstrap/scss/bootstrap';
 @import "~bootswatch/dist/slate/bootstrap";
 
-// body{
-//     background-color: black;
-// }
+.custom-card-deck {
+  padding: 0.75rem 1rem;
+}
 
-// div {
-//     background-color: transparent;
-// }
+.custom-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: 0px;
+  margin-left: 0px;
+}

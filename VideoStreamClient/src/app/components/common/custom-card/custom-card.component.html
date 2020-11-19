@@ -1,9 +1,15 @@
-<div class="align-self-center p-2 bd-highlight">
-    <div class="card" style="width: 200px" [routerLink]="route">
-        <img class="card-img-top" [src]="thumbnail">
-        <div class="card-body">
-            <h5 *ngIf="title" class="card-title">{{title}}</h5>
-            <p *ngIf="description" class="card-text" style="font-size: small;">{{description}}</p>
-        </div>
+<div class="card custom-card" [routerLink]="route">
+    <img class="card-img-top hover-anim" [src]="thumbnail" (click)="onImgClick()">
+    <div class="card-body">
+        <h5 *ngIf="title" class="card-title">{{title}}</h5>
+        <p *ngIf="description" class="card-text" style="font-size: small;">{{description}}</p>
+    </div>
+    <div *ngIf="showButtons" class="custom-card-footer">
+        <span class="icon float-right hover-anim">
+            <fa-icon [icon]="faEllipsisH" size="1x"></fa-icon>
+        </span>
+        <span class="icon float-right hover-anim" (click)="onDownloadClick()">
+            <fa-icon [icon]="faDownload" size="1x"></fa-icon>
+        </span>
     </div>
 </div>

@@ -4,10 +4,10 @@
         </breadcrum-component>
     </div>
     <div class="row">
-        <h3>Video Galleries</h3>
+        <h3 class="col">Video Galleries</h3>
     </div>
     <div *ngIf="!loading" class="row">
-        <div class="col card-deck">
+        <div class="custom-row custom-card-deck">
             <custom-card-component *ngFor="let video of videoList" [route]="['/video-list',video.id]"
                 [title]='video.displayName' [description]=''>
             </custom-card-component>

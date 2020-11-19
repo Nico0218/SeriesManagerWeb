@@ -7,7 +7,7 @@
         <h3 class="col">Image Galleries</h3>
     </div>
     <div *ngIf="!loading" class="row">
-        <div class="col card-deck">
+        <div class="custom-row custom-card-deck">
             <custom-card-component *ngFor="let gallery of Galleries" [route]='["/image-list", gallery.id]'
                 [title]='gallery.displayName' [description]='"Description Text"'>
             </custom-card-component>

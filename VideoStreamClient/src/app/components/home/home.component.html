@@ -8,7 +8,7 @@
         <h3 *ngIf="!user || !user.displayName" class="col">Home</h3>
     </div>
     <div *ngIf="!loading" class="row">
-        <div class="col card-deck">
+        <div class="custom-row custom-card-deck">
             <custom-card-component [route]='["/image-gallery-list"]' [title]='"Image Galleries"'
                 [description]='"View all the available image galleries"'>
             </custom-card-component>

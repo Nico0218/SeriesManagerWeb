@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
     selector: 'load-indicator-component',
@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
     styleUrls: ['./load-indicator.component.scss']
 })
 export class LoadIndicatorComponent {
-
+    @Input() fullscreen = true;
 }

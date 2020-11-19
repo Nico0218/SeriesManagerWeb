@@ -90,4 +90,8 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
             this.selectedVideo = episode;
         }, 500);
     }
+
+    download(id: string) {
+        console.log(id);
+    }
 }

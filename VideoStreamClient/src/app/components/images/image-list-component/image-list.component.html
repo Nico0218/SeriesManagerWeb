@@ -7,20 +7,21 @@
         <h3 class="col">Gallery Images</h3>
     </div>
     <div *ngIf="!loading" class="row">
-        <div class="col-7">
-            <div class="w-100 row d-flex justify-content-center">
-                <ngb-pagination [(page)]="page" [pageSize]="pageSize" [collectionSize]="collectionSize" [maxSize]="10"
-                    [rotate]="true" (pageChange)="pageChange()"></ngb-pagination>
-            </div>
-            <div class="row card-deck custom-card-deck">
-                <custom-card-component *ngFor="let image of Images" [route]='["/image-list", imageGallery.id]' [title]=''
-                    [description]='image.displayName' [thumbnail]="image.imageThumbnail" (click)="selectCard(image)">
-                </custom-card-component>
-            </div>
-        </div>
-        <div class="col-5">
-            <image-viewer-component class="h-100" [selectedImage]="selectedImage"></image-viewer-component>
+        <ngb-pagination class="w-100 custom-row d-flex justify-content-center" [(page)]="page" [pageSize]="pageSize"
+            [collectionSize]="collectionSize" [maxSize]="10" [rotate]="true" (pageChange)="pageChange()">
+        </ngb-pagination>
+        <div class="custom-row custom-card-deck d-flex justify-content-center">
+            <custom-card-component *ngFor="let image of Images" [route]='["/image-list", imageGallery.id]'
+                [itemID]="image.id" [title]='' [description]='image.displayName' [thumbnail]="image.imageThumbnail"
+                [showButtons]="true" (onImg)="selectCard(image)" (onDownload)="download($event)">
+            </custom-card-component>
         </div>
     </div>
-    <load-indicator-component *ngIf="loading" class="row"></load-indicator-component>
+</div>
+
+<load-indicator-component *ngIf="loading">
+</load-indicator-component>
+
+<div id="myModal" class="modal" (click)="closePopupModal()">
+    <image-viewer-component class="h-100" [selectedImage]="selectedImage"></image-viewer-component>
 </div>

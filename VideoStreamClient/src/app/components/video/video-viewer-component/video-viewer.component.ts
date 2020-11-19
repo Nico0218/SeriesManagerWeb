@@ -1,6 +1,7 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
+import { debounceTime, takeUntil, tap } from 'rxjs/operators';
 import { Video } from '../../../classes/Models/Video';
 import { VideoStreamService } from '../../../services/video-stream.service';
 
@@ -9,12 +10,36 @@ import { VideoStreamService } from '../../../services/video-stream.service';
   templateUrl: './video-viewer.component.html',
   styleUrls: ['./video-viewer.component.scss']
 })
-export class VideoViewerComponent implements OnInit, OnDestroy {
+export class VideoViewerComponent implements OnInit, OnDestroy, AfterViewInit {
   destroy$: Subject<boolean> = new Subject();
   VideoURL: SafeUrl;
+  aspectWidth = 1280;
+  aspectHeight = 720;
+  width = 480;
+  height = 320;
   @Input() selectedVideo: Video;
 
-  constructor(private videoGalleryService: VideoStreamService) { }
+  $resizeObs: Subject<any>;
+
+  constructor(private videoGalleryService: VideoStreamService) {
+    this.$resizeObs = new Subject<any>();
+    this.$resizeObs
+      .pipe(
+        debounceTime(500),
+        tap(() => {
+          var videoContainer = document.getElementById("videoContainer");
+          if (videoContainer) {
+            var newWidth = videoContainer.clientWidth;
+            if (newWidth !== this.width) {
+              this.width = newWidth;
+              this.height = this.width * this.aspectHeight / this.aspectWidth;
+            }
+          }
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe();
+  }
 
   ngOnInit(): void {
     this.GetVideoURL();
@@ -23,6 +48,17 @@ export class VideoViewerComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.$resizeObs.next();
+    }, 200);
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.$resizeObs.next();
   }
 
   public GetVideoURL() {

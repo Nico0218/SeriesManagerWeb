@@ -11,7 +11,13 @@ export abstract class UIBase {
     constructor(routes: Routes) {
         routes.forEach(route => {
             if (route.component) {
-                this.paths[route.component.name.replace("Component", "")] = route.path;
+                var routeID = route.path;
+                while (routeID.includes("-")) {
+                    routeID = routeID.replace("-", "");
+                }
+                if (routeID.includes("/"))
+                    routeID = routeID.substring(0, routeID.indexOf("/"));
+                this.paths[routeID] = route.path;
             }
         });
     }
@@ -20,7 +26,7 @@ export abstract class UIBase {
         const breadcrumbItem = new BreadcrumbItem();
         breadcrumbItem.id = componentName;
         breadcrumbItem.label = displayName ? displayName : componentName;
-        breadcrumbItem.path = "/" + this.paths[componentName];
+        breadcrumbItem.path = "/" + this.paths[componentName.toLowerCase()];
         if (objID) {
             breadcrumbItem.path = breadcrumbItem.path.replace(":objID", objID);
         }

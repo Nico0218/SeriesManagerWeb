@@ -1,4 +1,4 @@
-import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
+import { APP_BASE_HREF, HashLocationStrategy, LocationStrategy, PlatformLocation } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -85,6 +85,7 @@ import { RepeatTypeComponent } from './ui-components/repeat-section/repeat-secti
       deps: [ConfigService],
       multi: true
     },
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
     VideoGalleryService,
     VideoService,
     VideoStreamService,

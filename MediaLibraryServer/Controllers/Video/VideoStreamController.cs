@@ -21,5 +21,11 @@ namespace MediaLibraryServer.Controllers {
             fileStreamResult.EnableRangeProcessing = true;
             return fileStreamResult;
         }
+
+        [HttpGet("GetVideoSubtitles/{videoID}")]
+        public ObjectResult GetVideoSubtitles(string videoID) {
+            logger.LogInformation($"Get subtitles for video: {videoID}");
+            return new ObjectResult(new { data = videoStreamService.GetVideoSubtitles(videoID) });
+        }
     }
 }

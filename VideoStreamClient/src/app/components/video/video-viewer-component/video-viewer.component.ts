@@ -13,15 +13,18 @@ import { VideoStreamService } from '../../../services/video-stream.service';
 export class VideoViewerComponent implements OnInit, OnDestroy, AfterViewInit {
   destroy$: Subject<boolean> = new Subject();
   VideoURL: SafeUrl;
+  SubtitleURL: SafeUrl;
   aspectWidth = 1280;
   aspectHeight = 720;
   width = 480;
   height = 320;
   @Input() selectedVideo: Video;
 
+  loading = false;
   $resizeObs: Subject<any>;
 
   constructor(private videoGalleryService: VideoStreamService) {
+    this.loading = true;
     this.$resizeObs = new Subject<any>();
     this.$resizeObs
       .pipe(
@@ -41,8 +44,9 @@ export class VideoViewerComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe();
   }
 
-  ngOnInit(): void {
-    this.GetVideoURL();
+  async ngOnInit() {
+    await this.GetVideoURL();
+    this.loading = false;
   }
 
   ngOnDestroy(): void {
@@ -61,8 +65,9 @@ export class VideoViewerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.$resizeObs.next();
   }
 
-  public GetVideoURL() {
-    this.VideoURL = this.videoGalleryService.GetVideoStream(this.selectedVideo);
+  public async GetVideoURL() {
+    this.SubtitleURL = await this.videoGalleryService.GetVideoSubtitles(this.selectedVideo.id);
+    this.VideoURL = this.videoGalleryService.GetVideoStream(this.selectedVideo.id);    
   }
 
   public PlaybackError(error) {

@@ -15,15 +15,15 @@ namespace MediaLibraryServer.Services {
             this.videoService = videoService;
         }
 
-        public Stream GetVideoStream(string episodeID) {
-            if (episodeID is null) {
-                throw new ArgumentNullException(nameof(episodeID));
+        public Stream GetVideoStream(string videoID) {
+            if (videoID is null) {
+                throw new ArgumentNullException(nameof(videoID));
             }
-            logger.LogDebug($"Getting video stream for episode {episodeID}");
-            Video video = videoService.GetByID(episodeID);
+            logger.LogDebug($"Getting video stream for episode {videoID}");
+            Video video = videoService.GetByID(videoID);
             if (video == null) {
-                logger.LogError($"Failed to find episode {episodeID}");
-                throw new FileNotFoundException($"Failed to find episode {episodeID}");
+                logger.LogError($"Failed to find episode {videoID}");
+                throw new FileNotFoundException($"Failed to find episode {videoID}");
             }
 
             try {
@@ -32,6 +32,15 @@ namespace MediaLibraryServer.Services {
                 logger.LogError(msgStreamError, ex);
                 throw;
             }
+        }
+
+        public string GetVideoSubtitles(string videoID) {
+            if (videoID is null) {
+                throw new ArgumentNullException(nameof(videoID));
+            }
+            logger.LogDebug($"Getting video subtitles for video {videoID}");
+            string subtileSource = @"C:\inetpub\wwwroot\SeriesManagerWeb\SeriesManagerServer\Resources\upc-video-subtitles-en.vtt";
+            return Convert.ToBase64String(File.ReadAllBytes(subtileSource));
         }
     }
 }

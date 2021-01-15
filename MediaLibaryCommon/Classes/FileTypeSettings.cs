@@ -17,6 +17,7 @@ namespace MediaLibraryCommon.Classes
                 removeStrings.Clear();
                 removeStrings.Add("_");
                 removeStrings.Add(".");
+                removeStrings.Add(",");
                 removeStrings.Add("-");
                 removeStrings.Add("~");
                 removeStrings.Add(";");

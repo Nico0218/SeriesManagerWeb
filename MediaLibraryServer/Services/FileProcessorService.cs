@@ -72,7 +72,7 @@ namespace MediaLibraryServer.Services {
                     }
                 }
             } catch (Exception ex) {
-                logger.LogError("File process failed.", ex);
+                logger.LogError($"File process failed. {ex.Message}", ex);
             } finally {
                 fileWatcherTimer.Enabled = true;
             }
@@ -100,11 +100,19 @@ namespace MediaLibraryServer.Services {
             }
             switch (fileType) {
                 case FolderType.VideoFile: {
-                        videoGalleryService.ProcessNewVideoFile(FilePath);
+                        try {
+                            videoGalleryService.ProcessNewVideoFile(FilePath);
+                        } catch (Exception ex) {
+                            throw new Exception($"Failed to process video {Path.GetFileName(FilePath)} - {ex.Message}", ex);
+                        }                        
                         break;
                     }
                 case FolderType.ImageFile: {
-                        imageGalleryService.ProcessNewImageFile(FilePath);
+                        try {
+                            imageGalleryService.ProcessNewImageFile(FilePath);
+                        } catch (Exception ex) {
+                            throw new Exception($"Failed to process image {Path.GetFileName(FilePath)} - {ex.Message}", ex);
+                        }
                         break;
                     }
                 case FolderType.UnknownFile:

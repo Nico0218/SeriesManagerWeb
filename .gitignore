@@ -34,3 +34,7 @@ DBProviders/obj/
 MediaLibraryServer/medialibrary.db
 
 VideoStreamClient/package-lock.json
+
+TestBench/bin/Debug
+
+TestBench/obj/

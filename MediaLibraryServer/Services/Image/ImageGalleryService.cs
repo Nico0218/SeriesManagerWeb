@@ -21,7 +21,7 @@ namespace MediaLibraryServer.Services {
         private readonly IImageComparisonService imageComparisonService;
         private readonly IFolderService folderService;
 
-        public ImageGalleryService(ILogger<ImageGalleryService> logger, IDataService dataService, IConfigService configService, IImageService imageService, 
+        public ImageGalleryService(ILogger<ImageGalleryService> logger, IDataService dataService, IConfigService configService, IImageService imageService,
             IImageComparisonService imageComparisonService, IFolderService folderService, IMemoryCache memoryCache) : base(logger, dataService, memoryCache) {
             this.configService = configService;
             this.imageService = imageService;
@@ -85,7 +85,17 @@ namespace MediaLibraryServer.Services {
                 image = new GalleryImage(FilePath.Replace(Path.GetFileName(FilePath), fileName));
                 FilePath = Path.Combine(folderService.GetFolder(FolderType.ImageFile).BasePath, image.Name);
             }
-            File.Move(oldFilePath, FilePath);
+            try {
+                File.Move(oldFilePath, FilePath);
+            } catch (IOException ex) {
+                if (ex.Message.Contains("file already exists")) {
+                    string newName = Path.GetFileNameWithoutExtension(FilePath);
+                    newName += $" - ({DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")})";
+                    newName += Path.GetExtension(oldFilePath);
+                    File.Move(oldFilePath, FilePath.Replace(Path.GetFileName(FilePath), newName));
+                }
+            }
+
 
             image.FilePath = FilePath;
             //Index the file into the DB            

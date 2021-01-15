@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Text;
-using System.Linq;
 
 namespace SQLiteProvider.Services {
     public class SQLiteClient : IDataService, IDisposable {
@@ -191,6 +190,15 @@ namespace SQLiteProvider.Services {
             }
         }
 
+        public void DeleteObjectData<T>(T obj) {
+            if (obj is null) {
+                throw new ArgumentNullException(nameof(obj));
+            }
+            T[] objects = new T[1];
+            objects[0] = obj;
+            DeleteObjectData(objects);
+        }
+
         public void DeleteObjectData<T>(T[] objects) {
             if (objects is null) {
                 throw new ArgumentNullException(nameof(objects));
@@ -200,7 +208,7 @@ namespace SQLiteProvider.Services {
             deleteStringBuilder.AppendLine($"DELETE FROM {tableName}");
             deleteStringBuilder.AppendLine("WHERE `ID` IN (");
             for (int i = 0; i < objects.Length; i++) {
-                deleteStringBuilder.AppendLine($"\"{objects[i].GetType().GetProperty("ID").GetValue(objects[i]).ToString()}\"");
+                deleteStringBuilder.AppendLine($"\"{GetID(objects[i])}\"");
                 if (i != objects.Length - 1) {
                     deleteStringBuilder.Append(", ");
                 } else {
@@ -310,7 +318,7 @@ namespace SQLiteProvider.Services {
                 } else if (properties[i].PropertyType == typeof(int) || properties[i].PropertyType == typeof(bool) || properties[i].PropertyType.IsEnum) {
                     value = $"{properties[i].GetValue(obj)}";
                 } else if (properties[i].PropertyType == typeof(double) || properties[i].PropertyType == typeof(float) || properties[i].PropertyType == typeof(decimal)) {
-                    value = $"{properties[i].GetValue(obj).ToString().Replace(",",".")}";
+                    value = $"{properties[i].GetValue(obj).ToString().Replace(",", ".")}";
                 } else {
                     value = $"\"{properties[i].GetValue(obj)}\"";
                 }
@@ -320,7 +328,7 @@ namespace SQLiteProvider.Services {
                 }
             }
 
-            updateStringBuilder.AppendLine($"WHERE `ID` = \"{obj.GetType().GetProperty("ID").GetValue(obj)}\"");
+            updateStringBuilder.AppendLine($"WHERE `ID` = \"{GetID(obj)}\"");
 
             using (SqliteConnection sqliteConnection = new SqliteConnection(ConnectionString)) {
                 sqliteConnection.Open();
@@ -335,7 +343,7 @@ namespace SQLiteProvider.Services {
             StringBuilder stringBuilder = new StringBuilder();
             string dataType = GetSQLiteDataType(propertyInfo);
 
-            if (propertyInfo.Name != "ID")
+            if (!propertyInfo.Name.Equals("ID", StringComparison.InvariantCultureIgnoreCase))
                 stringBuilder.AppendLine($"`{propertyInfo.Name}` {dataType} NULL,");
             else
                 stringBuilder.AppendLine($"`{propertyInfo.Name}` {dataType} NOT NULL,");
@@ -414,6 +422,21 @@ namespace SQLiteProvider.Services {
                 }
             }
             return rowsAffected;
+        }
+
+        private string GetID<T>(T obj) {
+            PropertyInfo IDProp = obj.GetType().GetProperty("ID");
+            if (IDProp == null) {
+                IDProp = obj.GetType().GetProperty("id");
+            }
+            if (IDProp == null) {
+                throw new Exception("Could not find the ID property on the data object.");
+            }
+            string res = IDProp.GetValue(obj)?.ToString();
+            if (string.IsNullOrEmpty(res)) {
+                throw new NullReferenceException("The object ID property can not be null or empty.");
+            }
+            return res;
         }
     }
 }

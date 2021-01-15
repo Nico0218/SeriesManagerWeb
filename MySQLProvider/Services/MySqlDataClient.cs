@@ -156,6 +156,16 @@ namespace MySQLProvider.Services {
             }
         }
 
+        public void DeleteObjectData<T>(T obj) {
+            if (obj is null) {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            T[] objects = new T[1];
+            objects[0] = obj;
+            DeleteObjectData(objects);
+        }
+
         public void DeleteObjectData<T>(T[] objects) {
             if (objects is null) {
                 throw new ArgumentNullException(nameof(objects));
@@ -166,7 +176,7 @@ namespace MySQLProvider.Services {
             deleteStringBuilder.AppendLine($"DELETE FROM {tableName}");
             deleteStringBuilder.AppendLine("WHERE `ID` IN (");
             for (int i = 0; i < objects.Length; i++) {
-                deleteStringBuilder.AppendLine($"\"{objects[i].GetType().GetProperty("ID").GetValue(objects[i]).ToString()}\"");
+                deleteStringBuilder.AppendLine($"\"{GetID(objects[i])}\"");
                 if (i != objects.Length - 1) {
                     deleteStringBuilder.Append(", ");
                 } else {
@@ -291,7 +301,7 @@ namespace MySQLProvider.Services {
                 }
             }
 
-            updateStringBuilder.AppendLine($"WHERE `ID` = \"{obj.GetType().GetProperty("ID").GetValue(obj).ToString()}\"");
+            updateStringBuilder.AppendLine($"WHERE `ID` = \"{GetID(obj)}\"");
 
             using (MySqlCommand deleteCmd = mySqlConnection.CreateCommand()) {
                 deleteCmd.CommandText = updateStringBuilder.ToString();
@@ -313,7 +323,7 @@ namespace MySQLProvider.Services {
             StringBuilder stringBuilder = new StringBuilder();
             string dataType = GetMySQLDataType(propertyInfo);
 
-            if (propertyInfo.Name != "ID")
+            if (propertyInfo.Name.Equals("ID", StringComparison.InvariantCultureIgnoreCase))
                 stringBuilder.AppendLine($"`{propertyInfo.Name}` {dataType} NULL,");
             else
                 stringBuilder.AppendLine($"`{propertyInfo.Name}` {dataType} NOT NULL,");
@@ -342,6 +352,21 @@ namespace MySQLProvider.Services {
             if (attribute != null)
                 MaxLength = (attribute as StringValidatorAttribute).MaxLength;
             return MaxLength;
+        }
+
+        private string GetID<T>(T obj) {
+            PropertyInfo IDProp = obj.GetType().GetProperty("ID");
+            if (IDProp == null) {
+                IDProp = obj.GetType().GetProperty("id");
+            }
+            if (IDProp == null) {
+                throw new Exception("Could not find the ID property on the data object.");
+            }
+            string res = IDProp.GetValue(obj)?.ToString();
+            if (string.IsNullOrEmpty(res)) {
+                throw new NullReferenceException("The object ID property can not be null or empty.");
+            }
+            return res;
         }
     }
 }

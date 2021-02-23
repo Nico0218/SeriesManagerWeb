@@ -1,14 +1,28 @@
 ﻿using System;
-using VideoProcessorService;
+using System.Threading.Tasks;
+using VideoProcessorService.Services;
 
 namespace TestBench {
     class Program {
-        //https://sourceforge.net/p/mediainfo/discussion/297610/thread/40a22e58/
-        static void Main(string[] args) {
+        static async Task Main(string[] args) {
             Console.WriteLine("Hello World!");
-            SubtitleExtractionService SubtitleExtractionService = new SubtitleExtractionService();
-            string subtitles = SubtitleExtractionService.ExtractSubtitle();
-            Console.WriteLine(subtitles);
+            VideoConversionService videoConversionService = new VideoConversionService();
+            string input = @"H:\Code Repo\VideoProcessorTestApp\VideoProcessorTestApp\VideoProcessorTestApp\VideoIn\[HR] Hajimete no Gal 01 [1080p][x265].mkv";
+            string output = @"H:\Code Repo\VideoProcessorTestApp\VideoProcessorTestApp\VideoProcessorTestApp\VideoOut";
+
+            Task cancelTask = Task.Run(() => {
+                while (Console.ReadKey().Key != ConsoleKey.Enter) {
+                    Console.Out.WriteLineAsync("Press the ENTER key to cancel...");
+                }
+
+                Console.Out.WriteLineAsync("\nENTER key pressed: canceling conversion.\n");
+                videoConversionService.CancelConversion();
+            });
+            Task conversionTask = videoConversionService.ConvertVideoAsync(input, output);
+
+            await Task.WhenAny(new[] { cancelTask, conversionTask });
+
+            Console.WriteLine("File re-encoding complete");
             Console.ReadKey();
         }
     }

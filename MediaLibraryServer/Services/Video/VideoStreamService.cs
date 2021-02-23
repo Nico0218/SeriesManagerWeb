@@ -39,7 +39,7 @@ namespace MediaLibraryServer.Services {
                 throw new ArgumentNullException(nameof(videoID));
             }
             logger.LogDebug($"Getting video subtitles for video {videoID}");
-            string subtileSource = @"C:\inetpub\wwwroot\SeriesManagerWeb\SeriesManagerServer\Resources\upc-video-subtitles-en.vtt";
+            string subtileSource = @"C:\inetpub\wwwroot\SeriesManagerWeb\SeriesManagerServer\Resources\Hajimete no Gal 01.vtt";
             return Convert.ToBase64String(File.ReadAllBytes(subtileSource));
         }
     }

@@ -72,13 +72,13 @@ namespace VideoProcessorService.Services {
                 return null;
             }
 
-            int subsStreamIndex = subtitleStreams.ToList().Find(ii => ii.Default == 1)?.Index ?? -1;
-            if (subsStreamIndex == -1) {
-                subsStreamIndex = subtitleStreams.FirstOrDefault().Index;
+            int subsStreamIndex = subtitleStreams.ToList().FindIndex(ii => ii.Default == 1);
+            if (subsStreamIndex <= -1) {
+                subsStreamIndex = 0;
             }
 
             string outputFile = Path.Combine(outputPath, Path.GetFileNameWithoutExtension(sourceFile) + ".vtt");
-            string ffmpegArgs = $"-i \"{sourceFile}\" -map 0:s:{0} \"{outputFile}\"";
+            string ffmpegArgs = $"-i \"{sourceFile}\" -map 0:s:{subsStreamIndex} \"{outputFile}\"";
 
             try {
                 IConversion conversion = FFmpeg.Conversions.New();

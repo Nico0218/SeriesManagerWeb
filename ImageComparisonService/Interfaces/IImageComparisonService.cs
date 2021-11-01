@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace ImageComparisonService.Interfaces {
+﻿namespace ImageComparisonService.Interfaces {
     public interface IImageComparisonService {
         string GetImageComparisonData(string imageFilePath);
 

@@ -1,21 +1,24 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 using VideoProcessorService.Interfaces;
 using Xabe.FFmpeg;
 
 namespace VideoProcessorService.Services {
     public class VideoConversionService : IVideoConversionService {
+        private readonly ILogger<VideoConversionService> logger;
         IVideoConverter videoConverter;
 
-        public VideoConversionService() {
-            videoConverter = new XabeVideoConverterService();
+        public VideoConversionService(ILogger<VideoConversionService> logger, IVideoConverter videoConverter) {
+            this.logger = logger;
+            this.videoConverter = videoConverter;
         }
 
         public void CancelConversion() {
             videoConverter.CancelConversion();
         }
 
-        public Task<IConversionResult> ConvertVideoAsync(string videoPath, string outputPath) {
-            return videoConverter.ConverVideoAsync(videoPath, outputPath);
+        public Task<IConversionResult> ConvertVideoAsync(string videoPath, string outputPath, bool useHardwareAcceleration = true) {
+            return videoConverter.ConverVideoAsync(videoPath, outputPath, useHardwareAcceleration);
         }
     }
 }

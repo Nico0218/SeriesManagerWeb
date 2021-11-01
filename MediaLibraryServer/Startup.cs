@@ -17,6 +17,8 @@ using Microsoft.OpenApi.Models;
 using MySQLProvider.Services;
 using SQLiteProvider.Services;
 using System;
+using VideoProcessorService.Interfaces;
+using VideoProcessorService.Services;
 
 namespace MediaLibraryServer {
     public class Startup {
@@ -55,6 +57,8 @@ namespace MediaLibraryServer {
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IMemoryCache, MemoryCache>();
 
+            services.AddScoped<IVideoConverter, XabeVideoConverterService>();
+            services.AddScoped<IVideoConversionService, VideoConversionService>();
             services.AddScoped<IFileProcessorService, FileProcessorService>();
             services.AddScoped<IVideoService, VideoService>();
             services.AddScoped<IVideoGalleryService, VideoGalleryService>();

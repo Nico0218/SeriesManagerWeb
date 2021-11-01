@@ -13,12 +13,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using VideoProcessorService.Interfaces;
 
 namespace MediaLibraryServer.Services {
     public class VideoGalleryService : AbstractLibraryService<VideoGallery, VideoGalleryData>, IVideoGalleryService {
         private readonly IConfigService configService;
         private readonly IVideoService videoService;
         private readonly IFolderService folderService;
+        private readonly IVideoConversionService videoConversionService;
         private readonly string constSeasonString = "Season";
         Regex SeasonandNoSpaceMatch;
         Regex SeasonandSpaceMatch;
@@ -27,13 +30,15 @@ namespace MediaLibraryServer.Services {
 
         private readonly char[] numbers = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-        public VideoGalleryService(ILogger<VideoGalleryService> logger, IDataService dataService, IVideoService videoService, IFolderService folderService, IMemoryCache memoryCache) : base(logger, dataService, memoryCache) {
+        public VideoGalleryService(ILogger<VideoGalleryService> logger, IDataService dataService, IVideoService videoService, IFolderService folderService, IMemoryCache memoryCache,
+            IVideoConversionService videoConversionService) : base(logger, dataService, memoryCache) {
             SeasonandNoSpaceMatch = new Regex(@"(Season[0-9]+)", RegexOptions.IgnoreCase);
             SeasonandSpaceMatch = new Regex(@"(Season [0-9]+)", RegexOptions.IgnoreCase);
             SandNoSpaceMatch = new Regex(@"(S[0-9]+)", RegexOptions.IgnoreCase);
             SandSpaceMatch = new Regex(@"(S [0-9]+)", RegexOptions.IgnoreCase);
             this.videoService = videoService;
             this.folderService = folderService;
+            this.videoConversionService = videoConversionService;
         }
 
         public VideoGallery GetByName(string galleryName) {
@@ -96,15 +101,19 @@ namespace MediaLibraryServer.Services {
                 Save(videoGallery);
             }
 
-            //Move the file to the library
+            //Create the season folder directory
             string oldFilePath = filePath;
-            filePath = Path.Combine(libPath, videoGallerName, season, Path.GetFileName(filePath));
+            filePath = Path.Combine(libPath, videoGallerName, season, Path.GetFileNameWithoutExtension(filePath));
             if (!Directory.Exists(Path.GetDirectoryName(filePath))) {
                 Directory.CreateDirectory(Path.GetDirectoryName(filePath));
             }
+
+            //Move the file to the library
             //Duplicate check
             if (!FileUtils.IsFileLocked(filePath)) {
-                File.Move(oldFilePath, filePath);
+                //Convert the video
+                Task.WaitAll(videoConversionService.ConvertVideoAsync(oldFilePath, filePath, false));                
+                File.Delete(oldFilePath);
                 //Index the file in the DB
                 Video episode = new Video(filePath);
                 episode.GalleryID = videoGallery.ID;

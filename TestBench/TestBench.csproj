@@ -6,7 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VideoEncoder\VideoProcessorService.csproj" />
+    <ProjectReference Include="..\VideoEncoder\VideoProcessorService.csproj">
+      <Private>true</Private>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>

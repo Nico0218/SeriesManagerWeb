@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Classes\**" />
+    <Content Remove="Classes\**" />
+    <EmbeddedResource Remove="Classes\**" />
+    <None Remove="Classes\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="appsettings.json" />
   </ItemGroup>
 
@@ -16,29 +23,24 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.16.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="5.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.18.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="5.0.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ImageComparisonService\ImageComparisonService.csproj" />
-    <ProjectReference Include="..\MediaLibaryCommon\MediaLibraryCommon.csproj" />
+    <ProjectReference Include="..\MediaLibaryCommon\MediaLibraryCommon.csproj">
+      <Private>true</Private>
+    </ProjectReference>
     <ProjectReference Include="..\MySQLProvider\MySQLProvider.csproj">
       <Private>true</Private>
     </ProjectReference>
     <ProjectReference Include="..\SQLiteProvider\SQLiteProvider.csproj">
       <Private>true</Private>
     </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Classes\" />
+    <ProjectReference Include="..\VideoEncoder\VideoProcessorService.csproj" />
   </ItemGroup>
 
 

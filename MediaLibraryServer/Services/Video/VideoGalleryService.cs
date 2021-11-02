@@ -59,7 +59,7 @@ namespace MediaLibraryServer.Services {
             return (VideoGallery)videoGalleryDatas;
         }
 
-        public void ProcessNewVideoFile(string filePath) {
+        public async void ProcessNewVideoFile(string filePath) {
             //Decide which lib the file goes to
             string libPath = folderService.GetFolder(FolderType.VideoFile).BasePath;
             //Decide the video gallery folder name
@@ -112,10 +112,11 @@ namespace MediaLibraryServer.Services {
             //Duplicate check
             if (!FileUtils.IsFileLocked(filePath)) {
                 //Convert the video
-                Task.WaitAll(videoConversionService.ConvertVideoAsync(oldFilePath, filePath, false));                
+                string resultFile = await videoConversionService.ConvertVideoAsync(oldFilePath, filePath, false);
+                //Task.WaitAll(videoConversionService.ConvertVideoAsync(oldFilePath, filePath, false));
                 File.Delete(oldFilePath);
                 //Index the file in the DB
-                Video episode = new Video(filePath);
+                Video episode = new Video(resultFile);
                 episode.GalleryID = videoGallery.ID;
                 episode.Status = ObjectStatus.Created;
                 videoService.Save(episode);

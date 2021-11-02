@@ -17,7 +17,7 @@ namespace VideoProcessorService.Services {
             videoConverter.CancelConversion();
         }
 
-        public Task<IConversionResult> ConvertVideoAsync(string videoPath, string outputPath, bool useHardwareAcceleration = true) {
+        public Task<string> ConvertVideoAsync(string videoPath, string outputPath, bool useHardwareAcceleration = true) {
             return videoConverter.ConverVideoAsync(videoPath, outputPath, useHardwareAcceleration);
         }
     }

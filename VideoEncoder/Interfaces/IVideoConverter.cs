@@ -3,7 +3,7 @@ using Xabe.FFmpeg;
 
 namespace VideoProcessorService.Interfaces {
     public interface IVideoConverter {
-        Task<IConversionResult> ConverVideoAsync(string videoPath, string outputPath, bool useHardwareAcceleration);
+        Task<string> ConverVideoAsync(string videoPath, string outputPath, bool useHardwareAcceleration);
         void CancelConversion();
     }
 }

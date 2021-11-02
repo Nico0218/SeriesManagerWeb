@@ -1,32 +1,45 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { Video } from '../classes/Models/Video';
-import { Environment } from '../classes/environment';
-import { map } from 'rxjs/operators';
+import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
+import { map } from "rxjs/operators";
+import { Environment } from "../classes/environment";
+import { SubtitlesWrapper } from "../classes/Models/subtitles-wrapper";
 
 @Injectable()
 export class VideoStreamService {
-    constructor(private httpClient: HttpClient,
-        private domSanitizer: DomSanitizer) {
-    }
+  constructor(
+    private httpClient: HttpClient,
+    private domSanitizer: DomSanitizer
+  ) {}
 
-    public get controllerURL(): string {
-        return `${Environment.apiUrl}/VideoStream`;
-    }
+  public get controllerURL(): string {
+    return `${Environment.apiUrl}/VideoStream`;
+  }
 
-    GetVideoStream(videoID: string): SafeUrl {
-        return this.domSanitizer.bypassSecurityTrustUrl(`${this.controllerURL}/GetVideoStream/${videoID}`);
-    }
+  GetVideoStream(videoID: string): SafeUrl {
+    return this.domSanitizer.bypassSecurityTrustUrl(
+      `${this.controllerURL}/GetVideoStream/${videoID}`
+    );
+  }
 
-    async GetVideoSubtitles(videoID: string): Promise<SafeUrl> {
-        this.domSanitizer.bypassSecurityTrustResourceUrl
-        return await this.httpClient.get(`${this.controllerURL}/GetVideoSubtitles/${videoID}`)
-            .pipe(
-                map((ii: any) => {
-                    let res = `data:text/plain;base64,${ii.data}`;
-                    return this.domSanitizer.bypassSecurityTrustUrl(res);
-                })
-            ).toPromise();
-    }
+  async GetVideoSubtitles(videoID: string): Promise<SubtitlesWrapper[]> {
+    this.domSanitizer.bypassSecurityTrustResourceUrl;
+    return await this.httpClient
+      .get(`${this.controllerURL}/GetVideoSubtitles/${videoID}`)
+      .pipe(
+        map((ii: SubtitlesWrapper[]) => {
+          let safeSubs: SubtitlesWrapper[] = [];
+          ii.forEach((subs) => {
+            let subtitlesWrapper = new SubtitlesWrapper();
+            subtitlesWrapper.title = subs.title;
+            subtitlesWrapper.language = subs.language;
+            let res = `data:text/plain;base64,${subs.data}`;
+            subtitlesWrapper.data = this.domSanitizer.bypassSecurityTrustUrl(res);
+            safeSubs.push(subtitlesWrapper);
+          });
+          return safeSubs;
+        })
+      )
+      .toPromise();
+  }
 }

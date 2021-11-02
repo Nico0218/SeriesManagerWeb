@@ -20,7 +20,7 @@ namespace VideoProcessorService.Services {
         }
 
         //https://ffmpeg.xabe.net/docs.html
-        public async Task<IConversionResult> ConverVideoAsync(string videoPath, string outputPath, bool useHardwareAcceleration = true) {
+        public async Task<string> ConverVideoAsync(string videoPath, string outputPath, bool useHardwareAcceleration = true) {
             if (string.IsNullOrEmpty(videoPath)) {
                 throw new ArgumentException($"'{nameof(videoPath)}' cannot be null or empty", nameof(videoPath));
             }
@@ -60,7 +60,7 @@ namespace VideoProcessorService.Services {
                 }
 
                 IConversionResult result = await converter.Start(cancellationTokenSource.Token);
-                return result;
+                return outputName;
             } catch (Exception ex) {
                 logger.LogError($"Failed to convert video file {Path.GetFileName(videoPath)}", ex);
                 throw;

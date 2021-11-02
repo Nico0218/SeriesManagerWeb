@@ -2,6 +2,7 @@ import { AfterViewInit, Component, HostListener, Input, OnDestroy, OnInit } from
 import { SafeUrl } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil, tap } from 'rxjs/operators';
+import { SubtitlesWrapper } from 'src/app/classes/Models/subtitles-wrapper';
 import { Video } from '../../../classes/Models/Video';
 import { VideoStreamService } from '../../../services/video-stream.service';
 
@@ -13,7 +14,7 @@ import { VideoStreamService } from '../../../services/video-stream.service';
 export class VideoViewerComponent implements OnInit, OnDestroy, AfterViewInit {
   destroy$: Subject<boolean> = new Subject();
   VideoURL: SafeUrl;
-  SubtitleURL: SafeUrl;
+  SubtitleURLs: SubtitlesWrapper[];
   aspectWidth = 1280;
   aspectHeight = 720;
   width = 480;
@@ -66,7 +67,7 @@ export class VideoViewerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public async GetVideoURL() {
-    this.SubtitleURL = await this.videoGalleryService.GetVideoSubtitles(this.selectedVideo.id);
+    this.SubtitleURLs = await this.videoGalleryService.GetVideoSubtitles(this.selectedVideo.id);
     this.VideoURL = this.videoGalleryService.GetVideoStream(this.selectedVideo.id);    
   }
 

@@ -1,6 +1,8 @@
-﻿using MediaLibraryServer.Interfaces;
+﻿using MediaLibraryCommon.Classes.Models;
+using MediaLibraryServer.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace MediaLibraryServer.Controllers {
     [ApiController]
@@ -25,7 +27,8 @@ namespace MediaLibraryServer.Controllers {
         [HttpGet("GetVideoSubtitles/{videoID}")]
         public ObjectResult GetVideoSubtitles(string videoID) {
             logger.LogInformation($"Get subtitles for video: {videoID}");
-            return new ObjectResult(new { data = videoStreamService.GetVideoSubtitles(videoID) });
+            List<SubtitlesWrapper> data = videoStreamService.GetVideoSubtitles(videoID);
+            return new ObjectResult(data);
         }
     }
 }

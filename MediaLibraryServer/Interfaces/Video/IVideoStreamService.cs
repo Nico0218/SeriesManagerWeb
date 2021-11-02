@@ -1,9 +1,10 @@
-﻿using System.IO;
+﻿using MediaLibraryCommon.Classes.Models;
+using System.Collections.Generic;
+using System.IO;
 
 namespace MediaLibraryServer.Interfaces {
-    public interface IVideoStreamService
-    {
+    public interface IVideoStreamService {
         Stream GetVideoStream(string videoID);
-        string GetVideoSubtitles(string videoID);
+        List<SubtitlesWrapper> GetVideoSubtitles(string videoID);
     }
 }

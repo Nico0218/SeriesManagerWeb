@@ -52,7 +52,7 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.destroy$.next();
+        this.destroy$.next(true);
         this.destroy$.complete();
     }
 

@@ -33,7 +33,7 @@ export class VideoGalleryListComponent extends UIBase implements OnInit, OnDestr
     }
 
     ngOnDestroy(): void {
-        this.destroy$.next();
+        this.destroy$.next(true);
         this.destroy$.complete();
     }
 

@@ -51,19 +51,19 @@ export class VideoViewerComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
+    this.destroy$.next(true);
     this.destroy$.complete();
   }
 
   ngAfterViewInit(): void {
     setTimeout(() => {
-      this.$resizeObs.next();
+      this.$resizeObs.next(true);
     }, 200);
   }
 
   @HostListener('window:resize', ['$event'])
   onResize() {
-    this.$resizeObs.next();
+    this.$resizeObs.next(true);
   }
 
   public async GetVideoURL() {

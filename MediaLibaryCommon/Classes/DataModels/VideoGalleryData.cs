@@ -3,6 +3,9 @@ using System.Configuration;
 
 namespace MediaLibraryCommon.Classes.DataModels {
     public class VideoGalleryData : DataModelBase {
+        [StringValidator(MaxLength = 1000)]
+        public string Description { get; set; }
+
         [StringValidator(MaxLength = 36)]
         public string WikiLink { get; set; }
 
@@ -15,6 +18,7 @@ namespace MediaLibraryCommon.Classes.DataModels {
                 ID = source.ID,
                 Name = source.Name,
                 DisplayName = source.DisplayName,
+                Description = source.Description,
                 WikiLink = source.WikiLink
             };
             return destination;
@@ -25,6 +29,7 @@ namespace MediaLibraryCommon.Classes.DataModels {
                 ID = source.ID,
                 Name = source.Name,
                 DisplayName = source.DisplayName,
+                Description = source.Description,
                 WikiLink = source.WikiLink
             };
             return destination;

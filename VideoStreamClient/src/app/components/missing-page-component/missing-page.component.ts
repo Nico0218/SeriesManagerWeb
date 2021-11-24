@@ -18,6 +18,6 @@ export class MissingPageComponent extends UIBase implements OnInit {
     }
 
     private loadBreadcrumb() {
-        this.AddBreadcrumItem("Home");
+        this.AddBreadCrumbItem("Home");
     }
 }

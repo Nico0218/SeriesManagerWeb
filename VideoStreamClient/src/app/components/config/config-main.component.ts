@@ -161,8 +161,8 @@ export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
     }
 
     private loadBreadcrumb() {
-        this.AddBreadcrumItem("Home");
-        this.AddBreadcrumItem("Settings");
+        this.AddBreadCrumbItem("Home");
+        this.AddBreadCrumbItem("Settings");
     }
 
     test: Observable<any>;

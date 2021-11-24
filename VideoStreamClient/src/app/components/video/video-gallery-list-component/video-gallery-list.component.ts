@@ -38,7 +38,7 @@ export class VideoGalleryListComponent extends UIBase implements OnInit, OnDestr
     }
 
     private loadBreadcrumb() {
-        this.AddBreadcrumItem("Home");
-        this.AddBreadcrumItem("VideoGalleryList");
+        this.AddBreadCrumbItem("Home");
+        this.AddBreadCrumbItem("VideoGalleryList");
     }
 }

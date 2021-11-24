@@ -12,6 +12,7 @@ export class CustomCardComponent {
     @Input() title: string;
     @Input() description: string;
     @Input() thumbnail: string;
+    @Input() showImage = true;
     @Input() showButtons = false;
     @Input() itemID: string;
     @Output() onImg = new EventEmitter<null>();

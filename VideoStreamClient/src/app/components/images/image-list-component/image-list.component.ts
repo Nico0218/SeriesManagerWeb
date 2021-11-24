@@ -82,9 +82,9 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
     }
 
     private loadBreadcrumb() {
-        this.AddBreadcrumItem("Home");
-        this.AddBreadcrumItem("ImageGalleryList");
-        this.AddBreadcrumItem("ImageList", this.imageGallery.displayName, this.imageGallery.id);
+        this.AddBreadCrumbItem("Home");
+        this.AddBreadCrumbItem("ImageGalleryList");
+        this.AddBreadCrumbItem("ImageList", this.imageGallery.displayName, this.imageGallery.id);
     }
 
     selectCard(image: GalleryImage) {

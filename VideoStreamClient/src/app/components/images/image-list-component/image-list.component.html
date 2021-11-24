@@ -1,20 +1,22 @@
-<div class="container-fluid h-100">
-    <div class="row">
-        <breadcrum-component class="col" *ngIf="breadcrumbItems" [breadcrumbItems]="breadcrumbItems">
-        </breadcrum-component>
-    </div>
-    <div class="row">
-        <h3 class="col">Gallery Images</h3>
-    </div>
-    <div *ngIf="!loading" class="row">
-        <ngb-pagination class="w-100 custom-row d-flex justify-content-center" [(page)]="page" [pageSize]="pageSize"
-            [collectionSize]="collectionSize" [maxSize]="10" [rotate]="true" (pageChange)="pageChange()">
-        </ngb-pagination>
-        <div class="custom-row custom-card-deck d-flex justify-content-center">
-            <custom-card-component *ngFor="let image of Images" [route]='["/image-list", imageGallery.id]'
-                [itemID]="image.id" [title]='' [description]='image.displayName' [thumbnail]="image.imageThumbnail"
-                [showButtons]="true" (onImg)="selectCard(image)" (onDownload)="download($event)">
-            </custom-card-component>
+<div class="container-fluid vh-100">
+    <div class="d-flex flex-column h-100">
+        <div class="row">
+            <breadcrum-component class="col" *ngIf="breadcrumbItems" [breadcrumbItems]="breadcrumbItems">
+            </breadcrum-component>
+        </div>
+        <div class="row">
+            <h3 class="col">Walls</h3>
+        </div>
+        <div *ngIf="!loading" class="row flex-grow-1">
+            <ngb-pagination class="w-100 custom-row d-flex justify-content-center" style="height: 42px;" [(page)]="page" [pageSize]="pageSize"
+                [collectionSize]="collectionSize" [maxSize]="10" [rotate]="true" (pageChange)="pageChange()">
+            </ngb-pagination>
+            <div class="custom-row custom-card-deck flex-grow-1 justify-content-center">
+                <custom-card-component *ngFor="let image of Images" [route]='["/image-list", imageGallery.id]'
+                    [itemID]="image.id" [title]='' [description]='image.displayName' [thumbnail]="image.imageThumbnail"
+                    [showButtons]="true" (onImg)="selectCard(image)" (onDownload)="download($event)">
+                </custom-card-component>
+            </div>
         </div>
     </div>
 </div>

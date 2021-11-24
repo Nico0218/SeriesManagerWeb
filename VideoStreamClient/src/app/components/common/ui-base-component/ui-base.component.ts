@@ -22,7 +22,7 @@ export abstract class UIBase {
         });
     }
 
-    public AddBreadcrumItem(componentName: string, displayName: string = undefined, objID: string = undefined) {
+    public AddBreadCrumbItem(componentName: string, displayName: string = undefined, objID: string = undefined) {
         const breadcrumbItem = new BreadcrumbItem();
         breadcrumbItem.id = componentName;
         breadcrumbItem.label = displayName ? displayName : componentName;

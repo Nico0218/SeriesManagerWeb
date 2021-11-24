@@ -25,6 +25,6 @@ export class HomeComponent extends UIBase implements OnInit {
     }
 
     private loadBreadcrumb() {
-        this.AddBreadcrumItem("Home");
+        this.AddBreadCrumbItem("Home");
     }
 }

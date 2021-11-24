@@ -38,7 +38,7 @@ export class ImageGalleryListComponent extends UIBase implements OnInit, OnDestr
     }
 
     private loadBreadcrumb() {
-        this.AddBreadcrumItem("Home");
-        this.AddBreadcrumItem("ImageGalleryList");
+        this.AddBreadCrumbItem("Home");
+        this.AddBreadCrumbItem("ImageGalleryList");
     }
 }

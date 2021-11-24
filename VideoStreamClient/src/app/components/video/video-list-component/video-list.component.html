@@ -1,26 +1,46 @@
-<div class="container-fluid h-100">
-    <div class="row">
-        <breadcrum-component class="col" *ngIf="breadcrumbItems" [breadcrumbItems]="breadcrumbItems">
-        </breadcrum-component>
-    </div>
-    <div class="row">
-        <h3 *ngIf="videoGallery" class="col">Videos - {{videoGallery.displayName}}</h3>
-    </div>
-    <div *ngIf="!loading" class="row">
-        <div class="col-6 card-deck">
-            <ngb-pagination class="w-100 custom-row d-flex justify-content-center" style="max-height: 40px;"
-                [(page)]="page" [pageSize]="pageSize" [collectionSize]="collectionSize" [maxSize]="10" [rotate]="true"
-                (pageChange)="pageChange()">
-            </ngb-pagination>
-            <div class="custom-row custom-card-deck d-flex justify-content-center">
-                <custom-card-component *ngFor="let video of videos" [title]='video.displayName' [description]=''
-                    [showButtons]="true" [itemID]="video.id" (onImg)="SelectFile(video)"
-                    (onDownload)="download($event)">
-                </custom-card-component>
-            </div>
+<div class="container-fluid vh-100">
+    <div class="d-flex flex-column h-100">
+        <div class="row">
+            <breadcrum-component class="col" *ngIf="breadcrumbItems" [breadcrumbItems]="breadcrumbItems">
+            </breadcrum-component>
         </div>
-        <div class="col-6">
-            <video-viewer-component *ngIf="selectedVideo" [selectedVideo]="selectedVideo"></video-viewer-component>
+        <!-- <div class="row">
+            <h3 *ngIf="videoGallery" class="col">Videos - {{videoGallery.displayName}}</h3>
+        </div> -->
+        <div *ngIf="!loading" class="row flex-grow-1">
+            <div class="col-6">
+                <div *ngIf="videoGallery" class="card w-100 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{videoGallery.displayName}}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Show Rating</h6>
+                        <p class="card-text">{{videoGallery.description}}</p>
+                        <a href="#" class="card-link">{{videoGallery.wikiLink}}</a>
+
+                        <ngb-pagination class="w-100 custom-row d-flex justify-content-center custom-paginator"
+                            [(page)]="page" [pageSize]="pageSize" [collectionSize]="collectionSize" [maxSize]="10"
+                            [rotate]="true" (pageChange)="pageChange()">
+                        </ngb-pagination>
+                        <ul class="list-group list-group-flush">
+                            <li *ngFor="let video of videos" class="list-group-item custom-card-list-item"
+                                (click)="SelectFile(video)">
+                                <p class="custom-card-list-item-div">{{video.displayName}}</p>
+                            </li>
+                        </ul>
+                        <!-- <div class="custom-row custom-card-deck d-flex justify-content-center">
+                            <custom-card-component *ngFor="let video of videos" [title]='video.displayName'
+                                [description]='' [showImage]="false" [showButtons]="true" [itemID]="video.id"
+                                (onImg)="SelectFile(video)" (onDownload)="download($event)">
+                            </custom-card-component>
+                        </div> -->
+                    </div>
+                </div>
+                <!-- <div class="card-deck">
+
+                </div> -->
+            </div>
+            <div class="col-6" style="border:  2px; border-radius: 4px; border-color: azure; border-style: solid;">
+                <video-viewer-component *ngIf="selectedVideo" [selectedVideo]="selectedVideo"></video-viewer-component>
+            </div>
         </div>
     </div>
     <load-indicator-component *ngIf="loading" class="row"></load-indicator-component>

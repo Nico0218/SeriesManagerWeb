@@ -1,6 +1,6 @@
 <div class="card custom-card" [routerLink]="route">
-    <img class="card-img-top hover-anim" [src]="thumbnail" (click)="onImgClick()">
-    <div class="card-body">
+    <img *ngIf="showImage" class="card-img-top hover-anim" [src]="thumbnail" (click)="onImgClick()">
+    <div class="card-body" (click)="onImgClick()">
         <h5 *ngIf="title" class="card-title">{{title}}</h5>
         <p *ngIf="description" class="card-text" style="font-size: small;">{{description}}</p>
     </div>

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MediaLibraryServer.Services {
     public class VideoService : AbstractLibraryService<Video, VideoData>, IVideoService {
@@ -69,7 +70,7 @@ namespace MediaLibraryServer.Services {
                         videos.Add((Video)item);
                     }
                 }
-
+                videos = videos.OrderBy(ii => ii.Name).ToList();
                 AddItemToCache(key, videos);
             }
             return videos;

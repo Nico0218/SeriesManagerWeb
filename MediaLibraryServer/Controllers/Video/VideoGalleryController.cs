@@ -1,4 +1,5 @@
-﻿using MediaLibraryServer.Interfaces;
+﻿using MediaLibraryCommon.Classes.LogicModels;
+using MediaLibraryServer.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -32,6 +33,14 @@ namespace MediaLibraryServer.Controllers {
             return new ObjectResult(videoGalleryService.GetByName(GalleryName));
         }
 
-        
+        [HttpPost("Save")]
+        public StatusCodeResult Save(VideoGallery videoGallery) {
+            if (videoGallery == null) {
+                return new NoContentResult();
+            }
+            logger.LogInformation($"Saving {videoGallery.Name}");
+            videoGalleryService.Save(videoGallery);
+            return new OkResult();
+        }
     }
 }

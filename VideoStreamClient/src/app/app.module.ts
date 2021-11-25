@@ -1,7 +1,7 @@
 import { APP_BASE_HREF, HashLocationStrategy, LocationStrategy, PlatformLocation } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -60,6 +60,7 @@ import { RepeatTypeComponent } from './ui-components/repeat-section/repeat-secti
     NgbModule,
     ReactiveFormsModule,
     FontAwesomeModule,
+    FormsModule,
     FormlyModule.forRoot(
       {
         extras: {

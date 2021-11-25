@@ -1,6 +1,8 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
+import { lastValueFrom } from "rxjs";
 import { map, take } from "rxjs/operators";
+import { ObjectStatus } from "src/app/enums/config/object-status";
 import { Video } from "../../../classes/Models/Video";
 import { VideoGallery } from "../../../classes/Models/video-gallery";
 import { VideoGalleryService } from "../../../services/video-gallery.service";
@@ -13,12 +15,13 @@ import { UIBase } from "../../common/ui-base-component/ui-base.component";
   styleUrls: ["./video-list.component.scss"],
 })
 export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
-  videoGallery: VideoGallery;
-  videos: Video[];
-  selectedVideo: Video;
+  public videoGallery: VideoGallery;
+  public videos: Video[];
+  public selectedVideo: Video;
   public page = 1;
   public pageSize = 12;
   public collectionSize = 0;
+  public canEdit = false;
 
   constructor(
     private videoGalleryService: VideoGalleryService,
@@ -62,10 +65,6 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
 
   private async onVideoGalleryReady(videoGallery: VideoGallery) {
     this.videoGallery = videoGallery;
-    this.videoGallery.description =
-      "Some place holder text for a nice long anime description. Some generic line about some generic show.";
-    this.videoGallery.wikiLink =
-      "ttps://myanimelist.net/anime/39535/Mushoku_Tensei__Isekai_Ittara_Honki_Dasu";
     this.loadBreadcrumb();
     this.collectionSize = await this.videoService
       .GetCountByGallery(this.videoGallery.id)
@@ -110,5 +109,22 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
 
   download(id: string) {
     console.log(id);
+  }
+
+  Edit() {
+    this.canEdit = true;
+  }
+
+  async Save() {
+    this.canEdit = false;
+    this.loading = true;
+    this.videoGallery.status = ObjectStatus.Modified;
+    await lastValueFrom(this.videoGalleryService.Save(this.videoGallery));
+    this.videoGallery.status = ObjectStatus.None;
+    this.loading = false;
+  }
+
+  RateChange($event) {
+    this.Save();
   }
 }

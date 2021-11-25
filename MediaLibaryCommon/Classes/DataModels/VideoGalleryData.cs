@@ -1,4 +1,5 @@
 ﻿using MediaLibraryCommon.Classes.LogicModels;
+using MediaLibraryCommon.Enums;
 using System.Configuration;
 
 namespace MediaLibraryCommon.Classes.DataModels {
@@ -6,8 +7,14 @@ namespace MediaLibraryCommon.Classes.DataModels {
         [StringValidator(MaxLength = 1000)]
         public string Description { get; set; }
 
-        [StringValidator(MaxLength = 36)]
+        [StringValidator(MaxLength = 250)]
         public string WikiLink { get; set; }
+
+        public int Rating { get; set; }
+
+        public int EpisodeCount { get; set; }
+
+        public int AiringState { get; set; }
 
         public VideoGalleryData() {
 
@@ -19,7 +26,10 @@ namespace MediaLibraryCommon.Classes.DataModels {
                 Name = source.Name,
                 DisplayName = source.DisplayName,
                 Description = source.Description,
-                WikiLink = source.WikiLink
+                WikiLink = source.WikiLink,
+                Rating = source.Rating,
+                EpisodeCount = source.EpisodeCount,
+                AiringState = (AiringState)source.AiringState
             };
             return destination;
         }
@@ -30,7 +40,10 @@ namespace MediaLibraryCommon.Classes.DataModels {
                 Name = source.Name,
                 DisplayName = source.DisplayName,
                 Description = source.Description,
-                WikiLink = source.WikiLink
+                WikiLink = source.WikiLink,
+                Rating = source.Rating,
+                EpisodeCount = source.EpisodeCount,
+                AiringState = (int)source.AiringState
             };
             return destination;
         }

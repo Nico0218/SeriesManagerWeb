@@ -2,9 +2,10 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 import { lastValueFrom } from "rxjs";
 import { map, take } from "rxjs/operators";
-import { ObjectStatus } from "src/app/enums/config/object-status";
 import { Video } from "../../../classes/Models/Video";
 import { VideoGallery } from "../../../classes/Models/video-gallery";
+import { AiringState } from "../../../enums/airing-state";
+import { ObjectStatus } from "../../../enums/config/object-status";
 import { VideoGalleryService } from "../../../services/video-gallery.service";
 import { VideoService } from "../../../services/video.service";
 import { UIBase } from "../../common/ui-base-component/ui-base.component";
@@ -22,6 +23,9 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
   public pageSize = 12;
   public collectionSize = 0;
   public canEdit = false;
+  public AiringState = AiringState;
+
+  private tempVideoGallery: VideoGallery;
 
   constructor(
     private videoGalleryService: VideoGalleryService,
@@ -112,6 +116,7 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
   }
 
   Edit() {
+    this.tempVideoGallery = JSON.parse(JSON.stringify(this.videoGallery));
     this.canEdit = true;
   }
 
@@ -121,10 +126,20 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
     this.videoGallery.status = ObjectStatus.Modified;
     await lastValueFrom(this.videoGalleryService.Save(this.videoGallery));
     this.videoGallery.status = ObjectStatus.None;
+    this.tempVideoGallery = undefined;
     this.loading = false;
+  }
+
+  Cancel() {
+    this.videoGallery = JSON.parse(JSON.stringify(this.tempVideoGallery));
+    this.canEdit = false;
   }
 
   RateChange($event) {
     this.Save();
+  }
+
+  AiringStateClicked(airingState: number) {
+    this.videoGallery.airingState = airingState;
   }
 }

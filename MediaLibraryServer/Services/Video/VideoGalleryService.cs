@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using VideoProcessorService.Interfaces;
 
@@ -60,8 +61,10 @@ namespace MediaLibraryServer.Services {
         }
 
         public async void ProcessNewVideoFile(string filePath) {
+            FileInfo fileInfo = new FileInfo(filePath);
+            long fileSize = Convert.ToInt64(Math.Ceiling(Convert.ToDouble(fileInfo.Length) / 1024 / 1024));
             //Decide which lib the file goes to
-            string libPath = folderService.GetFolder(FolderType.VideoFile).BasePath;
+            string libPath = folderService.GetFolder(FolderType.VideoFile, fileSize).BasePath;
             //Decide the video gallery folder name
             string fileName = Path.GetFileName(filePath);
             int index = fileName.LastIndexOfAny(numbers);
@@ -113,13 +116,12 @@ namespace MediaLibraryServer.Services {
             if (!FileUtils.IsFileLocked(filePath)) {
                 //Convert the video
                 string resultFile = await videoConversionService.ConvertVideoAsync(oldFilePath, filePath, false);
-                //Task.WaitAll(videoConversionService.ConvertVideoAsync(oldFilePath, filePath, false));
-                File.Delete(oldFilePath);
                 //Index the file in the DB
                 Video episode = new Video(resultFile);
                 episode.GalleryID = videoGallery.ID;
                 episode.Status = ObjectStatus.Created;
                 videoService.Save(episode);
+                File.Delete(oldFilePath);
             } else {
                 filePath = Path.Combine(folderService.GetFolder(FolderType.VideoReject).BasePath, Path.GetFileName(filePath));
                 File.Move(oldFilePath, filePath, true);

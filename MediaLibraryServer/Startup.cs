@@ -25,11 +25,12 @@ namespace MediaLibraryServer {
         private const string msgDataStoreTypeError = "Not supported data store type";
         private readonly string AppSettingsKey = "AppSettings";
         private readonly string AllowAllCors = "AllowAllCors";
+
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration) {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
@@ -85,7 +86,8 @@ namespace MediaLibraryServer {
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory) {
+        public void Configure(IApplicationBuilder app, IHostApplicationLifetime applicationLifetime, IWebHostEnvironment env, ILoggerFactory loggerFactory) {
+            applicationLifetime.ApplicationStopping.Register(OnShutdown);
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
@@ -110,6 +112,12 @@ namespace MediaLibraryServer {
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
             });
+        }
+
+        private void OnShutdown() {
+            if (Program.videoConversionService != null) {
+                Program.videoConversionService.CancelConversion();
+            }
         }
     }
 }

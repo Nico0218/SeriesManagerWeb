@@ -48,7 +48,7 @@ namespace MediaLibraryServer.Services {
 
             List<Video> videos;
             string key = galleryID + pageNo + pageSize;
-            if (!memoryCache.TryGetValue(key, out videos)) {
+            //if (!memoryCache.TryGetValue(key, out videos)) {
                 logger.LogInformation($"Getting images for gallery {galleryID}");
                 List<IParameter> parameters = new List<IParameter>();
                 parameters.Add(new Parameter() { ColumnName = "GalleryID", DataType = "System.String", Operator = DBProviderBase.Enums.ParamOperator.Equals, Value = galleryID });
@@ -72,7 +72,7 @@ namespace MediaLibraryServer.Services {
                 }
                 videos = videos.OrderBy(ii => ii.Name).ToList();
                 AddItemToCache(key, videos);
-            }
+            //}
             return videos;
         }
     }

@@ -22,7 +22,7 @@ namespace MediaLibraryServer.Services.Config {
         /// <param name="folderType">The type of folder to get.</param>
         /// <param name="fileSizeMb">The size of the file to be stored, defaults to 0 Mb</param>
         /// <returns></returns>
-        public FolderLibrary GetFolder(FolderType folderType, int fileSizeMb = 0) {
+        public FolderLibrary GetFolder(FolderType folderType, long fileSizeMb = 0) {
             string key = AllFoldersKey + ":" + folderType.ToString();
             List<FolderLibrary> folders;
             if (!memoryCache.TryGetValue(key, out folders)) {

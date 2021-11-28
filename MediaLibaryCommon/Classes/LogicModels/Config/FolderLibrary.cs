@@ -1,4 +1,5 @@
-﻿using MediaLibraryCommon.Enums;
+﻿using MediaLibraryCommon.Classes.Models;
+using MediaLibraryCommon.Enums;
 using System;
 using System.Configuration;
 using System.IO;
@@ -20,33 +21,36 @@ namespace MediaLibraryCommon.Classes.LogicModels.Config {
         }
 
         /// <summary>
-        /// Gets the available space on the folder disk in Mb
+        /// Gets the total free space on the disk in Mb.
         /// </summary>
-        public long GetFreeSpace {
+        public long GetTotalFreeSpace {
             get {
-                return GetFreeBytes / 1024;
+                return GetFreeBytes.AvailableFreeSpace / 1024 / 1024;
             }
         }
 
         /// <summary>
-        /// Gets the available space in the folder in Mb
+        /// Gets the total usable free space in Mb.
         /// </summary>
         public long GetAvailableSpace {
             get {
-                long freeSpace = GetFreeBytes;
-                long availableSpace = freeSpace - (long)(freeSpace * (MinFreeSpace / 100));
-                return availableSpace / 1024;
+                DriveInfo driveSpace = GetFreeBytes;
+                double reservedSpace = driveSpace.TotalSize * (MinFreeSpace / 100);
+                double availableSpace = driveSpace.AvailableFreeSpace - reservedSpace;
+                if (availableSpace < 0)
+                    return 0;
+                return Convert.ToInt64(Math.Ceiling(availableSpace) / 1024 / 1024);
             }
         }
 
-        private long GetFreeBytes {
+        private DriveInfo GetFreeBytes {
             get {
                 if (string.IsNullOrEmpty(BasePath))
                     throw new NullReferenceException("The base path has not been configured");
                 DriveInfo driveInfo = new DriveInfo(Path.GetDirectoryName(BasePath));
                 if (driveInfo == null)
                     throw new NullReferenceException($"Failed to get drive info for path {BasePath}");
-                return driveInfo.AvailableFreeSpace;
+                return driveInfo;
             }
         }
 
@@ -75,10 +79,10 @@ namespace MediaLibraryCommon.Classes.LogicModels.Config {
                     Directory.CreateDirectory(BasePath);
                 } catch (Exception ex) {
                     return false;
-                }                
+                }
             }
             //Critical low space. Things are not OK
-            if (GetFreeSpace < 1024)
+            if (GetTotalFreeSpace < 1024)
                 return false;
             return true;
         }

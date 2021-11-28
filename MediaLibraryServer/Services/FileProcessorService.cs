@@ -25,7 +25,7 @@ namespace MediaLibraryServer.Services {
             this.imageGalleryService = imageGalleryService;
             this.folderService = folderService;
 
-            fileWatcherTimer = new Timer(60000);
+            fileWatcherTimer = new Timer(10000);
             fileWatcherTimer.Elapsed += FileWatcherTimer_Elapsed;
         }
 

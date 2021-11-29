@@ -14,7 +14,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using VideoProcessorService.Interfaces;
 
 namespace MediaLibraryServer.Services {
@@ -111,21 +110,30 @@ namespace MediaLibraryServer.Services {
                 Directory.CreateDirectory(Path.GetDirectoryName(filePath));
             }
 
-            //Move the file to the library
             //Duplicate check
-            if (!FileUtils.IsFileLocked(filePath)) {
-                //Convert the video
-                string resultFile = await videoConversionService.ConvertVideoAsync(oldFilePath, filePath, false);
-                //Index the file in the DB
-                Video episode = new Video(resultFile);
-                episode.GalleryID = videoGallery.ID;
-                episode.Status = ObjectStatus.Created;
-                videoService.Save(episode);
-                File.Delete(oldFilePath);
-            } else {
-                filePath = Path.Combine(folderService.GetFolder(FolderType.VideoReject).BasePath, Path.GetFileName(filePath));
+            if (File.Exists(filePath + ".mp4")) {
+                filePath = Path.Combine(folderService.GetFolder(FolderType.VideoReject).BasePath, Path.GetFileName(oldFilePath));
                 File.Move(oldFilePath, filePath, true);
                 logger.LogInformation($"Found duplicate video {Path.GetFileName(filePath)} and moved in to the rejected folder");
+                return;
+            }
+
+            //Convert the video and Move the file to the library
+            string resultFile = await videoConversionService.ConvertVideoAsync(oldFilePath, filePath, false);
+            //Index the file in the DB
+            Video episode = new Video(resultFile);
+            episode.GalleryID = videoGallery.ID;
+            episode.Status = ObjectStatus.Created;
+            videoService.Save(episode);
+            try {
+                if (FileUtils.IsFileLocked(oldFilePath)) {
+                    Thread.Sleep(500);
+                    File.Delete(oldFilePath);
+                } else {
+                    File.Delete(oldFilePath);
+                }
+            } catch (Exception ex) {
+                logger.LogError("Failed to cleanup old video file.", ex);
             }
         }
     }

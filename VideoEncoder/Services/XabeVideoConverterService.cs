@@ -16,7 +16,7 @@ namespace VideoProcessorService.Services {
         public XabeVideoConverterService(ILogger<XabeVideoConverterService> logger) {
             //Set directory where app should look for FFmpeg 
             this.logger = logger;
-            FFmpeg.SetExecutablesPath(@"H:\Code Repo\SeriesManagerWeb\VideoEncoder\FFmpeg");
+            FFmpeg.SetExecutablesPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FFmpeg"));
         }
 
         //https://ffmpeg.xabe.net/docs.html

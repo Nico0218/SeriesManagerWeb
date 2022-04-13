@@ -7,5 +7,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
     <EncryptedPassword />
+    <_PublishTargetUrl>C:\inetpub\wwwroot\VSS\Server</_PublishTargetUrl>
+    <History>True|2022-04-13T21:11:27.3677338Z;True|2022-04-13T23:09:09.4232844+02:00;</History>
   </PropertyGroup>
 </Project>

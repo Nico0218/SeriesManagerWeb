@@ -5,6 +5,6 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <_PublishTargetUrl>C:\inetpub\wwwroot\SeriesManagerWeb\SeriesManagerServer</_PublishTargetUrl>
-    <History>True|2021-11-29T21:56:37.9592015Z;False|2021-11-29T23:53:21.4925432+02:00;</History>
+    <History>False|2022-04-13T21:03:15.8631988Z;True|2021-11-29T23:56:37.9592015+02:00;False|2021-11-29T23:53:21.4925432+02:00;</History>
   </PropertyGroup>
 </Project>

@@ -5,6 +5,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <ActiveDebugProfile>VideoStreamTest</ActiveDebugProfile>
-    <NameOfLastUsedPublishProfile>H:\Code Repo\SeriesManagerWeb\MediaLibraryServer\Properties\PublishProfiles\FolderProfile.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>H:\Code Repo\SeriesManagerWeb\MediaLibraryServer\Properties\PublishProfiles\IISProfile.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>

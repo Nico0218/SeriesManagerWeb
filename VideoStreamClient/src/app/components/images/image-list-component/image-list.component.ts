@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { map, take } from 'rxjs/operators';
-import { ImageGallery } from 'src/app/classes/Models/image-gallery';
+import { ImageGallery } from '../../../classes/Models/image-gallery';
 import { GalleryImage } from '../../../classes/Models/gallery-image';
 import { ImageGalleryService } from '../../../services/image-gallery.service';
 import { ImageService } from '../../../services/image.service';

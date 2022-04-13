@@ -4,12 +4,12 @@ import {
   HostListener,
   Input,
   OnDestroy,
-  OnInit,
+  OnInit
 } from "@angular/core";
 import { SafeUrl } from "@angular/platform-browser";
 import { Subject } from "rxjs";
 import { debounceTime, takeUntil, tap } from "rxjs/operators";
-import { SubtitlesWrapper } from "src/app/classes/Models/subtitles-wrapper";
+import { SubtitlesWrapper } from "../../../classes/Models/subtitles-wrapper";
 import { Video } from "../../../classes/Models/Video";
 import { VideoStreamService } from "../../../services/video-stream.service";
 

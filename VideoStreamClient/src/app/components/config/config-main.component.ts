@@ -194,6 +194,10 @@ export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
     // stop here if form is invalid
     if (this.form.invalid) return;
     this.saving = true;
+    //This is temp
+    if (this.mainConfig.status === ObjectStatus.None) {
+      this.mainConfig.status = ObjectStatus.Modified;
+    }
     this.mainConfig.isConfigured = true;
 
     this.configService
@@ -209,7 +213,6 @@ export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
         })
       )
       .subscribe();
-    // }
   }
 
   private UpdateConfig() {

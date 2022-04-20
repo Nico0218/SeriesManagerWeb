@@ -5,4 +5,11 @@ export abstract class LogicModelBase {
     public name: string;
     public displayName: string;
     public status: ObjectStatus;
+
+    /**
+     *
+     */
+    constructor() {
+        this.status = ObjectStatus.Created;
+    }
 }

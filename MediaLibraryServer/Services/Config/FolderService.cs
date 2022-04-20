@@ -25,7 +25,7 @@ namespace MediaLibraryServer.Services.Config {
         public FolderLibrary GetFolder(FolderType folderType, long fileSizeMb = 0) {
             string key = AllFoldersKey + ":" + folderType.ToString();
             List<FolderLibrary> folders;
-            if (!memoryCache.TryGetValue(key, out folders)) {
+            if (!memoryCache.TryGetValue(key, out folders) || folders.Find(ii => ii.FileType == folderType) == null) {
                 folders = GetAll().FindAll(ii => ii.FileType == folderType);
                 MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(2)).SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
                 memoryCache.Set(key, folders, cacheEntryOptions);

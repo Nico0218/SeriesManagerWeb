@@ -8,6 +8,6 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <TimeStampOfAssociatedLegacyPublishXmlFile />
     <EncryptedPassword />
     <_PublishTargetUrl>C:\inetpub\wwwroot\VSS\Server</_PublishTargetUrl>
-    <History>True|2022-04-13T21:11:27.3677338Z;True|2022-04-13T23:09:09.4232844+02:00;</History>
+    <History>True|2022-04-20T19:05:00.4145173Z;True|2022-04-13T23:11:27.3677338+02:00;True|2022-04-13T23:09:09.4232844+02:00;</History>
   </PropertyGroup>
 </Project>

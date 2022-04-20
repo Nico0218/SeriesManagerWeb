@@ -29,7 +29,7 @@ namespace MediaLibraryServer.Services.Config {
                 try {
                     folderService.GetFolder(item);
                 } catch (Exception ex) {
-                    logger.LogError("The library is not properly configured.", ex);
+                    logger.LogError("The library is not properly configured." + ex.Message , ex);
                     return false;
                 }                    
             }

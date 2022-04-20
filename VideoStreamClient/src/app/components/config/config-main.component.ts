@@ -2,14 +2,14 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormGroup } from "@angular/forms";
 import { Router } from "@angular/router";
 import { FormlyFieldConfig } from "@ngx-formly/core";
-import { Observable, ReplaySubject } from "rxjs";
+import { firstValueFrom, ReplaySubject } from "rxjs";
 import {
   catchError,
   debounceTime,
   first,
   map,
   takeUntil,
-  tap,
+  tap
 } from "rxjs/operators";
 import { FolderLibrary } from "../../classes/config/folder-library";
 import { MainConfig } from "../../classes/config/main-config";
@@ -60,33 +60,31 @@ export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
         debounceTime(500),
         tap(() => {
           if (this.model.folders && this.oldModel) {
-            (this.model.folders as FolderLibrary[]).forEach((newFolder) => {
-              const oldFolderIndex = (
-                this.oldModel.folders as FolderLibrary[]
-              ).findIndex((ii) => ii.id == newFolder.id);
-              if (oldFolderIndex == -1) {
-                newFolder.status = ObjectStatus.Created;
-                if (newFolder.displayName) {
-                  newFolder.name = newFolder.displayName.replace(" ", "");
-                  newFolder.id = Guid.newGuid();
-                  this.oldModel.folders.push(newFolder);
+            let newFolders = this.model.folders as FolderLibrary[];
+            let oldFolders = this.oldModel.folders as FolderLibrary[];
+            if (newFolders.length > 0) {
+              newFolders.forEach((newFolder) => {
+                if (!newFolder) return;
+                const oldFolderIndex = oldFolders.findIndex((ii) => ii.id == newFolder.id);
+                if (oldFolderIndex == -1) {
+                  newFolder.status = ObjectStatus.Created;
+                  if (newFolder.displayName) {
+                    newFolder.name = newFolder.displayName.replace(" ", "");
+                    newFolder.id = Guid.newGuid();
+                    this.oldModel.folders.push(newFolder);
+                  }
+                } else if (JSON.stringify(newFolder) != JSON.stringify(this.oldModel.folders[oldFolderIndex])) {
+                  newFolder.status = ObjectStatus.Modified;
+                  this.oldModel.folders[oldFolderIndex] = newFolder;
                 }
-              } else if (
-                JSON.stringify(newFolder) !=
-                JSON.stringify(this.oldModel.folders[oldFolderIndex])
-              ) {
-                newFolder.status = ObjectStatus.Modified;
-                this.oldModel.folders[oldFolderIndex] = newFolder;
-              }
-            });
-            (this.oldModel.folders as FolderLibrary[]).forEach((oldFolder) => {
-              var newFolder = (this.model.folders as FolderLibrary[]).find(
-                (ii) => ii.id == oldFolder.id
-              );
-              if (newFolder == null) {
-                oldFolder.status = ObjectStatus.Deleted;
-              }
-            });
+              });
+            }
+            if (oldFolders.length > 0) {
+              oldFolders.forEach((oldFolder) => {
+                var newFolder = newFolders.find((ii) => ii.id == oldFolder.id);
+                if (newFolder == null) oldFolder.status = ObjectStatus.Deleted;
+              });
+            }
           }
         }),
         takeUntil(this.destroyed$)
@@ -148,7 +146,7 @@ export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
               key: "minFreeSpace",
               templateOptions: {
                 label: "Minimum Free Space:",
-                type: 'number',
+                type: "number",
                 min: 0,
                 max: 100,
                 required: true,
@@ -161,22 +159,20 @@ export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
   }
 
   private async loadConfiguredFolders() {
-    await this.configService
-      .GetFolders()
-      .pipe(
+    await firstValueFrom(
+      this.configService.GetFolders().pipe(
         tap((ii) => {
           if (ii) this.model.folders = ii;
           else this.model.folders = [];
         }),
         first()
       )
-      .toPromise();
+    );
   }
 
   private async loadMainConfig() {
-    await this.configService
-      .GetConfig()
-      .pipe(
+    await firstValueFrom(
+      this.configService.GetConfig().pipe(
         tap((ii) => {
           if (ii) this.mainConfig = ii;
           else {
@@ -185,7 +181,7 @@ export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
         }),
         first()
       )
-      .toPromise();
+    );
   }
 
   private loadBreadcrumb() {
@@ -193,20 +189,15 @@ export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
     this.AddBreadCrumbItem("Settings");
   }
 
-  test: Observable<any>;
-  modelChange() {}
-
   onSubmit() {
     this.submitted = true;
     // stop here if form is invalid
-    if (this.form.invalid) {
-      return;
-    }
+    if (this.form.invalid) return;
     this.saving = true;
     this.mainConfig.isConfigured = true;
 
     this.configService
-      .SaveFolders(this.oldModel.folders)
+      .SaveFolders(this.model.folders)
       .pipe(
         map((ii) => {
           this.UpdateConfig();
@@ -218,6 +209,7 @@ export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
         })
       )
       .subscribe();
+    // }
   }
 
   private UpdateConfig() {

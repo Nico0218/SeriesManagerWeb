@@ -366,7 +366,9 @@ namespace SQLiteProvider.Services {
         }
 
         private void GetCDataType(PropertyInfo propertyInfo, object obj, SqliteDataReader result) {
-            if (propertyInfo.PropertyType == typeof(string)) {
+            if (result.IsDBNull(propertyInfo.Name)) {
+                propertyInfo.SetValue(obj, Activator.CreateInstance(propertyInfo.PropertyType));
+            } else if (propertyInfo.PropertyType == typeof(string)) {
                 propertyInfo.SetValue(obj, result.GetString(propertyInfo.Name));
             } else if (propertyInfo.PropertyType == typeof(DateTime)) {
                 propertyInfo.SetValue(obj, result.GetDateTime(propertyInfo.Name));

@@ -1,19 +1,30 @@
 <div class="container-fluid vh-100">
-    <div class="d-flex flex-column h-100">
-        <div class="row">
-            <breadcrum-component class="col" *ngIf="breadcrumbItems" [breadcrumbItems]="breadcrumbItems">
-            </breadcrum-component>
-        </div>
-        <div class="row">
-            <h3 class="col">Image Galleries</h3>
-        </div>
-        <div *ngIf="!loading" class="row flex-grow-1">
-            <div class="custom-row custom-card-deck">
-                <custom-card-component *ngFor="let gallery of Galleries" [route]='["/image-list", gallery.id]'
-                    [title]='gallery.displayName' [description]='"Description Text"'>
-                </custom-card-component>
-            </div>
-        </div>
-        <load-indicator-component *ngIf="loading" class="row"></load-indicator-component>
+  <div class="d-flex flex-column h-100">
+    <div class="row">
+      <breadcrum-component
+        class="col"
+        *ngIf="breadcrumbItems"
+        [breadcrumbItems]="breadcrumbItems"
+      >
+      </breadcrum-component>
     </div>
+    <div class="row">
+      <h3 class="col">Image Galleries</h3>
+    </div>
+    <div *ngIf="!loading" class="row flex-grow-1">
+      <div class="custom-row custom-card-deck">
+        <custom-card-component
+          *ngFor="let gallery of Galleries"
+          [route]="['/image-list', gallery.id]"
+          [title]="gallery.displayName"
+          [description]="'Description Text'"
+        >
+        </custom-card-component>
+      </div>
+    </div>
+    <load-indicator-component
+      *ngIf="loading"
+      class="row"
+    ></load-indicator-component>
+  </div>
 </div>

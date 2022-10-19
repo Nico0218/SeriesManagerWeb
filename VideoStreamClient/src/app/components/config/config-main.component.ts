@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormGroup } from "@angular/forms";
+import { UntypedFormGroup } from "@angular/forms";
 import { Router } from "@angular/router";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { firstValueFrom, ReplaySubject } from "rxjs";
@@ -26,7 +26,7 @@ import { UIBase } from "../common/ui-base-component/ui-base.component";
 export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
-  form: FormGroup = new FormGroup({});
+  form: UntypedFormGroup = new UntypedFormGroup({});
   submitted = false;
   loading = true;
   saving = false;

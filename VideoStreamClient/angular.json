@@ -162,5 +162,7 @@
       }
     }
   },
-  "defaultProject": "VideoStreamClient"
+  "cli": {
+    "analytics": false
+  }
 }

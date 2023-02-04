@@ -10,7 +10,7 @@ import { UIBase } from '../common/ui-base-component/ui-base.component';
     styleUrls: ['./home.component.scss']
 })
 export class HomeComponent extends UIBase implements OnInit {
-    user: User;
+    user?: User;
 
     constructor(private authenticationService: AuthenticationService,
         private router: Router) {

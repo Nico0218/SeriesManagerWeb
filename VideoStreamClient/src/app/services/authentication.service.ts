@@ -11,13 +11,14 @@ import { User } from '../classes/security/user';
 export class AuthenticationService {
     private userSubject?: BehaviorSubject<User | undefined>;
     public user?: Observable<User | undefined>;
+    private readonly userCacheKey = 'user';
 
     constructor(private router: Router,
         private http: HttpClient) {
-        const userStr = localStorage.getItem('user');
+        const userStr = localStorage.getItem(this.userCacheKey);
         if (userStr) {
             const user = JSON.parse(userStr) as User;
-            if (this.userSubject) {
+            if (user) {
                 this.userSubject = new BehaviorSubject<User | undefined>(user);
                 this.user = this.userSubject.asObservable();
             }
@@ -30,11 +31,11 @@ export class AuthenticationService {
         return `${Environment.apiUrl}/User`;
     }
 
-    public get userValue(): User {
+    public get userValue(): User | undefined {
         if (this.userSubject && this.userSubject.value) {
             return this.userSubject.value;
         }
-        throw new Error("UserSubject has not been set.");
+        return undefined;
     }
 
     public login(username: string, password: string) {
@@ -44,22 +45,20 @@ export class AuthenticationService {
         return this.http.post<any>(`${this.controllerURL}/authenticate`, loginRequest)
             .pipe(map(user => {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
-                localStorage.setItem('user', JSON.stringify(user));
+                localStorage.setItem(this.userCacheKey, JSON.stringify(user));
                 if (this.userSubject) {
                     this.userSubject.next(user);
                     return user;
                 }
-                throw new Error("userSubject has not been set");
             }));
     }
 
     public logout() {
         // remove user from local storage to log user out
-        localStorage.removeItem('user');
+        localStorage.removeItem(this.userCacheKey);
         if (this.userSubject) {
             this.userSubject.next(undefined);
             this.router.navigate(['/login']);
         }
-        throw new Error("userSubject has not been set");
     }
 }

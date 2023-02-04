@@ -64,6 +64,11 @@ namespace VideoProcessorService.Services {
                 audioStream.SetCodec(AudioCodec.aac);
                 converter.AddStream(audioStream);
 
+                foreach (var subtitleStream in mediaInfo.SubtitleStreams) {
+                    subtitleStream.SetCodec(Xabe.FFmpeg.Streams.SubtitleStream.SubtitleCodec.mov_text);
+                    converter.AddStream(subtitleStream);
+                }
+
                 ExtractSubsAsync(videoPath, outputPath, mediaInfo.SubtitleStreams, useHardwareAcceleration, cancellationTokenSource);
 
                 converter.SetOutputFormat(Format.mp4);

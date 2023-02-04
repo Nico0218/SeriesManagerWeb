@@ -34,6 +34,20 @@ namespace MediaLibraryServer.Services {
         }
 
         public void Start() {
+            FileUtils.CheckAndCreateDirectory(folderService.GetFolder(FolderType.Ingest).BasePath);
+            FileUtils.CheckAndCreateDirectory(folderService.GetFolder(FolderType.Interim).BasePath);
+
+            IEnumerable<string> interimFiles = Directory.EnumerateFiles(folderService.GetFolder(FolderType.Interim).BasePath, "*.*", SearchOption.AllDirectories);
+            foreach (string filePath in interimFiles) {
+                FileUtils.IsFileLocked(filePath);
+                string destPath = Path.Combine(folderService.GetFolder(FolderType.Ingest).BasePath, Path.GetFileName(filePath));
+                try {
+                    File.Move(filePath, destPath);
+                } catch (IOException ex) {
+                    logger.LogError($"Failed to move the file {filePath} from the interim folder to the ingest location", ex);
+                }
+            }
+
             fileWatcherTimer.Start();
             logger.LogInformation("File processor service started.");
         }
@@ -48,13 +62,11 @@ namespace MediaLibraryServer.Services {
 
             try {
                 if (configService.IsConfigReady()) {
-                    logger.LogInformation("Checking for files in the ingest folder.");
-                    FileUtils.CheckAndCreateDirectory(folderService.GetFolder(FolderType.Ingest).BasePath);
-                    FileUtils.CheckAndCreateDirectory(folderService.GetFolder(FolderType.Interim).BasePath);
+                    logger.LogInformation("Checking for files in the ingest folder.");                    
 
-                    IEnumerable<string> enumerable = Directory.EnumerateFiles(folderService.GetFolder(FolderType.Ingest).BasePath, "*.*", SearchOption.AllDirectories);
+                    IEnumerable<string> ingestFiles = Directory.EnumerateFiles(folderService.GetFolder(FolderType.Ingest).BasePath, "*.*", SearchOption.AllDirectories);
                     int count = 0;
-                    foreach (string filePath in enumerable) {
+                    foreach (string filePath in ingestFiles) {
                         FileUtils.IsFileLocked(filePath);
                         string destPath = Path.Combine(folderService.GetFolder(FolderType.Interim).BasePath, Path.GetFileName(filePath));
                         bool fileMoved = false;

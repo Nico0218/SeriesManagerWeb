@@ -7,20 +7,25 @@ using System.Threading;
 using System.Threading.Tasks;
 using VideoProcessorService.Interfaces;
 using Xabe.FFmpeg;
+using Xabe.FFmpeg.Events;
 
 namespace VideoProcessorService.Services {
     public class XabeVideoConverterService : IVideoConverter {
-        private readonly ILogger<XabeVideoConverterService> logger;
-        public CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private readonly ILogger<XabeVideoConverterService> logger;        
 
         public XabeVideoConverterService(ILogger<XabeVideoConverterService> logger) {
             //Set directory where app should look for FFmpeg 
             this.logger = logger;
-            FFmpeg.SetExecutablesPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FFmpeg"));
+            this.init();
+        }
+
+        public void init() {
+            string ffMpegPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FFmpeg");
+            FFmpeg.SetExecutablesPath(ffMpegPath);
         }
 
         //https://ffmpeg.xabe.net/docs.html
-        public async Task<string> ConverVideoAsync(string videoPath, string outputPath, bool useHardwareAcceleration = true) {
+        public async Task<string> ConverVideoAsync(string videoPath, string outputPath, bool useHardwareAcceleration, CancellationTokenSource cancellationTokenSource) {
             if (string.IsNullOrEmpty(videoPath)) {
                 throw new ArgumentException($"'{nameof(videoPath)}' cannot be null or empty", nameof(videoPath));
             }
@@ -28,6 +33,15 @@ namespace VideoProcessorService.Services {
                 throw new ArgumentException($"'{nameof(outputPath)}' cannot be null or empty", nameof(outputPath));
             }
 
+            if (Directory.Exists(outputPath)) {
+                try {
+                    foreach (var file in Directory.GetFiles(outputPath)) {
+                        File.Delete(file);
+                    }
+                } catch (Exception) {
+                    throw;
+                }
+            }
             string outputName = Path.Combine(outputPath, Path.GetFileNameWithoutExtension(videoPath) + ".mp4");
             try {
                 IMediaInfo mediaInfo = FFmpeg.GetMediaInfo(videoPath).Result;
@@ -50,11 +64,11 @@ namespace VideoProcessorService.Services {
                 audioStream.SetCodec(AudioCodec.aac);
                 converter.AddStream(audioStream);
 
-                ExtractSubsAsync(videoPath, outputPath, mediaInfo.SubtitleStreams, useHardwareAcceleration);
+                ExtractSubsAsync(videoPath, outputPath, mediaInfo.SubtitleStreams, useHardwareAcceleration, cancellationTokenSource);
 
                 converter.SetOutputFormat(Format.mp4);
                 converter.SetOutput(outputName);
-                converter.OnProgress += Converter_OnProgress_Video;
+                converter.OnProgress += (sender, args) => { Converter_OnProgress_Video(sender, args, Path.GetFileName(videoPath)); };
                 if (useHardwareAcceleration) {
                     converter.UseHardwareAcceleration(HardwareAccelerator.auto, VideoCodec.h264_cuvid, VideoCodec.h264_nvenc, 0);
                 }
@@ -68,7 +82,7 @@ namespace VideoProcessorService.Services {
 
         }
 
-        private async void ExtractSubsAsync(string sourceFile, string outputPath, IEnumerable<ISubtitleStream> subtitleStreams, bool useHardwareAcceleration = true) {
+        private async void ExtractSubsAsync(string sourceFile, string outputPath, IEnumerable<ISubtitleStream> subtitleStreams, bool useHardwareAcceleration, CancellationTokenSource cancellationTokenSource) {
             if (string.IsNullOrEmpty(sourceFile)) {
                 throw new ArgumentException($"'{nameof(sourceFile)}' cannot be null or empty", nameof(sourceFile));
             }
@@ -93,7 +107,7 @@ namespace VideoProcessorService.Services {
                 count++;
 
                 IConversion converter = FFmpeg.Conversions.New();
-                converter.OnProgress += Converter_OnProgress_Subs;
+                converter.OnProgress += (sender, args) => { Converter_OnProgress_Subs(sender, args, Path.GetFileName(sourceFile)); };
                 if (useHardwareAcceleration) {
                     converter.UseHardwareAcceleration(HardwareAccelerator.auto, VideoCodec.h264_cuvid, VideoCodec.h264_nvenc, 0);
                 }
@@ -108,16 +122,12 @@ namespace VideoProcessorService.Services {
             }
         }
 
-        private void Converter_OnProgress_Subs(object sender, Xabe.FFmpeg.Events.ConversionProgressEventArgs args) {
-            Console.Out.WriteLineAsync($"Extracting Subs {args.Percent}% -- {args.Duration}/{args.TotalLength}");
+        private void Converter_OnProgress_Subs(object sender, ConversionProgressEventArgs args, string fileName) {
+            Console.Out.WriteLineAsync($"Extracting Subs from {fileName} {args.Percent}% -- {args.Duration}/{args.TotalLength}");
         }
 
-        private void Converter_OnProgress_Video(object sender, Xabe.FFmpeg.Events.ConversionProgressEventArgs args) {
-            Console.Out.WriteLineAsync($"Encoding video {args.Percent}% -- {args.Duration}/{args.TotalLength}");
-        }
-
-        public void CancelConversion() {
-            cancellationTokenSource.Cancel();
+        private void Converter_OnProgress_Video(object sender, ConversionProgressEventArgs args, string fileName) {
+            Console.Out.WriteLineAsync($"Encoding video for {fileName} {args.Percent}% -- {args.Duration}/{args.TotalLength}");
         }
     }
 }

@@ -29,6 +29,7 @@ namespace MediaLibraryServer.Services {
         Regex SandSpaceMatch;
 
         private readonly char[] numbers = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+        static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
         public VideoGalleryService(ILogger<VideoGalleryService> logger, IDataService dataService, IVideoService videoService, IFolderService folderService, IMemoryCache memoryCache,
             IVideoConversionService videoConversionService) : base(logger, dataService, memoryCache) {
@@ -118,20 +119,45 @@ namespace MediaLibraryServer.Services {
                 return;
             }
 
-            //Convert the video and Move the file to the library
-            string resultFile = await videoConversionService.ConvertVideoAsync(oldFilePath, filePath, false);
-            //Index the file in the DB
-            Video episode = new Video(resultFile);
-            episode.GalleryID = videoGallery.ID;
-            episode.Status = ObjectStatus.Created;
-            videoService.Save(episode);
+            await semaphoreSlim.WaitAsync();
+            string cancelationTokenKey = Path.GetFileName(oldFilePath);
             try {
-                if (FileUtils.IsFileLocked(oldFilePath)) {
-                    Thread.Sleep(500);
-                    File.Delete(oldFilePath);
-                } else {
-                    File.Delete(oldFilePath);
-                }
+                //Convert the video and Move the file to the library
+                string resultFile = await videoConversionService.ConvertVideoAsync(oldFilePath, filePath, false, videoConversionService.GetCancellationToken(cancelationTokenKey));
+                //Index the file in the DB
+                Video episode = new Video(resultFile);
+                episode.GalleryID = videoGallery.ID;
+                episode.Status = ObjectStatus.Created;
+                videoService.Save(episode);
+            } finally {
+                semaphoreSlim.Release();
+                videoConversionService.CancelConversion(cancelationTokenKey);
+            }
+
+            try {
+                int retryCount = 0;
+                do {
+                    if (FileUtils.IsFileLocked(oldFilePath)) {
+                        Thread.Sleep(500);
+                        retryCount++;
+                    } else {
+                        try {
+                            FileInfo t = new FileInfo(oldFilePath);
+                            t.IsReadOnly = false;
+                            t.Delete();
+                            //File.Delete(oldFilePath);
+                        } catch (Exception) {
+                            if (retryCount < 3) {
+                                Thread.Sleep(500);
+                                retryCount++;
+                            } else {
+                                throw;
+                            }
+                        }
+
+                    }
+                } while (retryCount < 3);
+
             } catch (Exception ex) {
                 logger.LogError("Failed to cleanup old video file.", ex);
             }

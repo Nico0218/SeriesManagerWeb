@@ -1,6 +1,6 @@
 <div *ngFor="let field of field.fieldGroup; let i = index;" class="repeater">
     <formly-field class="repeaterForm" [field]="field"> </formly-field>
-    <div class="remove-container col-sm-2 d-flex align-items-center">
+    <div class="remove-container d-flex align-items-center">
         <button class="btn btn-danger" type="button" (click)="remove(i)">Remove</button>
     </div>
 </div>

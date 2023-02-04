@@ -116,7 +116,7 @@ namespace MediaLibraryServer {
 
         private void OnShutdown() {
             if (Program.videoConversionService != null) {
-                Program.videoConversionService.CancelConversion();
+                Program.videoConversionService.CancelAllConversion();
             }
         }
     }

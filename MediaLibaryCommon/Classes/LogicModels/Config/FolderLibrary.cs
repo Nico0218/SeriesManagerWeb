@@ -77,7 +77,7 @@ namespace MediaLibraryCommon.Classes.LogicModels.Config {
             if (!Directory.Exists(BasePath)) {
                 try {
                     Directory.CreateDirectory(BasePath);
-                } catch (Exception ex) {
+                } catch (Exception) {
                     return false;
                 }
             }

@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Xabe.FFmpeg;
 
 namespace VideoProcessorService.Interfaces {
     public interface IVideoConverter {
-        Task<string> ConverVideoAsync(string videoPath, string outputPath, bool useHardwareAcceleration);
-        void CancelConversion();
+        Task<string> ConverVideoAsync(string videoPath, string outputPath, bool useHardwareAcceleration, CancellationTokenSource cancellationTokenSource);
     }
 }

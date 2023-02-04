@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
-import { lastValueFrom } from "rxjs";
+import { firstValueFrom, lastValueFrom } from "rxjs";
 import { map, take } from "rxjs/operators";
 import { Video } from "../../../classes/Models/Video";
 import { VideoGallery } from "../../../classes/Models/video-gallery";
@@ -16,16 +16,16 @@ import { UIBase } from "../../common/ui-base-component/ui-base.component";
   styleUrls: ["./video-list.component.scss"],
 })
 export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
-  public videoGallery: VideoGallery;
-  public videos: Video[];
-  public selectedVideo: Video;
+  public videoGallery?: VideoGallery;
+  public videos?: Video[];
+  public selectedVideo?: Video;
   public page = 1;
   public pageSize = 12;
   public collectionSize = 0;
   public canEdit = false;
   public AiringState = AiringState;
 
-  private tempVideoGallery: VideoGallery;
+  private tempVideoGallery?: VideoGallery;
 
   constructor(
     private videoGalleryService: VideoGalleryService,
@@ -37,22 +37,32 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.selectedVideo = new Video();
+    this.selectedVideo = {
+      id: '',
+      name: '',
+      displayName: '',
+      galleryID: '',
+      status: ObjectStatus.Created
+    };
     this.loading = true;
     if (!history.state.videoGallery) {
       //redirect to not found
       this.activeRoute.paramMap
         .pipe(
-          map((params: ParamMap) =>
-            this.videoGalleryService
-              .GetByID(params.get("objID"))
-              .pipe(
-                map((videoGallery) => {
-                  this.onVideoGalleryReady(videoGallery);
-                }),
-                take(1)
-              )
-              .subscribe()
+          map((params: ParamMap) => {
+            const objID = params.get("objID");
+            if (objID) {
+              this.videoGalleryService
+                .GetByID(objID)
+                .pipe(
+                  map((videoGallery) => {
+                    this.onVideoGalleryReady(videoGallery);
+                  }),
+                  take(1)
+                )
+                .subscribe()
+            }
+          }
           ),
           take(1)
         )
@@ -70,9 +80,8 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
   private async onVideoGalleryReady(videoGallery: VideoGallery) {
     this.videoGallery = videoGallery;
     this.loadBreadcrumb();
-    this.collectionSize = await this.videoService
-      .GetCountByGallery(this.videoGallery.id)
-      .toPromise();
+    this.collectionSize = await firstValueFrom(this.videoService
+      .GetCountByGallery(this.videoGallery.id));
     this.loadVideoPage();
   }
 
@@ -82,26 +91,34 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
   }
 
   private loadVideoPage() {
-    this.videoService
-      .GetByPage(this.videoGallery.id, this.page, this.pageSize)
-      .pipe(
-        map((result) => {
-          this.videos = result;
-          this.loading = false;
-        }),
-        take(1)
-      )
-      .subscribe();
+    if (this.videoGallery) {
+      this.videoService
+        .GetByPage(this.videoGallery.id, this.page, this.pageSize)
+        .pipe(
+          map((result) => {
+            this.videos = result;
+            this.loading = false;
+          }),
+          take(1)
+        )
+        .subscribe();
+    } else {
+      console.error(`Video Gallery has not been set`);
+    }
   }
 
   private loadBreadcrumb() {
-    this.AddBreadCrumbItem("Home");
-    this.AddBreadCrumbItem("VideoGalleryList");
-    this.AddBreadCrumbItem(
-      "VideoList",
-      this.videoGallery.displayName,
-      this.videoGallery.id
-    );
+    if (this.videoGallery) {
+      this.AddBreadCrumbItem("Home");
+      this.AddBreadCrumbItem("VideoGalleryList");
+      this.AddBreadCrumbItem(
+        "VideoList",
+        this.videoGallery.displayName,
+        this.videoGallery.id
+      );
+    } else {
+      console.error(`Video Gallery has not been set`);
+    }
   }
 
   SelectFile(episode: Video) {
@@ -123,11 +140,15 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
   async Save() {
     this.canEdit = false;
     this.loading = true;
-    this.videoGallery.status = ObjectStatus.Modified;
-    await lastValueFrom(this.videoGalleryService.Save(this.videoGallery));
-    this.videoGallery.status = ObjectStatus.None;
-    this.tempVideoGallery = undefined;
-    this.loading = false;
+    if (this.videoGallery) {
+      this.videoGallery.status = ObjectStatus.Modified;
+      await lastValueFrom(this.videoGalleryService.Save(this.videoGallery));
+      this.videoGallery.status = ObjectStatus.None;
+      this.tempVideoGallery = undefined;
+      this.loading = false;
+    } else {
+      console.error(`Video Gallery has not been set`);
+    }
   }
 
   Cancel() {
@@ -135,11 +156,15 @@ export class VideoListComponent extends UIBase implements OnInit, OnDestroy {
     this.canEdit = false;
   }
 
-  RateChange($event) {
+  RateChange($event: any) {
     this.Save();
   }
 
   AiringStateClicked(airingState: number) {
-    this.videoGallery.airingState = airingState;
+    if (this.videoGallery) {
+      this.videoGallery.airingState = airingState;
+    } else {
+      console.error(`Video Gallery has not been set`);
+    }
   }
 }

@@ -29,8 +29,8 @@ export class ImageService {
     GetByPage(GalleryID: string, PageNo: number, PageSize: number): Observable<GalleryImage[]> {
         return this.httpClient.get(`${this.controllerURL}/GetByPage/${GalleryID}/${PageNo}/${PageSize}`)
             .pipe(
-                map((ii: GalleryImage[]) => {
-                    return ii;
+                map((ii: any) => {
+                    return ii as GalleryImage[];
                 })
             );
     }
@@ -38,8 +38,8 @@ export class ImageService {
     GetByID(ImageID: string): Observable<GalleryImage> {
         return this.httpClient.get(`${this.controllerURL}/GetByID/${ImageID}`)
             .pipe(
-                map((ii: GalleryImage) => {
-                    return ii;
+                map((ii: any) => {
+                    return ii as GalleryImage;
                 })
             );
     }
@@ -47,7 +47,8 @@ export class ImageService {
     GetThumbnailByID(ImageID: string, ThumbnailSize: number): Observable<SafeUrl> {
         return this.httpClient.get(`${this.controllerURL}/GetThumbnailByID/${ImageID}/${ThumbnailSize}`)
             .pipe(
-                map((ii: ImageDataWrapper) => {
+                map((ii: any) => ii as ImageDataWrapper),
+                map((ii) => {
                     let res = `data:image/jpg;base64,${ii.imageData}`;
                     return this.domSanitizer.bypassSecurityTrustUrl(res);
                 })
@@ -57,7 +58,8 @@ export class ImageService {
     GetDataByID(ImageID: string): Observable<SafeUrl> {
         return this.httpClient.get(`${this.controllerURL}/GetDataByID/${ImageID}`)
             .pipe(
-                map((ii: ImageDataWrapper) => {
+                map((ii: any) => ii as ImageDataWrapper),
+                map((ii) => {
                     let res = `data:image/jpg;base64,${ii.imageData}`;
                     return this.domSanitizer.bypassSecurityTrustUrl(res);
                 })

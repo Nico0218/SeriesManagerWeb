@@ -1,13 +1,35 @@
 <div *ngIf="!loading" id="videoContainer" class="h-100 w-100">
-    <div *ngIf="!selectedVideo.id" class="h-100 w-100 d-flex justify-content-center">
-        <div class="align-self-center p-2 bd-highlight">Please select a video for playback.</div>
+    <div
+        *ngIf="selectedVideo && !selectedVideo.id"
+        class="h-100 w-100 d-flex justify-content-center"
+    >
+        <div class="align-self-center p-2 bd-highlight">
+            Please select a video for playback.
+        </div>
     </div>
-    <video *ngIf="VideoURL" class="videoPlayer" [width]="width" [height]="height" autoplay controls
-        type='video/x-matroska; codecs="theora, vorbis"'>
+    <video
+        *ngIf="VideoURL"
+        class="videoPlayer"
+        [width]="width"
+        [height]="height"
+        autoplay
+        controls
+        type='video/x-matroska; codecs="theora, vorbis"'
+    >
         <!-- [error]="PlaybackError($event)" -->
         <source [src]="VideoURL" />
-        <track *ngFor="let subUrl of SubtitleURLs" default [src]="subUrl.data" kind="subtitles"
-            srclang="{{subUrl.language}}" label="{{subUrl.title}}" mode="showing">
+        <track
+            *ngFor="let subUrl of SubtitleURLs"
+            default
+            [src]="subUrl.data"
+            kind="subtitles"
+            srclang="{{ subUrl.language }}"
+            label="{{ subUrl.title }}"
+            mode="showing"
+        />
     </video>
 </div>
-<load-indicator-component *ngIf="loading" class="h-100 w-100"></load-indicator-component>
+<load-indicator-component
+    *ngIf="loading"
+    class="h-100 w-100"
+></load-indicator-component>

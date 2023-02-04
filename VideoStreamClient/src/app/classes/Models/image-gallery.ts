@@ -1,5 +1,5 @@
 import { LogicModelBase } from './logic-model-base';
 
-export class ImageGallery extends LogicModelBase {
-    public fileStore: string;
+export interface ImageGallery extends LogicModelBase {
+    fileStore: string;
 }

@@ -12,7 +12,7 @@ export class BreadcrumComponent {
     faUserCog = faUserCog
     faSignOutAlt = faSignOutAlt
 
-    @Input() breadcrumbItems: BreadcrumbItem[];
+    @Input() breadcrumbItems: BreadcrumbItem[] = [];
     constructor(private authenticationService: AuthenticationService) {
 
     }

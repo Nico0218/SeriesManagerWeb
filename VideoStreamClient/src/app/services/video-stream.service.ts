@@ -1,6 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
+import { firstValueFrom } from "rxjs";
 import { map } from "rxjs/operators";
 import { Environment } from "../classes/environment";
 import { SubtitlesWrapper } from "../classes/Models/subtitles-wrapper";
@@ -10,7 +11,7 @@ export class VideoStreamService {
   constructor(
     private httpClient: HttpClient,
     private domSanitizer: DomSanitizer
-  ) {}
+  ) { }
 
   public get controllerURL(): string {
     return `${Environment.apiUrl}/VideoStream`;
@@ -24,13 +25,14 @@ export class VideoStreamService {
 
   async GetVideoSubtitles(videoID: string): Promise<SubtitlesWrapper[]> {
     this.domSanitizer.bypassSecurityTrustResourceUrl;
-    return await this.httpClient
+    return await firstValueFrom(this.httpClient
       .get(`${this.controllerURL}/GetVideoSubtitles/${videoID}`)
       .pipe(
-        map((ii: SubtitlesWrapper[]) => {
+        map((ii: any) => ii as SubtitlesWrapper[]),
+        map((ii) => {
           let safeSubs: SubtitlesWrapper[] = [];
           ii.forEach((subs) => {
-            let subtitlesWrapper = new SubtitlesWrapper();
+            let subtitlesWrapper = {} as SubtitlesWrapper;
             subtitlesWrapper.title = subs.title;
             subtitlesWrapper.language = subs.language;
             let res = `data:text/plain;base64,${subs.data}`;
@@ -39,7 +41,6 @@ export class VideoStreamService {
           });
           return safeSubs;
         })
-      )
-      .toPromise();
+      ));
   }
 }

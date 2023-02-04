@@ -20,13 +20,13 @@ import { VideoStreamService } from "../../../services/video-stream.service";
 })
 export class VideoViewerComponent implements OnInit, OnDestroy, AfterViewInit {
   destroy$: Subject<boolean> = new Subject();
-  VideoURL: SafeUrl;
-  SubtitleURLs: SubtitlesWrapper[];
+  VideoURL: SafeUrl = '';
+  SubtitleURLs: SubtitlesWrapper[] = [];
   aspectWidth = 1280;
   aspectHeight = 720;
   width = 480;
   height = 320;
-  @Input() selectedVideo: Video;
+  @Input() selectedVideo?: Video;
 
   loading = false;
   $resizeObs: Subject<any>;
@@ -84,7 +84,7 @@ export class VideoViewerComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  public PlaybackError(error) {
+  public PlaybackError(error: any) {
     // video playback failed - show a message saying why
     switch (error.target.error.code) {
       case error.target.error.MEDIA_ERR_ABORTED:

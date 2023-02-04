@@ -11,7 +11,7 @@ export class VideoGalleryService {
   constructor(
     private httpClient: HttpClient,
     private domSanitizer: DomSanitizer
-  ) {}
+  ) { }
 
   public get controllerURL(): string {
     return `${Environment.apiUrl}/VideoGallery`;
@@ -19,6 +19,7 @@ export class VideoGalleryService {
 
   GetAll(): Observable<VideoGallery[]> {
     return this.httpClient.get(`${this.controllerURL}/GetAll`).pipe(
+      map((ii: any) => ii as VideoGallery[]),
       map((ii: VideoGallery[]) => {
         return ii;
       })
@@ -29,6 +30,7 @@ export class VideoGalleryService {
     return this.httpClient
       .get(`${this.controllerURL}/GetByID/${GalleryID}`)
       .pipe(
+        map((ii: any) => ii as VideoGallery),
         map((ii: VideoGallery) => {
           return ii;
         })
@@ -39,6 +41,7 @@ export class VideoGalleryService {
     return this.httpClient
       .get(`${this.controllerURL}/GetByName/${GalleryName}`)
       .pipe(
+        map((ii: any) => ii as VideoGallery),
         map((ii: VideoGallery) => {
           return ii;
         })

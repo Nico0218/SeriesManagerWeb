@@ -82,7 +82,7 @@ import { RepeatTypeComponent } from './ui-components/repeat-section/repeat-secti
     {
       provide: APP_INITIALIZER,
       useFactory: (configService: ConfigService) =>
-        () => configService.loadAppsettings(),
+        () => configService.loadAppSettings(),
       deps: [ConfigService],
       multi: true
     },

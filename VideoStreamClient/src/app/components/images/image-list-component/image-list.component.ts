@@ -7,6 +7,7 @@ import { ImageGalleryService } from '../../../services/image-gallery.service';
 import { ImageService } from '../../../services/image.service';
 import { UIBase } from '../../common/ui-base-component/ui-base.component';
 import { ImageViewerComponent } from '../image-viewer-component/image-viewer.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
     selector: 'image-list-component',
@@ -14,10 +15,10 @@ import { ImageViewerComponent } from '../image-viewer-component/image-viewer.com
     styleUrls: ['./image-list.component.scss']
 })
 export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
-    @ViewChild(ImageViewerComponent) imageViewer: ImageViewerComponent;
-    public imageGallery: ImageGallery;
-    public Images: GalleryImage[];
-    public selectedImage: GalleryImage;
+    @ViewChild(ImageViewerComponent) imageViewer?: ImageViewerComponent;
+    public imageGallery?: ImageGallery;
+    public Images?: GalleryImage[];
+    public selectedImage?: GalleryImage;
     public page = 1;
     public pageSize = 16;
     public collectionSize = 0;
@@ -34,15 +35,19 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
         if (!history.state.imageGallery) {
             //redirect to not found
             this.activeRoute.paramMap.pipe(
-                map((params: ParamMap) =>
-                    this.imageGalleryService.GetByID(params.get('objID'))
-                        .pipe(
-                            map(imageGallery => {
-                                this.onImageGalleryReady(imageGallery);
-                            }),
-                            take(1)
-                        )
-                        .subscribe()
+                map((params: ParamMap) => {
+                    const objID = params.get('objID');
+                    if (objID) {
+                        this.imageGalleryService.GetByID(objID)
+                            .pipe(
+                                map(imageGallery => {
+                                    this.onImageGalleryReady(imageGallery);
+                                }),
+                                take(1)
+                            )
+                            .subscribe()
+                    }
+                }
                 ),
                 take(1)
             ).subscribe();
@@ -59,7 +64,7 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
     private async onImageGalleryReady(imageGallery: ImageGallery) {
         this.imageGallery = imageGallery;
         this.loadBreadcrumb();
-        this.collectionSize = await this.imageService.GetCountByGallery(this.imageGallery.id).toPromise();
+        this.collectionSize = await firstValueFrom(this.imageService.GetCountByGallery(this.imageGallery.id));
         this.loadImagePage();
     }
 
@@ -69,22 +74,30 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
     }
 
     private loadImagePage() {
-        this.imageService.GetByPage(this.imageGallery.id, this.page, this.pageSize)
-            .pipe(
-                map(result => {
-                    this.Images = result;
-                    this.loadThumbnails();
-                    this.loading = false;
-                }),
-                take(1)
-            )
-            .subscribe();
+        if (this.imageGallery) {
+            this.imageService.GetByPage(this.imageGallery.id, this.page, this.pageSize)
+                .pipe(
+                    map(result => {
+                        this.Images = result;
+                        this.loadThumbnails();
+                        this.loading = false;
+                    }),
+                    take(1)
+                )
+                .subscribe();
+        } else {
+            console.error(`Image Gallery has not been set.`);
+        }
     }
 
     private loadBreadcrumb() {
-        this.AddBreadCrumbItem("Home");
-        this.AddBreadCrumbItem("ImageGalleryList");
-        this.AddBreadCrumbItem("ImageList", this.imageGallery.displayName, this.imageGallery.id);
+        if (this.imageGallery) {
+            this.AddBreadCrumbItem("Home");
+            this.AddBreadCrumbItem("ImageGalleryList");
+            this.AddBreadCrumbItem("ImageList", this.imageGallery.displayName, this.imageGallery.id);
+        } else {
+            console.error(`Image Gallery has not been set.`);
+        }
     }
 
     selectCard(image: GalleryImage) {
@@ -104,9 +117,13 @@ export class ImageListComponent extends UIBase implements OnInit, OnDestroy {
     }
 
     private async loadThumbnails() {
-        this.Images.forEach(async image => {
-            image.imageThumbnail = await this.imageService.GetThumbnailByID(image.id, 200).toPromise();
-        });
+        if (this.Images) {
+            this.Images.forEach(async image => {
+                image.imageThumbnail = await firstValueFrom(this.imageService.GetThumbnailByID(image.id, 200));
+            });
+        } else {
+            console.error(`Images has not been set.`);
+        }
     }
 
     download(id: string) {

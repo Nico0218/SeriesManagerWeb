@@ -9,7 +9,7 @@ import { ImageService } from '../../../services/image.service';
     styleUrls: ['./image-viewer.component.scss']
 })
 export class ImageViewerComponent implements OnInit {
-    @Input() selectedImage: GalleryImage;
+    @Input() selectedImage?: GalleryImage;
     public loading = false;
 
     constructor(private imageService: ImageService) {
@@ -26,8 +26,10 @@ export class ImageViewerComponent implements OnInit {
             this.imageService.GetDataByID(this.selectedImage.id)
                 .pipe(
                     map(ii => {
-                        this.selectedImage.data = ii;
-                        this.loading = false;
+                        if (this.selectedImage) {
+                            this.selectedImage.data = ii;
+                            this.loading = false;
+                        }
                     }),
                     take(1)
                 )

@@ -1,3 +1,3 @@
-export class ImageDataWrapper {
+export interface ImageDataWrapper {
     imageData: string;
 }

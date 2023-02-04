@@ -19,8 +19,8 @@ export class ImageGalleryService {
     GetAll(): Observable<ImageGallery[]> {
         return this.httpClient.get(`${this.controllerURL}/GetAll`)
             .pipe(
-                map((ii: ImageGallery[]) => {
-                    return ii;
+                map((ii: any) => {
+                    return ii as ImageGallery[];
                 })
             );
     }
@@ -28,8 +28,8 @@ export class ImageGalleryService {
     GetByID(GalleryID: string): Observable<ImageGallery> {
         return this.httpClient.get(`${this.controllerURL}/GetByID/${GalleryID}`)
             .pipe(
-                map((ii: ImageGallery) => {
-                    return ii;
+                map((ii: any) => {
+                    return ii as ImageGallery;
                 })
             );
     }
@@ -37,8 +37,8 @@ export class ImageGalleryService {
     GetByName(GalleryName: string): Observable<ImageGallery> {
         return this.httpClient.get(`${this.controllerURL}/GetByName/${GalleryName}`)
             .pipe(
-                map((ii: ImageGallery) => {
-                    return ii;
+                map((ii: any) => {
+                    return ii as ImageGallery;
                 })
             );
     }

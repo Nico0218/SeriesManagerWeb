@@ -11,10 +11,10 @@ import { ConfigService } from '../../services/config.service';
     styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-    loginForm: UntypedFormGroup;
+    loginForm?: UntypedFormGroup;
     loading = false;
     submitted = false;
-    returnUrl: string;
+    returnUrl?: string;
     error = '';
 
     constructor(
@@ -43,7 +43,12 @@ export class LoginComponent implements OnInit {
     }
 
     // convenience getter for easy access to form fields
-    get formField() { return this.loginForm.controls; }
+    get formField() { 
+        if (!this.loginForm) {
+            throw new Error("Login Form is not set");            
+        }
+        return this.loginForm.controls; 
+    }
 
     onSubmit() {
         this.submitted = true;
@@ -54,7 +59,7 @@ export class LoginComponent implements OnInit {
             this.formField.password.setValue("admin");
 
         // stop here if form is invalid
-        if (this.loginForm.invalid) {
+        if (this.loginForm && this.loginForm.invalid) {
             return;
         }
 

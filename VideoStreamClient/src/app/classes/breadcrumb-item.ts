@@ -1,5 +1,5 @@
-export class BreadcrumbItem {
-    public id: string;
-    public label: string;
-    public path: string;
+export interface BreadcrumbItem {
+    id: string;
+    label: string;
+    path: string;
 }

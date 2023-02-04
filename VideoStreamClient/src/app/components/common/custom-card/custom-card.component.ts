@@ -8,13 +8,13 @@ import { faDownload, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
     styleUrls: ['./custom-card.component.scss']
 })
 export class CustomCardComponent {
-    @Input() route: any[];
-    @Input() title: string;
-    @Input() description: string;
+    @Input() route: any[] = [];
+    @Input() title: string = "";
+    @Input() description: string = "";
     @Input() thumbnail: string;
     @Input() showImage = true;
     @Input() showButtons = false;
-    @Input() itemID: string;
+    @Input() itemID: string = "";
     @Output() onImg = new EventEmitter<null>();
     @Output() onDownload = new EventEmitter<string>();
     // @Output() Download = new EventEmitter<string>();

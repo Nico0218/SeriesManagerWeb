@@ -11,6 +11,7 @@ import {
   takeUntil,
   tap
 } from "rxjs/operators";
+import { FolderModel } from "src/app/classes/Models/temp-folder-model";
 import { FolderLibrary } from "../../classes/config/folder-library";
 import { MainConfig } from "../../classes/config/main-config";
 import { ObjectStatus } from "../../enums/config/object-status";
@@ -31,12 +32,12 @@ export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
   loading = true;
   saving = false;
   error = "";
-  mainConfig: MainConfig;
-  model = {
-    folders: FolderLibrary[0],
+  mainConfig?: MainConfig;
+  model: FolderModel = {
+    folders: []
   };
   oldModel = this.model;
-  fields: FormlyFieldConfig[];
+  fields: FormlyFieldConfig[] = [];
 
   constructor(private configService: ConfigService, private router: Router) {
     super(router.config);
@@ -176,7 +177,13 @@ export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
         tap((ii) => {
           if (ii) this.mainConfig = ii;
           else {
-            this.mainConfig = new MainConfig();
+            this.mainConfig = {
+              id: '',
+              name: '',
+              displayName: '',
+              status: ObjectStatus.None,
+              isConfigured: false
+            };
           }
         }),
         first()
@@ -195,43 +202,51 @@ export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
     if (this.form.invalid) return;
     this.saving = true;
     //This is temp
-    if (this.mainConfig.status === ObjectStatus.None) {
-      this.mainConfig.status = ObjectStatus.Modified;
-    }
-    this.mainConfig.isConfigured = true;
+    if (this.mainConfig) {
+      if (this.mainConfig.status === ObjectStatus.None) {
+        this.mainConfig.status = ObjectStatus.Modified;
+      }
+      this.mainConfig.isConfigured = true;
 
-    this.configService
-      .SaveFolders(this.model.folders)
-      .pipe(
-        map((ii) => {
-          this.UpdateConfig();
-        }),
-        catchError((ii) => {
-          this.error = ii;
-          this.saving = false;
-          return ii;
-        })
-      )
-      .subscribe();
+      this.configService
+        .SaveFolders(this.model.folders)
+        .pipe(
+          map((ii) => {
+            this.UpdateConfig();
+          }),
+          catchError((ii) => {
+            this.error = ii;
+            this.saving = false;
+            return ii;
+          })
+        )
+        .subscribe();
+    } else {
+      console.error("Mainconfig has not been set");
+    }
   }
 
   private UpdateConfig() {
-    this.configService
-      .SaveConfig(this.mainConfig)
-      .pipe(
-        map((ii) => {
-          (this.model.folders as FolderLibrary[]).forEach((folder) => {
-            folder.status = ObjectStatus.None;
-          });
-          this.oldModel = JSON.parse(JSON.stringify(this.model));
-          this.saving = false;
-        }),
-        catchError((ii) => {
-          this.error = ii;
-          this.saving = false;
-          return ii;
-        })
-      )
-      .subscribe();
+    if (this.mainConfig) {
+      this.configService
+        .SaveConfig(this.mainConfig)
+        .pipe(
+          map((ii) => {
+            (this.model.folders as FolderLibrary[]).forEach((folder) => {
+              folder.status = ObjectStatus.None;
+            });
+            this.oldModel = JSON.parse(JSON.stringify(this.model));
+            this.saving = false;
+          }),
+          catchError((ii) => {
+            this.error = ii;
+            this.saving = false;
+            return ii;
+          })
+        )
+        .subscribe();
+    } else {
+      console.error("Mainconfig has not been set");
+    }
   }
 }

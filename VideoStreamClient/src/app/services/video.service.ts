@@ -10,13 +10,14 @@ export class VideoService {
     constructor(private httpClient: HttpClient) {
     }
 
-    public get controllerURL() : string {
+    public get controllerURL(): string {
         return `${Environment.apiUrl}/Video`;
     }
 
     GetByGallery(GalleryID: string): Observable<Video[]> {
         return this.httpClient.get(`${this.controllerURL}/GetByGallery/${GalleryID}`)
             .pipe(
+                map((ii: any) => ii as Video[]),
                 map((ii: Video[]) => {
                     return ii;
                 })
@@ -26,6 +27,7 @@ export class VideoService {
     GetCountByGallery(GalleryID: string): Observable<number> {
         return this.httpClient.get(`${this.controllerURL}/GetCountByGallery/${GalleryID}`)
             .pipe(
+                map((ii: any) => ii as number),
                 map((ii: number) => {
                     return ii;
                 })
@@ -35,6 +37,7 @@ export class VideoService {
     GetByPage(GalleryID: string, PageNo: number, PageSize: number): Observable<Video[]> {
         return this.httpClient.get(`${this.controllerURL}/GetByPage/${GalleryID}/${PageNo}/${PageSize}`)
             .pipe(
+                map((ii: any) => ii as Video[]),
                 map((ii: Video[]) => {
                     return ii;
                 })

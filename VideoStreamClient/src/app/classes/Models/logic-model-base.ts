@@ -1,15 +1,8 @@
 import { ObjectStatus } from '../../enums/config/object-status';
 
-export abstract class LogicModelBase {
-    public id: string;
-    public name: string;
-    public displayName: string;
-    public status: ObjectStatus;
-
-    /**
-     *
-     */
-    constructor() {
-        this.status = ObjectStatus.Created;
-    }
+export interface LogicModelBase {
+    id: string;
+    name: string;
+    displayName: string;
+    status: ObjectStatus;
 }

@@ -13,7 +13,7 @@ import { UIBase } from '../../common/ui-base-component/ui-base.component';
 export class VideoGalleryListComponent extends UIBase implements OnInit, OnDestroy {
     videoList: VideoGallery[] = [];
 
-    constructor(private videoGalleryService: VideoGalleryService, 
+    constructor(private videoGalleryService: VideoGalleryService,
         private router: Router) {
         super(router.config);
     }

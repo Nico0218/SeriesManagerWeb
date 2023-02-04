@@ -1,12 +1,12 @@
+import { APP_BASE_HREF } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
+import { firstValueFrom, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { of, Observable } from 'rxjs';
 import { AppConfig } from '../classes/app-config';
-import { Environment } from '../classes/environment';
-import { MainConfig } from '../classes/config/main-config';
 import { FolderLibrary } from '../classes/config/folder-library';
-import { APP_BASE_HREF } from '@angular/common';
+import { MainConfig } from '../classes/config/main-config';
+import { Environment } from '../classes/environment';
 
 @Injectable()
 export class ConfigService {
@@ -21,20 +21,24 @@ export class ConfigService {
         return `${Environment.apiUrl}/Config`;
     }
 
-    public loadAppsettings(): Promise<any> {
-        return this.httpClient.get(this.applicationPath + "assets/appsettings.json").pipe(
-            map((result: AppConfig) => {
-                Environment.apiUrl = result.apiUrl;
-                Environment.production = result.production;
-                return of(result)
-            })).toPromise();
+    public loadAppSettings(): Promise<AppConfig> {
+        return firstValueFrom(this.httpClient.get(this.applicationPath + "assets/appsettings.json")
+            .pipe(
+                map((result: unknown) => {
+                    const appConfig = result as AppConfig;
+                    Environment.apiUrl = appConfig.apiUrl;
+                    Environment.production = appConfig.production;
+                    return appConfig;
+                })
+            )
+        );
     }
 
     public IsConfigured(): Observable<boolean> {
         return this.httpClient.get(`${this.controllerURL}/IsConfigured`)
             .pipe(
-                map((ii: boolean) => {
-                    return ii;
+                map((ii: unknown) => {
+                    return ii as boolean;
                 })
             );
     }
@@ -42,8 +46,8 @@ export class ConfigService {
     public GetConfig(): Observable<MainConfig> {
         return this.httpClient.get(`${this.controllerURL}/GetConfig`)
             .pipe(
-                map((ii: MainConfig) => {
-                    return ii;
+                map((ii: unknown) => {
+                    return ii as MainConfig;
                 })
             );
     }
@@ -51,8 +55,8 @@ export class ConfigService {
     public SaveConfig(mainConfig: MainConfig): Observable<boolean> {
         return this.httpClient.post(`${this.controllerURL}/SaveConfig`, mainConfig)
             .pipe(
-                map((ii: boolean) => {
-                    return ii;
+                map((ii: unknown) => {
+                    return ii as boolean;
                 })
             );
     }
@@ -60,17 +64,17 @@ export class ConfigService {
     public GetFolders(): Observable<FolderLibrary[]> {
         return this.httpClient.get(`${this.controllerURL}/GetFolders`)
             .pipe(
-                map((ii: FolderLibrary[]) => {
-                    return ii;
+                map((ii: unknown) => {
+                    return ii as FolderLibrary[];
                 })
             );
     }
 
-    public SaveFolders(folders): Observable<boolean> {
+    public SaveFolders(folders: FolderLibrary[]): Observable<boolean> {
         return this.httpClient.post(`${this.controllerURL}/SaveFolders`, folders)
             .pipe(
-                map((ii: boolean) => {
-                    return ii;
+                map((ii: unknown) => {
+                    return ii as boolean;
                 })
             );
     }

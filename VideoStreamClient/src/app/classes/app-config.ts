@@ -1,4 +1,4 @@
-export class AppConfig {
-    public production: boolean;
-    public apiUrl: string;
+export interface AppConfig {
+    production: boolean;
+    apiUrl: string;
 }

@@ -1,79 +1,202 @@
 <div class="container-fluid vh-100">
     <div class="d-flex flex-column h-100">
         <div class="row">
-            <breadcrum-component class="col" *ngIf="breadcrumbItems" [breadcrumbItems]="breadcrumbItems">
+            <breadcrum-component
+                class="col"
+                *ngIf="breadcrumbItems"
+                [breadcrumbItems]="breadcrumbItems"
+            >
             </breadcrum-component>
         </div>
         <div *ngIf="!loading" class="row flex-grow-1">
             <div class="col-6">
                 <div *ngIf="videoGallery" class="card w-100 h-100">
                     <div class="card-body">
-                        <div class="float-end" style="height: 40px;">
-                            <button *ngIf="!canEdit" type="button" class="btn btn-secondary btn-custom"
-                                (click)=Edit()>Edit</button>
-                            <button *ngIf="canEdit" type="button" class="btn btn-secondary btn-custom"
-                                (click)=Save()>Save</button>
-                            <button *ngIf="canEdit" type="button" class="btn btn-secondary btn-custom"
-                                (click)=Cancel()>Cancel</button>
+                        <div class="float-end" style="height: 40px">
+                            <button
+                                *ngIf="!canEdit"
+                                type="button"
+                                class="btn btn-secondary btn-custom"
+                                (click)="Edit()"
+                            >
+                                Edit
+                            </button>
+                            <button
+                                *ngIf="canEdit"
+                                type="button"
+                                class="btn btn-secondary btn-custom"
+                                (click)="Save()"
+                            >
+                                Save
+                            </button>
+                            <button
+                                *ngIf="canEdit"
+                                type="button"
+                                class="btn btn-secondary btn-custom"
+                                (click)="Cancel()"
+                            >
+                                Cancel
+                            </button>
                         </div>
-                        <h5 class="card-title">{{videoGallery.displayName}}</h5>
+                        <h5 class="card-title">
+                            {{ videoGallery.displayName }}
+                        </h5>
                         <h6 class="card-subtitle mb-2 text-muted">
-                            <ngb-rating [max]="5" [(rate)]="videoGallery.rating" [readonly]="false"
-                                (rateChange)="RateChange($event)"></ngb-rating>
+                            <ngb-rating
+                                [max]="5"
+                                [(rate)]="videoGallery.rating"
+                                [readonly]="false"
+                                (rateChange)="RateChange($event)"
+                            ></ngb-rating>
                         </h6>
                         <div *ngIf="!canEdit">
-                            <p class="card-text">{{videoGallery.description}}</p>
-                            <a href="{{videoGallery.wikiLink}}" class="card-link" target="_blank">My Anime List</a>
+                            <p class="card-text">
+                                {{ videoGallery.description }}
+                            </p>
+                            <a
+                                href="{{ videoGallery.wikiLink }}"
+                                class="card-link"
+                                target="_blank"
+                                >My Anime List</a
+                            >
                             <div class="row">
-                                <div class="col-6" style="white-space:nowrap">
-                                    <label for="airingState">Airing State : </label>
-                                    <span id="airingState"
-                                        style="padding-left: 5px;">{{AiringState[videoGallery.airingState]}}</span>
+                                <div class="col-6" style="white-space: nowrap">
+                                    <label for="airingState"
+                                        >Airing State :
+                                    </label>
+                                    <span
+                                        id="airingState"
+                                        style="padding-left: 5px"
+                                        >{{
+                                            AiringState[
+                                                videoGallery.airingState
+                                            ]
+                                        }}</span
+                                    >
                                 </div>
-                                <div class="col-6" style="white-space:nowrap">
-                                    <label for="episodeCount">Episode Count : </label>
-                                    <span id="episodeCount"
-                                        style="padding-left: 5px;">{{videoGallery.episodeCount}}</span>
+                                <div class="col-6" style="white-space: nowrap">
+                                    <label for="episodeCount"
+                                        >Episode Count :
+                                    </label>
+                                    <span
+                                        id="episodeCount"
+                                        style="padding-left: 5px"
+                                        >{{ videoGallery.episodeCount }}</span
+                                    >
                                 </div>
                             </div>
                         </div>
                         <div *ngIf="canEdit">
-                            <textarea [(ngModel)]='videoGallery.description' id="description" name="description"
-                                class="w-100" style="height: 300px;"></textarea>
-                            <input class="w-100" type="url" [(ngModel)]='videoGallery.wikiLink' maxlength="250">
+                            <textarea
+                                [(ngModel)]="videoGallery.description"
+                                id="description"
+                                name="description"
+                                class="w-100"
+                                style="height: 300px"
+                            ></textarea>
+                            <input
+                                class="w-100"
+                                type="url"
+                                [(ngModel)]="videoGallery.wikiLink"
+                                maxlength="250"
+                            />
                             <div class="row">
-                                <div class="col-6" style="white-space:nowrap">
-                                    <label for="airingState">Airing State : </label>
-                                    <div ngbDropdown class="d-inline-block" style="padding-left: 5px;">
-                                        <button class="btn btn-outline-primary" id="dropdownBasic1"
-                                            ngbDropdownToggle>{{AiringState[videoGallery.airingState]}}</button>
-                                        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                                            <button ngbDropdownItem
-                                                (click)='AiringStateClicked(AiringState["Currently Airing"])'>{{AiringState[AiringState["Currently
-                                                Airing"]]}}</button>
-                                            <button ngbDropdownItem
-                                                (click)='AiringStateClicked(AiringState["Finished Airing"])'>{{AiringState[AiringState["Finished
-                                                Airing"]]}}</button>
+                                <div class="col-6" style="white-space: nowrap">
+                                    <label for="airingState"
+                                        >Airing State :
+                                    </label>
+                                    <div
+                                        ngbDropdown
+                                        class="d-inline-block"
+                                        style="padding-left: 5px"
+                                    >
+                                        <button
+                                            class="btn btn-outline-primary"
+                                            id="dropdownBasic1"
+                                            ngbDropdownToggle
+                                        >
+                                            {{
+                                                AiringState[
+                                                    videoGallery.airingState
+                                                ]
+                                            }}
+                                        </button>
+                                        <div
+                                            ngbDropdownMenu
+                                            aria-labelledby="dropdownBasic1"
+                                        >
+                                            <button
+                                                ngbDropdownItem
+                                                (click)="
+                                                    AiringStateClicked(
+                                                        AiringState[
+                                                            'Currently Airing'
+                                                        ]
+                                                    )
+                                                "
+                                            >
+                                                {{
+                                                    AiringState[
+                                                        AiringState[
+                                                            'Currently Airing'
+                                                        ]
+                                                    ]
+                                                }}
+                                            </button>
+                                            <button
+                                                ngbDropdownItem
+                                                (click)="
+                                                    AiringStateClicked(
+                                                        AiringState[
+                                                            'Finished Airing'
+                                                        ]
+                                                    )
+                                                "
+                                            >
+                                                {{
+                                                    AiringState[
+                                                        AiringState[
+                                                            'Finished Airing'
+                                                        ]
+                                                    ]
+                                                }}
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-6" style="white-space:nowrap">
-                                    <label for="episodeCount">Episode Count : </label>
-                                    <input type="number" id="episodeCount" style="padding-left: 5px;"
-                                        [(ngModel)]='videoGallery.episodeCount' />
+                                <div class="col-6" style="white-space: nowrap">
+                                    <label for="episodeCount"
+                                        >Episode Count :
+                                    </label>
+                                    <input
+                                        type="number"
+                                        id="episodeCount"
+                                        style="padding-left: 5px"
+                                        [(ngModel)]="videoGallery.episodeCount"
+                                    />
                                 </div>
                             </div>
                         </div>
 
-                        <ngb-pagination *ngIf="collectionSize > pageSize"
-                            class="w-100 custom-row d-flex justify-content-center custom-paginator" [(page)]="page"
-                            [pageSize]="pageSize" [collectionSize]="collectionSize" [rotate]="true"
-                            (pageChange)="pageChange()">
+                        <ngb-pagination
+                            *ngIf="collectionSize > pageSize"
+                            class="w-100 custom-row d-flex justify-content-center custom-paginator"
+                            [(page)]="page"
+                            [pageSize]="pageSize"
+                            [collectionSize]="collectionSize"
+                            [rotate]="true"
+                            (pageChange)="pageChange()"
+                        >
                         </ngb-pagination>
                         <ul class="list-group list-group-flush">
-                            <li *ngFor="let video of videos" class="list-group-item custom-card-list-item"
-                                (click)="SelectFile(video)">
-                                <p class="custom-card-list-item-div">{{video.displayName}}</p>
+                            <li
+                                *ngFor="let video of videos"
+                                class="list-group-item custom-card-list-item"
+                                (click)="SelectFile(video)"
+                            >
+                                <p class="custom-card-list-item-div">
+                                    {{ video.displayName }}
+                                </p>
                             </li>
                         </ul>
                     </div>
@@ -87,10 +210,24 @@
                     </div>
                 </div> -->
             </div>
-            <div class="col-6" style="border:  2px; border-radius: 4px; border-color: azure; border-style: solid;">
-                <video-viewer-component *ngIf="selectedVideo" [selectedVideo]="selectedVideo"></video-viewer-component>
+            <div
+                class="col-6"
+                style="
+                    border: 2px;
+                    border-radius: 4px;
+                    border-color: azure;
+                    border-style: solid;
+                "
+            >
+                <video-viewer-component
+                    *ngIf="selectedVideo"
+                    [selectedVideo]="selectedVideo"
+                ></video-viewer-component>
             </div>
         </div>
     </div>
-    <load-indicator-component *ngIf="loading" class="row"></load-indicator-component>
+    <load-indicator-component
+        *ngIf="loading"
+        class="row"
+    ></load-indicator-component>
 </div>

@@ -5,7 +5,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <_PublishTargetUrl>C:\inetpub\wwwroot\SeriesManagerWeb\SeriesManagerServer</_PublishTargetUrl>
-    <History>True|2023-02-04T17:56:00.9527675Z;False|2022-04-13T23:03:15.8631988+02:00;True|2021-11-29T23:56:37.9592015+02:00;False|2021-11-29T23:53:21.4925432+02:00;</History>
+    <History>True|2023-06-24T14:28:02.3003495Z;True|2023-06-24T15:05:47.5284611+02:00;True|2023-06-18T20:30:00.2940988+02:00;False|2023-06-18T20:27:31.8665798+02:00;False|2023-06-18T20:25:32.3136612+02:00;True|2023-02-05T00:28:51.3849286+02:00;True|2023-02-04T19:56:00.9527675+02:00;False|2022-04-13T23:03:15.8631988+02:00;True|2021-11-29T23:56:37.9592015+02:00;False|2021-11-29T23:53:21.4925432+02:00;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>

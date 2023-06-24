@@ -3,9 +3,11 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "serve": "ng serve",
+    "serve-prod": "ng serve --configuration production",
     "build": "ng build",
-    "build-prod": "ng build --configuration production --base-href /VideoStreamClient/ && xcopy \"H:/CodeRepo/SeriesManagerWeb/VideoStreamClient/dist/VideoStreamClient\" \"C:/inetpub/wwwroot/SeriesManagerWeb/VideoStreamClient\" /E /H /C /I /Y",
+    "build-prod": "ng build --configuration production --base-href /VideoStreamClient/",
+    "deploy": "npm run build-prod && xcopy \"H:/CodeRepo/SeriesManagerWeb/VideoStreamClient/dist/VideoStreamClient\" \"C:/inetpub/wwwroot/SeriesManagerWeb/VideoStreamClient\" /E /H /C /I /Y",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

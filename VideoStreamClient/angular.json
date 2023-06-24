@@ -41,8 +41,7 @@
                                     "with": "src/environments/environment.prod.ts"
                                 }
                             ],
-                            "outputPath": "C:/inetpub/wwwroot/VSS/Client",
-                            "baseHref": "/Client/",
+                            "outputPath": "dist/VideoStreamClient",
                             "optimization": true,
                             "outputHashing": "all",
                             "sourceMap": false,

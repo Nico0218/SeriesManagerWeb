@@ -18,6 +18,7 @@ import { ObjectStatus } from '../../enums/config/object-status'
 import { Guid } from '../../helpers/guid'
 import { ConfigService } from '../../services/config.service'
 import { UIBase } from '../common/ui-base-component/ui-base.component'
+import { v4 as uuidv4 } from 'uuid'
 
 @Component({
     selector: 'config-main-component',
@@ -194,7 +195,7 @@ export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
                     if (ii) this.mainConfig = ii
                     else {
                         this.mainConfig = {
-                            id: crypto.randomUUID(),
+                            id: uuidv4(),
                             name: 'DefaultAppSpace',
                             displayName: 'DefaultAppSpace',
                             status: ObjectStatus.None,
@@ -228,7 +229,7 @@ export class ConfigMainComponent extends UIBase implements OnInit, OnDestroy {
                 .pipe(
                     map((ii) => {
                         this.mainConfig!.isConfigured = true
-                        this.UpdateConfig();
+                        this.UpdateConfig()
                     }),
                     catchError((ii) => {
                         this.error = ii

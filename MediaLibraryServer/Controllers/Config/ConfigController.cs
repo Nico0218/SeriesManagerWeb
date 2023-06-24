@@ -25,9 +25,7 @@ namespace MediaLibraryServer.Controllers {
             //Check if we did first time setup
             if (!configService.IsConfigReady())
                 return new ObjectResult(false);
-            //Check if the required config is still valid
-            if (!configService.IsConfigReady())
-                return new ObjectResult(false);
+            // TODO Check if the required config is still valid
             return new ObjectResult(true);
         }
 

@@ -9,7 +9,7 @@ import UnprotectedRouteProps from './unprotected-route-props';
 const UnprotectedRoute = ({ children }: UnprotectedRouteProps): ReactJSXElement => {
 	const hasUser = getLocalStorageItem<UserInfo>(userInfoKey);
 	if (hasUser) {
-		return <Navigate to={AppRoutes.Gallery} replace />;
+		return <Navigate to={AppRoutes.Home} replace />;
 	}
 
 	return children;

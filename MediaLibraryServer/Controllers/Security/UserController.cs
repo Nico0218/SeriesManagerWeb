@@ -18,8 +18,8 @@ namespace MediaLibraryServer.Controllers {
             this.userService = userService;
         }
 
-        [HttpPost("Authenticate")]
-        public IActionResult Authenticate(LoginRequest loginRequest) {
+        [HttpPost("Login")]
+        public IActionResult Login(LoginRequest loginRequest) {
             try {
                 User user = userService.Login(loginRequest);
                 if (user == null) {
@@ -32,6 +32,20 @@ namespace MediaLibraryServer.Controllers {
                 logger.LogError($"Login request failed - {HttpContext.Request.Host}", ex);
                 return new UnauthorizedResult();
             }            
+        }
+
+        [HttpPost("Logout")]
+        public IActionResult Logout(LoginRequest loginRequest)
+        {
+            try
+            {
+                return new OkResult();
+            } catch (Exception ex)
+            {
+                //The login failed for an unexpected reason
+                logger.LogError($"Login request failed - {HttpContext.Request.Host}", ex);
+                return new UnauthorizedResult();
+            }
         }
     }
 }

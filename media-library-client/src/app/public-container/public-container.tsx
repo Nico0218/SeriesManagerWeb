@@ -5,6 +5,8 @@ import UserInfo from '../classes/user-info';
 import { userInfoKey } from '../constants';
 import { setLocalStorageItem } from '../functions/local-storage';
 import AppRoutes from '../routes/app-routes';
+import HttpHelper from '../classes/http-helper';
+import dispatchSnackbar from '../functions/dispatch-snackbar';
 
 export default function PublicContainer() {
 	const navigate = useNavigate();
@@ -12,9 +14,17 @@ export default function PublicContainer() {
 	const [password, setPassword] = useState<string>('');
 
 	const onLoginClick = () => {
-		const userInfo: UserInfo = { name: userName, token: '' };
-		setLocalStorageItem(userInfoKey, userInfo);
-		navigate(AppRoutes.Gallery);
+		HttpHelper.auth.login(
+			{ UserName: userName, Password: password },
+			() => {
+				const userInfo: UserInfo = { name: userName, token: '' };
+				setLocalStorageItem(userInfoKey, userInfo);
+				navigate(AppRoutes.Home);
+			},
+			err => {
+				dispatchSnackbar({ severity: 'error', open: true, message: 'Failed to login' });
+			}
+		);
 	};
 
 	return (

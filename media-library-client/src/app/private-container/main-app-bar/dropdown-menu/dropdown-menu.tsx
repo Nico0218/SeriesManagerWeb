@@ -1,6 +1,7 @@
 import { Button, ClickAwayListener, Grow, MenuItem, MenuList, Paper, Popper } from '@mui/material';
 import { KeyboardEvent, SyntheticEvent, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ThemeSelector from '../../../custom-components/theme-selector/theme-selector';
 import { userInfoKey } from '../../../constants';
 import { setLocalStorageItem } from '../../../functions/local-storage';
 import AppRoutes from '../../../routes/app-routes';
@@ -76,6 +77,7 @@ export function DropdownMenu() {
 									aria-labelledby="composition-button"
 									onKeyDown={handleListKeyDown}
 								>
+									<ThemeSelector sx={{ m: 2 }} />
 									<MenuItem onClick={onSettingsClick}>Settings</MenuItem>
 									<MenuItem onClick={onLogoutClick}>Logout</MenuItem>
 								</MenuList>

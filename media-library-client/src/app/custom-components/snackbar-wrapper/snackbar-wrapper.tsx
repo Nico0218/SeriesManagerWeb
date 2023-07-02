@@ -8,7 +8,7 @@ import SnackBarPayload from './snack-bar-payload';
 
 export default function SnackbarWrapper() {
 	const [snackBarPayload, setSnackBarPayload] = useState<SnackBarPayload>({
-		state: false,
+		open: false,
 		message: '',
 	});
 
@@ -27,7 +27,7 @@ export default function SnackbarWrapper() {
 		}
 
 		const temp = { ...snackBarPayload };
-		temp.state = false;
+		temp.open = false;
 		window.localStorage.removeItem(snackBarStorageKey);
 		setSnackBarPayload(temp);
 	};
@@ -46,7 +46,7 @@ export default function SnackbarWrapper() {
 
 	return (
 		<Snackbar
-			open={snackBarPayload.state}
+			open={snackBarPayload.open}
 			autoHideDuration={2000}
 			onClose={handleClose}
 			action={action}

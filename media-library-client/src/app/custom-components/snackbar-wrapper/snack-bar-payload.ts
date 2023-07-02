@@ -1,7 +1,7 @@
 import { AlertColor } from '@mui/material/Alert/Alert';
 
 export default interface SnackBarPayload {
-	state: boolean;
+	open: boolean;
 	message: string;
 	severity?: AlertColor | undefined;
 }

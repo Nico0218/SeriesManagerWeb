@@ -1,38 +1,49 @@
 import {
-	Button,
 	Card,
 	CardActionArea,
 	CardActions,
 	CardContent,
 	CardMedia,
+	Grid,
 	Typography,
 } from '@mui/material';
+import CustomCardProps from './custom-card-props';
 
-export default function CustomCard() {
+export default function CustomCard({
+	imgSrc,
+	title,
+	description,
+	children,
+	defaultAction,
+}: CustomCardProps) {
 	return (
-		<Card sx={{ maxWidth: 345 }}>
-			<CardActionArea>
-				<CardMedia
-					component="img"
-					height="140"
-					image="/static/images/cards/contemplative-reptile.jpg"
-					alt="green iguana"
-				/>
-				<CardContent>
-					<Typography gutterBottom variant="h5" component="div">
-						Lizard
-					</Typography>
-					<Typography variant="body2" color="text.secondary">
-						Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
-						across all continents except Antarctica
-					</Typography>
-				</CardContent>
-			</CardActionArea>
-			<CardActions>
-				<Button size="small" color="primary">
-					Share
-				</Button>
-			</CardActions>
-		</Card>
+		<Grid item>
+			<Card sx={{ maxWidth: 345 }}>
+				<CardActionArea onClick={defaultAction}>
+					<CardMedia
+						component="img"
+						image={imgSrc ? imgSrc : 'src/assets/image-placeholder.png'}
+						alt="green iguana"
+						sx={{ maxWidth: '100%', maxHeight: '100%', p: 1 }}
+						style={{ fill: '' }}
+					/>
+					<CardContent sx={{ p: 1 }}>
+						{title && (
+							<Typography gutterBottom variant="h5" component="div">
+								{title}
+							</Typography>
+						)}
+						{description && (
+							<Typography variant="body2" color="text.secondary">
+								{description}
+							</Typography>
+						)}
+					</CardContent>
+				</CardActionArea>
+				{children && (
+					<CardActions sx={{ display: 'flex', justifyContent: 'flex-end' }}>{children}</CardActions>
+				)}
+			</Card>
+		</Grid>
 	);
 }

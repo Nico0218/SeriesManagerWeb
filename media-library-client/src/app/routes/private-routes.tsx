@@ -1,6 +1,8 @@
 import { Navigate, RouteObject } from 'react-router-dom';
 import LazyErrorPage from '../common-pages/error-page/lazy-error-page';
-import LazyGallery from '../private-container/pages/gallery/lazy-gallery';
+import LazyImageGallery from '../private-container/pages/home/image-gallery/lazy-image-gallery';
+import LazyHome from '../private-container/pages/home/lazy-home';
+import LazyVideoGallery from '../private-container/pages/home/video-gallery/lazy-video-gallery';
 import LazyFolderLocations from '../private-container/pages/settings/lazy-folder-locations';
 import PrivateContainer from '../private-container/private-container';
 import AppRoutes from './app-routes';
@@ -13,17 +15,17 @@ const privateRoutes: RouteObject[] = [
 			<ProtectedRoute>
 				<>
 					<PrivateContainer />
-					<Navigate to={AppRoutes.Gallery} />
+					<Navigate to={AppRoutes.Home} />
 				</>
 			</ProtectedRoute>
 		),
 		errorElement: <LazyErrorPage />,
 		children: [
 			{
-				path: AppRoutes.Gallery,
+				path: AppRoutes.Home,
 				element: (
 					<ProtectedRoute>
-						<LazyGallery />
+						<LazyHome />
 					</ProtectedRoute>
 				),
 			},
@@ -32,6 +34,22 @@ const privateRoutes: RouteObject[] = [
 				element: (
 					<ProtectedRoute>
 						<LazyFolderLocations />
+					</ProtectedRoute>
+				),
+			},
+			{
+				path: AppRoutes.HomeImage,
+				element: (
+					<ProtectedRoute>
+						<LazyImageGallery />
+					</ProtectedRoute>
+				),
+			},
+			{
+				path: AppRoutes.HomeVideo,
+				element: (
+					<ProtectedRoute>
+						<LazyVideoGallery />
 					</ProtectedRoute>
 				),
 			},

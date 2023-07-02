@@ -1,7 +1,9 @@
 enum AppRoutes {
 	Login = '/Login',
 	Root = '/',
-	Gallery = '/Galley',
+	Home = '/Home',
+	HomeImage = '/Home/Images',
+	HomeVideo = '/Home/Video',
 	FolderLocation = '/Settings/FolderLocations',
 }
 export default AppRoutes;

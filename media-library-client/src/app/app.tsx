@@ -16,45 +16,45 @@ import createEmotionCache from './utils/create-emotion-cache';
 import QueryClientWrapper from './utils/create-query-client';
 
 export default function App() {
-  const themeKey = 'Theme';
-  const [theme, setTheme] = useState<AvailableThemes>(
-    (localStorage.getItem(themeKey) ?? 'defaultDarkTheme') as AvailableThemes
-  );
-  const emotionCache = createEmotionCache();
-  useMemo(() => {
-    if (theme) {
-      localStorage.setItem(themeKey, theme);
-    }
-  }, [theme]);
+	const themeKey = 'Theme';
+	const [theme, setTheme] = useState<AvailableThemes>(
+		(localStorage.getItem(themeKey) ?? 'defaultDarkTheme') as AvailableThemes
+	);
+	const emotionCache = createEmotionCache();
+	useMemo(() => {
+		if (theme) {
+			localStorage.setItem(themeKey, theme);
+		}
+	}, [theme]);
 
-  const muiTheme = useMemo(() => {
-    if (theme) {
-      return createTheme(availableThemes[theme]);
-    }
-    return createTheme(availableThemes['defaultDarkTheme']);
-  }, [theme]);
+	const muiTheme = useMemo(() => {
+		if (theme) {
+			return createTheme(availableThemes[theme]);
+		}
+		return createTheme(availableThemes['defaultDarkTheme']);
+	}, [theme]);
 
-  const router = createBrowserRouter([...privateRoutes, ...publicRoutes]);
-  return (
-    <GlobalAppContext.Provider
-      value={{
-        theme: theme,
-        setTheme: setTheme,
-      }}
-    >
-      <QueryClientProvider client={QueryClientWrapper.queryClient}>
-        <ThemeProvider theme={muiTheme}>
-          <CacheProvider value={emotionCache}>
-            <LocalizationProvider dateAdapter={AdapterLuxon}>
-              <CssBaseline />
-              <Suspense fallback={<LoadingComponent />}>
-                <RouterProvider router={router} />
-              </Suspense>
-              <SnackbarWrapper />
-            </LocalizationProvider>
-          </CacheProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </GlobalAppContext.Provider>
-  );
+	const router = createBrowserRouter([...privateRoutes, ...publicRoutes]);
+	return (
+		<GlobalAppContext.Provider
+			value={{
+				theme: theme,
+				setTheme: setTheme,
+			}}
+		>
+			<QueryClientProvider client={QueryClientWrapper.queryClient}>
+				<ThemeProvider theme={muiTheme}>
+					<CacheProvider value={emotionCache}>
+						<LocalizationProvider dateAdapter={AdapterLuxon}>
+							<CssBaseline />
+							<Suspense fallback={<LoadingComponent />}>
+								<RouterProvider router={router} />
+							</Suspense>
+							<SnackbarWrapper />
+						</LocalizationProvider>
+					</CacheProvider>
+				</ThemeProvider>
+			</QueryClientProvider>
+		</GlobalAppContext.Provider>
+	);
 }

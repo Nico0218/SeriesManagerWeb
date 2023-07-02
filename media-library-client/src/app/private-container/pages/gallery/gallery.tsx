@@ -1,22 +1,17 @@
-import { Box, Button, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { userNameKey, userTokenKey } from 'src/app/constants';
-import { setLocalStorageItem } from 'src/app/functions/local-storage';
-import AppRoutes from 'src/app/routes/app-routes';
+import { Box } from '@mui/material';
+import { useEffect } from 'react';
+import CustomCard from '../../../custom-components/custom-card/custom-card';
+import { AddBreadCrumbItem } from '../../../functions/bread-crumb-functions';
+import AppRoutes from '../../../routes/app-routes';
 
 export default function Gallery() {
-  const navigate = useNavigate();
+	useEffect(() => {
+		AddBreadCrumbItem({ label: 'Gallery', route: AppRoutes.Gallery });
+	}, []);
 
-  const onLogoutClick = () => {
-    setLocalStorageItem(userTokenKey, '');
-    setLocalStorageItem(userNameKey, '');
-    navigate(AppRoutes.Login);
-  };
-
-  return (
-    <Box>
-      <Typography>Gallery</Typography>
-      <Button onClick={onLogoutClick}>Logout</Button>
-    </Box>
-  );
+	return (
+		<Box>
+			<CustomCard />
+		</Box>
+	);
 }

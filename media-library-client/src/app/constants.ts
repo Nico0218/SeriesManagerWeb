@@ -1,4 +1,4 @@
 export const mainAppBarHeight = 60;
-export const snackBarStorageID = 'snackbar-storage';
-export const userTokenKey = 'user-token';
-export const userNameKey = 'user-name';
+export const snackBarStorageKey = 'snackbar-storage';
+export const userInfoKey = 'user-info';
+export const breadCrumbKey = 'bread-crumb';

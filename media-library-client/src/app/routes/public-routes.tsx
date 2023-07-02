@@ -5,15 +5,15 @@ import AppRoutes from './app-routes';
 import UnprotectedRoute from './unprotected-route.tsx/unprotected-route';
 
 export const publicRoutes: RouteObject[] = [
-  {
-    path: AppRoutes.Login,
-    element: (
-      <UnprotectedRoute>
-        <LazyPublicContainer />
-      </UnprotectedRoute>
-    ),
-    errorElement: <LazyErrorPage />,
-  },
+	{
+		path: AppRoutes.Login,
+		element: (
+			<UnprotectedRoute>
+				<LazyPublicContainer />
+			</UnprotectedRoute>
+		),
+		errorElement: <LazyErrorPage />,
+	},
 ];
 
 export default publicRoutes;

@@ -38,3 +38,4 @@ VideoStreamClient/package-lock.json
 TestBench/bin/Debug
 
 TestBench/obj/
+/media-library-client/.nx

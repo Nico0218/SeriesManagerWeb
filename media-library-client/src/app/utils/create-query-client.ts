@@ -1,9 +1,9 @@
-import { QueryClient, QueryKey, UseQueryOptions } from '@tanstack/react-query';
+import { QueryClient, QueryFilters, UseQueryOptions } from '@tanstack/react-query';
 
 export default class QueryClientWrapper {
 	public static queryClient = new QueryClient();
 
-	public static InvalidateKey = (key: QueryKey) => {
+	public static InvalidateKey = (key: QueryFilters) => {
 		const queryCache = QueryClientWrapper.queryClient.getQueryCache();
 		const queries = queryCache.findAll(key);
 		for (let i = 0; i < queries.length; i++) {

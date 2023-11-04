@@ -1,19 +1,10 @@
-import {
-	Backdrop,
-	Button,
-	Card,
-	CardActions,
-	CardContent,
-	CardMedia,
-	Fade,
-	Modal,
-	Typography,
-} from '@mui/material';
+import { Backdrop, Button, Dialog, Fade } from '@mui/material';
 import { useEffect, useState } from 'react';
 import HttpHelper from '../../../../../../classes/http-helper';
+import CustomCard from '../../../../../../custom-components/custom-card/custom-card';
 import ImageCardProps from './image-card-props';
 
-export default function ImageCard({ ImageID, DisplayName }: ImageCardProps) {
+export default function ImageCard({ ImageID, DisplayName }: Readonly<ImageCardProps>) {
 	const [dataImage, setDataImage] = useState<string>();
 
 	const [open, setOpen] = useState(false);
@@ -35,24 +26,23 @@ export default function ImageCard({ ImageID, DisplayName }: ImageCardProps) {
 
 	return (
 		<>
-			<Card sx={{ maxWidth: 345 }} onClick={handleOpen}>
-				<CardMedia
-					sx={{ height: 140 }}
-					image={`data:image/png;base64,${image}`}
-					title={DisplayName}
-				/>
-				<CardContent>
-					<Typography gutterBottom variant="h5" component="div">
-						{DisplayName}
-					</Typography>
-				</CardContent>
-				<CardActions>
-					<Button size="small">Rename</Button>
-					<Button size="small">Download</Button>
-					<Button size="small">Delete</Button>
-				</CardActions>
-			</Card>
-			<Modal
+			<CustomCard
+				title={DisplayName}
+				imgSrc={`data:image/png;base64,${image}`}
+				defaultAction={handleOpen}
+				actions={[
+					<Button key="Rename" size="small">
+						Rename
+					</Button>,
+					<Button key="Download" size="small">
+						Download
+					</Button>,
+					<Button key="Delete" size="small">
+						Delete
+					</Button>,
+				]}
+			/>
+			<Dialog
 				aria-labelledby="transition-modal-title"
 				aria-describedby="transition-modal-description"
 				open={open}
@@ -64,11 +54,21 @@ export default function ImageCard({ ImageID, DisplayName }: ImageCardProps) {
 						timeout: 500,
 					},
 				}}
+				fullScreen
 			>
 				<Fade in={open}>
-					<img height="100%" src={`data:image/png;base64,${dataImage}`} />
+					<img
+						height="100%"
+						src={`data:image/png;base64,${dataImage}`}
+						onClick={() => {
+							setOpen(false);
+						}}
+						onKeyUp={() => {
+							setOpen(false);
+						}}
+					/>
 				</Fade>
-			</Modal>
+			</Dialog>
 		</>
 	);
 }

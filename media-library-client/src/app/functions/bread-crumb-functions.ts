@@ -1,22 +1,13 @@
-import { breadCrumbKey } from '../constants';
-import BreadCrumbItem from '../private-container/main-app-bar/bread-crumb/bread-crumb-item';
-import { getLocalStorageItem, setLocalStorageItem } from './local-storage';
+import { breadcrumbLinkStorageID } from '../constants';
+import BreadcrumbItem from '../private-container/main-app-bar/breadcrumb/breadcrumb-item';
 
-export function AddBreadCrumbItem(breadCrumbItem: BreadCrumbItem) {
-	let breadCrumbItems = getLocalStorageItem<BreadCrumbItem[]>(breadCrumbKey);
-	if (!breadCrumbItems) breadCrumbItems = [];
-	if (!breadCrumbItems.find(x => x.route === breadCrumbItem.route)) {
-		breadCrumbItems.push(breadCrumbItem);
-	}
-	setLocalStorageItem(breadCrumbKey, breadCrumbItems);
-}
+export const updateBreadcrumbLinks = (breadcrumbLinks: BreadcrumbItem[]) => {
+	window.localStorage.setItem(breadcrumbLinkStorageID, JSON.stringify(breadcrumbLinks));
+	window.dispatchEvent(new Event(`${breadcrumbLinkStorageID}-event`));
+};
 
-export function RemoveBreadCrumbItem(breadCrumbItem: BreadCrumbItem) {
-	const breadCrumbItems = getLocalStorageItem<BreadCrumbItem[]>(breadCrumbKey);
-	if (!breadCrumbItems) return;
-	const existingItemIndex = breadCrumbItems.findIndex(x => x.route === breadCrumbItem.route);
-	if (existingItemIndex >= 0 && breadCrumbItems.length > existingItemIndex + 1) {
-		breadCrumbItems.splice(existingItemIndex + 1, 1);
-		setLocalStorageItem(breadCrumbKey, breadCrumbItems);
-	}
-}
+export const getBreadcrumbLinks = () => {
+	const breadcrumbLinks = window.localStorage.getItem(breadcrumbLinkStorageID);
+	if (breadcrumbLinks === null) return [];
+	return JSON.parse(breadcrumbLinks) as BreadcrumbItem[];
+};

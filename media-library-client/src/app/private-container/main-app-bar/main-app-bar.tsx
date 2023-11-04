@@ -1,5 +1,5 @@
 import { AppBar, Box } from '@mui/material';
-import BreadCrumb from './bread-crumb/bread-crumb';
+import BreadCrumb from './breadcrumb/breadcrumb';
 import { DropdownMenu } from './dropdown-menu/dropdown-menu';
 import { mainAppBarHeight } from '../../constants';
 

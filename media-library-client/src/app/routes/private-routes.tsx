@@ -6,7 +6,7 @@ import LazyVideoGallery from '../private-container/pages/home/video-gallery/lazy
 import LazyFolderLocations from '../private-container/pages/settings/lazy-folder-locations';
 import PrivateContainer from '../private-container/private-container';
 import ProtectedRoute from './protected-route/protected-route';
-import { RouteFolderLocation, RouteHome, RouteHomeImage, RouteHomeVideo, RouteImages, RouteRoot } from './app-routes';
+import { RouteFolderLocation, RouteHome, RouteImageFolders, RouteHomeVideo, RouteImages, RouteRoot } from './app-routes';
 import LazyImageTiles from '../private-container/pages/home/image-gallery/image-tiles/lazy-image-tiles';
 
 const privateRoutes: RouteObject[] = [
@@ -39,7 +39,7 @@ const privateRoutes: RouteObject[] = [
 				),
 			},
 			{
-				path: RouteHomeImage(),
+				path: RouteImageFolders(),
 				element: (
 					<ProtectedRoute>
 						<LazyImageGallery />

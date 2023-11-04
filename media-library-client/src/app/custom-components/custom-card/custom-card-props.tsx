@@ -5,5 +5,5 @@ export default interface CustomCardProps {
 	title?: string;
 	description?: string;
 	defaultAction?: () => void;
-	children?: ReactNode;
+	actions?: ReactNode | ReactNode[];
 }

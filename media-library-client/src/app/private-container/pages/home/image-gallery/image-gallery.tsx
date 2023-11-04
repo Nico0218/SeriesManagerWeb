@@ -1,17 +1,28 @@
+import { Button, Grid } from '@mui/material';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import httpHelper from '../../../../classes/http-helper';
 import CustomCard from '../../../../custom-components/custom-card/custom-card';
-import { AddBreadCrumbItem } from '../../../../functions/bread-crumb-functions';
+import { updateBreadcrumbLinks } from '../../../../functions/bread-crumb-functions';
 import GalleryData from '../../../../interfaces/gallery-data';
-import { RouteImages } from '../../../../routes/app-routes';
+import { RouteHome, RouteImageFolders, RouteImages } from '../../../../routes/app-routes';
 
 export default function ImageGallery() {
 	const navigate = useNavigate();
 	const [galleryDatas, setGalleryDatas] = useState<GalleryData[]>([]);
 
 	useEffect(() => {
-		AddBreadCrumbItem({ label: 'Image Gallery', route: RouteImages() });
+		updateBreadcrumbLinks([
+			{
+				label: `Home`,
+				route: RouteHome(),
+			},
+			{
+				label: 'Image Gallery',
+				route: RouteImageFolders(),
+			},
+		]);
+
 		httpHelper.ImageGallery.GetAll().then(data => {
 			setGalleryDatas(data);
 		});
@@ -31,11 +42,24 @@ export default function ImageGallery() {
 					defaultAction={() => {
 						onImageGalleryClick(galleryData.id);
 					}}
+					actions={
+						<Button
+							onClick={() => {
+								onImageGalleryClick(galleryData.id);
+							}}
+						>
+							Open
+						</Button>
+					}
 				/>
 			);
 		}
 		return components;
 	}, [galleryDatas]);
 
-	return render;
+	return (
+		<Grid container spacing={2}>
+			{render}
+		</Grid>
+	);
 }

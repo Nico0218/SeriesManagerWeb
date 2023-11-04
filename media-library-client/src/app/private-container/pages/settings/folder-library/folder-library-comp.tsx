@@ -18,7 +18,7 @@ export default function FolderLibraryComp({
 	setFormState,
 	onSave,
 	formID,
-}: FolderLibraryCompProps) {
+}: Readonly<FolderLibraryCompProps>) {
 	const onFolderDelete = () => {
 		setFolderLocations(prevState => {
 			const temp = [...prevState];

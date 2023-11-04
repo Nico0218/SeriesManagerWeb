@@ -10,9 +10,9 @@ import FormValidator from '../../../custom-components/inputs/form-validator';
 import FormValidation from '../../../custom-components/inputs/from-validation';
 import FolderType from '../../../enums/folder-type';
 import ObjectStatus from '../../../enums/object-status';
-import { AddBreadCrumbItem } from '../../../functions/bread-crumb-functions';
+import { updateBreadcrumbLinks } from '../../../functions/bread-crumb-functions';
 import dispatchSnackbar from '../../../functions/dispatch-snackbar';
-import { RouteFolderLocation } from '../../../routes/app-routes';
+import { RouteFolderLocation, RouteHome } from '../../../routes/app-routes';
 import FolderLibraryComp from './folder-library/folder-library-comp';
 
 export default function FolderLocations() {
@@ -109,7 +109,16 @@ export default function FolderLocations() {
 	}, [folderLocations]);
 
 	useEffect(() => {
-		AddBreadCrumbItem({ label: 'Library Location', route: RouteFolderLocation() });
+		updateBreadcrumbLinks([
+			{
+				label: `Home`,
+				route: RouteHome(),
+			},
+			{
+				label: 'Library Location',
+				route: RouteFolderLocation(),
+			},
+		]);
 	}, []);
 
 	const addFolderLocation = () => {

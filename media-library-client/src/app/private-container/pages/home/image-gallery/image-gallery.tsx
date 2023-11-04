@@ -8,13 +8,13 @@ import { RouteImages } from '../../../../routes/app-routes';
 
 export default function ImageGallery() {
 	const navigate = useNavigate();
-	const [images, setImages] = useState<GalleryData[]>([]);
+	const [galleryDatas, setGalleryDatas] = useState<GalleryData[]>([]);
 
 	useEffect(() => {
 		AddBreadCrumbItem({ label: 'Image Gallery', route: RouteImages() });
 		httpHelper.ImageGallery.GetAll().then(data => {
-			setImages(data);
-		})
+			setGalleryDatas(data);
+		});
 	}, []);
 
 	const onImageGalleryClick = (id: string) => {
@@ -22,18 +22,20 @@ export default function ImageGallery() {
 	};
 
 	const render = useMemo(() => {
-		const components: React.JSX.Element[] = []
-		for (let i = 0; i < images.length; i++) {
-			const element = images[i];
+		const components: React.JSX.Element[] = [];
+		for (const galleryData of galleryDatas) {
 			components.push(
 				<CustomCard
-					title={element.displayName}
-					defaultAction={() => { onImageGalleryClick(element.id) }}
+					key={galleryData.id}
+					title={galleryData.displayName}
+					defaultAction={() => {
+						onImageGalleryClick(galleryData.id);
+					}}
 				/>
-			)
-			return components
+			);
 		}
-	}, [images])
+		return components;
+	}, [galleryDatas]);
 
 	return render;
 }

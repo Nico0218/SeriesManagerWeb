@@ -1,31 +1,30 @@
-import { Grid, Toolbar, Typography } from '@mui/material';
+import { Box, Grid, Pagination, Typography } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import ValidatedNumber from 'src/app/custom-components/inputs/validated-number/validated-number';
 import httpHelper from '../../../../../classes/http-helper';
-import { updateBreadcrumbLinks } from '../../../../../functions/bread-crumb-functions';
 import GalleryData from '../../../../../interfaces/gallery-data';
 import GalleryImage from '../../../../../interfaces/gallery-images';
-import { RouteHome, RouteImageFolders, RouteImages } from '../../../../../routes/app-routes';
 import ImageCard from './image-card/image-card';
-import { Box, Pagination, Typography } from '@mui/material';
+import { updateBreadcrumbLinks } from '../../../../../functions/bread-crumb-functions';
+import { RouteHome, RouteImageFolders, RouteImages } from '../../../../../routes/app-routes';
 
 export default function ImageTile() {
 	const [galleryData, setGalleryData] = useState<GalleryData>();
 	const [images, setImages] = useState<GalleryImage[]>();
 	const [totalImageCount, setTotalImageCount] = useState<number>();
-	const [pageSize, setPageSize] = useState(10);
+	const [pageSize, setPageSize] = useState(2);
 	const [currentPage, setCurrentPage] = useState(1);
 	const params = useParams();
 	const [folderID] = useState<string>(params?.FolderID ?? '');
-	const [page , setPage] = useState<number>();
-	const maxIMages = 4
+	const [pageCount, setPageCount] = useState<number>();
 
 	const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
-		setPage(value);
-		httpHelper.Image.GetByPage(galleryID.id, value, 4).then(pages => {
-			setImages(pages);
-		});
+		setCurrentPage(value);
+		if (galleryData) {
+			httpHelper.Image.GetByPage(galleryData.id, value, pageSize).then(pages => {
+				setImages(pages);
+			});
+		}
 	  };
 
 	useEffect(() => {
@@ -37,20 +36,38 @@ export default function ImageTile() {
 	}, [folderID]);
 
 	useEffect(() => {
-		if (galleryID) {
-			httpHelper.Image.GetCountByGallery(galleryID.id).then(count => {
-				setPageCount(Math.ceil(count.data / maxIMages));
+		if (totalImageCount) {
+			setPageCount(Math.ceil(totalImageCount / pageSize))
+		}
+	}, [totalImageCount, pageSize])
+
+	useEffect(() => {
+		if (galleryData) {
+			httpHelper.Image.GetCountByGallery(galleryData.id).then(count => {
+				setTotalImageCount(count.data);
 			});
-			httpHelper.Image.GetByPage(galleryID.id, 1, maxIMages).then(pages => {
+			httpHelper.Image.GetByPage(galleryData.id, currentPage, pageSize).then(pages => {
 				setImages(pages);
 			});
 		}
 	}, [galleryData, currentPage, pageSize]);
 
 	useEffect(() => {
-		AddBreadCrumbItem({ label: 'Image Gallery', route: RouteHomeImage() });
-		setPage(1)
-	}, []);
+        updateBreadcrumbLinks([
+            {
+                label: `Home`,
+                route: RouteHome(),
+            },
+            {
+                label: 'Image Gallery',
+                route: RouteImageFolders(),
+            },
+            {
+                label: galleryData?.name ?? '',
+                route: RouteImages(),
+            },
+        ]);
+    }, [galleryData]);
 
 	const render = useMemo(() => {
 		if (images) {
@@ -69,12 +86,11 @@ export default function ImageTile() {
 	return (
 		<>
 			<Box>
-				<Typography>Page: {page}</Typography>
-				<Pagination count={pageCount} page={page} onChange={handleChange} />
+				<Pagination count={pageCount} page={currentPage} onChange={handleChange} />
 			</Box>
-			<Box>
+			<Grid container spacing={2}>
 				{render}
-			</Box>
+			</Grid>
 		</>
 	)
 }

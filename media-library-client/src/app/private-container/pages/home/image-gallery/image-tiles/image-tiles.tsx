@@ -10,7 +10,7 @@ import { RouteHome, RouteImageFolders, RouteImages } from '../../../../../routes
 import ImageCard from './image-card/image-card';
 
 export default function ImageTile() {
-	const [galleryID, setGalleryID] = useState<GalleryData>();
+	const [galleryData, setGalleryData] = useState<GalleryData>();
 	const [images, setImages] = useState<GalleryImage[]>();
 	const [totalImageCount, setTotalImageCount] = useState<number>();
 	const [pageSize, setPageSize] = useState(10);
@@ -20,22 +20,22 @@ export default function ImageTile() {
 
 	useEffect(() => {
 		if (folderID) {
-			httpHelper.ImageGallery.GetByID(folderID).then(folderGUID => {
-				setGalleryID(folderGUID);
+			httpHelper.ImageGallery.GetByID(folderID).then(galleryData => {
+				setGalleryData(galleryData);
 			});
 		}
 	}, [folderID]);
 
 	useEffect(() => {
-		if (galleryID) {
-			httpHelper.Image.GetCountByGallery(galleryID.id).then(result => {
+		if (galleryData) {
+			httpHelper.Image.GetCountByGallery(galleryData.id).then(result => {
 				setTotalImageCount(result.data);
 			});
-			httpHelper.Image.GetByPage(galleryID.id, currentPage, pageSize).then(pages => {
+			httpHelper.Image.GetByPage(galleryData.id, currentPage, pageSize).then(pages => {
 				setImages(pages);
 			});
 		}
-	}, [galleryID, currentPage, pageSize]);
+	}, [galleryData, currentPage, pageSize]);
 
 	useEffect(() => {
 		updateBreadcrumbLinks([
@@ -48,11 +48,11 @@ export default function ImageTile() {
 				route: RouteImageFolders(),
 			},
 			{
-				label: 'Images',
+				label: galleryData?.name ?? '',
 				route: RouteImages(),
 			},
 		]);
-	}, []);
+	}, [galleryData]);
 
 	const render = useMemo(() => {
 		if (images) {

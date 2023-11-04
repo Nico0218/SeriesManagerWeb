@@ -1,3 +1,4 @@
+import { Button, Grid } from '@mui/material';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import httpHelper from '../../../../classes/http-helper';
@@ -41,11 +42,24 @@ export default function ImageGallery() {
 					defaultAction={() => {
 						onImageGalleryClick(galleryData.id);
 					}}
+					actions={
+						<Button
+							onClick={() => {
+								onImageGalleryClick(galleryData.id);
+							}}
+						>
+							Open
+						</Button>
+					}
 				/>
 			);
 		}
 		return components;
 	}, [galleryDatas]);
 
-	return render;
+	return (
+		<Grid container spacing={2}>
+			{render}
+		</Grid>
+	);
 }

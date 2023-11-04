@@ -1,5 +1,5 @@
 import LogicModelBase from './logic-model-base';
 
-export interface MainConfig extends LogicModelBase {
+export default interface MainConfig extends LogicModelBase {
 	isConfigured: boolean;
 }

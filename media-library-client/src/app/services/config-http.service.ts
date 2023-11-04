@@ -10,7 +10,7 @@ import {
 import { cacheStaleTime } from '../constants';
 import urlCombine from '../functions/url-combine';
 import HttpOptions from '../interfaces/http-options';
-import { MainConfig } from '../interfaces/main-config';
+import MainConfig from '../interfaces/main-config';
 import QueryClientWrapper from '../utils/create-query-client';
 
 export class ConfigHttpService {
@@ -20,10 +20,10 @@ export class ConfigHttpService {
 	private readonly getFoldersPath = 'GetFolders';
 	private readonly saveFoldersPath = 'SaveFolders';
 
-	IsConfigured() {
+	IsConfigured(): UseQueryOptions<boolean, unknown, boolean> {
 		return {
 			queryKey: [this.isConfiguredPath],
-			queryFn: async (): Promise<FolderLibrary[]> => {
+			queryFn: async (): Promise<boolean> => {
 				const url = urlCombine(configAPI, this.isConfiguredPath);
 				const res = await fetch(url, {
 					headers: headers,
@@ -37,10 +37,10 @@ export class ConfigHttpService {
 		};
 	}
 
-	GetConfig() {
+	GetConfig(): UseQueryOptions<MainConfig, unknown, MainConfig> {
 		return {
 			queryKey: [this.getConfigPath],
-			queryFn: async (): Promise<FolderLibrary[]> => {
+			queryFn: async (): Promise<MainConfig> => {
 				const url = urlCombine(configAPI, this.getConfigPath);
 				const res = await fetch(url, {
 					headers: headers,

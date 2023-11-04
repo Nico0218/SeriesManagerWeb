@@ -1,6 +1,6 @@
 import { SxProps, Theme } from '@mui/material';
 import TextField from '@mui/material/TextField';
-import { KeyboardEvent, useEffect, useMemo, useState } from 'react';
+import { KeyboardEvent, useEffect, useState } from 'react';
 import FormValidator from '../form-validator';
 import ValidatedTextProps from './validated-text-props';
 
@@ -90,7 +90,7 @@ export default function ValidatedTextField({
 
 	const defaultStyle: SxProps<Theme> = { width: '100%', padding: 1 };
 
-	const renderInput = useMemo(() => {
+	const renderInput = () => {
 		return (
 			<TextField
 				key={id}
@@ -124,7 +124,7 @@ export default function ValidatedTextField({
 				InputLabelProps={{ shrink: !!value }}
 			/>
 		);
-	}, [value, valid]);
+	};
 
-	return renderInput;
+	return renderInput();
 }

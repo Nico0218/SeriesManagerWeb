@@ -1,5 +1,9 @@
+export const RoutePublicRoot = () => {
+	return '/LandingPage'
+}
+
 export const RouteLogin = () => {
-	return '/Login'
+	return '/LandingPage/Login'
 }
 
 export const RouteRoot = () => {

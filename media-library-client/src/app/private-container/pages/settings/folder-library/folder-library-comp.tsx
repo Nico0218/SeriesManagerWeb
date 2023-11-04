@@ -1,11 +1,12 @@
 import { Box } from '@mui/material';
-import FolderType from '../../../../enums/folder-type';
-import ObjectStatus from '../../../../enums/object-status';
+import FolderLibrary from '../../../../classes/folder-library';
 import IconButtonWrapper from '../../../../custom-components/icon-button-wrapper/icon-button-wrapper';
 import IconSelector from '../../../../custom-components/icon-loader/icon-selector';
 import ValidatedDropdown from '../../../../custom-components/inputs/validated-dropdown/validated-dropdown';
 import ValidatedNumber from '../../../../custom-components/inputs/validated-number/validated-number';
 import ValidatedTextField from '../../../../custom-components/inputs/validated-text/validated-text';
+import FolderType from '../../../../enums/folder-type';
+import ObjectStatus from '../../../../enums/object-status';
 import enumToDropDownItems from '../../../../functions/enum-to-drop-down-items';
 import FolderLibraryCompProps from './folder-library-comp-props';
 
@@ -26,6 +27,12 @@ export default function FolderLibraryComp({
 		});
 	};
 
+	const setObjectState = (temp: FolderLibrary[]) => {
+		if (temp[index].status === ObjectStatus.None) {
+			temp[index].status = ObjectStatus.Modified;
+		}
+	};
+
 	return (
 		<Box sx={{ display: 'flex', alignItems: 'center' }}>
 			<ValidatedTextField
@@ -38,7 +45,10 @@ export default function FolderLibraryComp({
 				onChange={value => {
 					setFolderLocations(prevState => {
 						const temp = [...prevState];
-						temp[index].name = value;
+						if (temp[index].name !== value) {
+							temp[index].name = value;
+							setObjectState(temp);
+						}
 						return temp;
 					});
 				}}
@@ -57,7 +67,10 @@ export default function FolderLibraryComp({
 				onChange={value => {
 					setFolderLocations(prevState => {
 						const temp = [...prevState];
-						temp[index].basePath = value;
+						if (temp[index].basePath !== value) {
+							temp[index].basePath = value;
+							setObjectState(temp);
+						}
 						return temp;
 					});
 				}}
@@ -73,8 +86,9 @@ export default function FolderLibraryComp({
 				onChange={value => {
 					setFolderLocations(prevState => {
 						const temp = [...prevState];
-						if (typeof value === 'number') {
+						if (typeof value === 'number' && temp[index].fileType !== value) {
 							temp[index].fileType = value;
+							setObjectState(temp);
 						}
 						return temp;
 					});
@@ -92,7 +106,10 @@ export default function FolderLibraryComp({
 				onChange={value => {
 					setFolderLocations(prevState => {
 						const temp = [...prevState];
-						temp[index].minFreeSpace = value;
+						if (temp[index].minFreeSpace !== value) {
+							temp[index].minFreeSpace = value;
+							setObjectState(temp);
+						}
 						return temp;
 					});
 				}}

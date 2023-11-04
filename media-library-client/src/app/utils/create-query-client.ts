@@ -1,15 +1,10 @@
-import { QueryClient, QueryFilters, UseQueryOptions } from '@tanstack/react-query';
+import { QueryClient, QueryKey, UseQueryOptions } from '@tanstack/react-query';
 
 export default class QueryClientWrapper {
 	public static queryClient = new QueryClient();
 
-	public static InvalidateKey = (key: QueryFilters) => {
-		const queryCache = QueryClientWrapper.queryClient.getQueryCache();
-		const queries = queryCache.findAll(key);
-		for (let i = 0; i < queries.length; i++) {
-			const element = queries[i];
-			queryCache.remove(element);
-		}
+	public static InvalidateKey = async (key: QueryKey) => {
+		await QueryClientWrapper.queryClient.invalidateQueries({ queryKey: key });
 	};
 
 	public static async GetData<T>(options: UseQueryOptions<T>) {

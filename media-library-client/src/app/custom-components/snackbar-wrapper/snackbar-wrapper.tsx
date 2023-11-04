@@ -1,4 +1,5 @@
-import { Alert, Snackbar } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 import { useEffect, useState } from 'react';
 import { snackBarStorageKey } from '../../constants';
 import { addLocalStorageEventListener, getLocalStorageItem } from '../../functions/local-storage';
@@ -8,15 +9,16 @@ import SnackBarPayload from './snack-bar-payload';
 
 export default function SnackbarWrapper() {
 	const [snackBarPayload, setSnackBarPayload] = useState<SnackBarPayload>({
-		open: false,
 		message: '',
 	});
+	const [visible, setVisible] = useState<boolean>(false);
 
 	useEffect(() => {
 		addLocalStorageEventListener(snackBarStorageKey, () => {
 			const localData = getLocalStorageItem<SnackBarPayload>(snackBarStorageKey);
 			if (localData) {
 				setSnackBarPayload(localData);
+				setVisible(true);
 			}
 		});
 	}, []);
@@ -27,7 +29,7 @@ export default function SnackbarWrapper() {
 		}
 
 		const temp = { ...snackBarPayload };
-		temp.open = false;
+		setVisible(false);
 		window.localStorage.removeItem(snackBarStorageKey);
 		setSnackBarPayload(temp);
 	};
@@ -46,10 +48,11 @@ export default function SnackbarWrapper() {
 
 	return (
 		<Snackbar
-			open={snackBarPayload.open}
-			autoHideDuration={2000}
+			open={visible}
+			autoHideDuration={snackBarPayload.severity === 'error' ? 5000 : 2000}
 			onClose={handleClose}
 			action={action}
+			sx={{ zIndex: 1500 }}
 		>
 			<Alert
 				onClose={handleClose}

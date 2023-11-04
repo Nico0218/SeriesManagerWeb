@@ -1,9 +1,6 @@
-import { userInfoKey } from '../constants';
 import dispatchSnackbar from '../functions/dispatch-snackbar';
-import { setLocalStorageItem } from '../functions/local-storage';
 import urlCombine from '../functions/url-combine';
-import { RouteLogin } from '../routes/app-routes';
-import HttpHelper from './http-helper';
+import HttpOptions from '../interfaces/http-options';
 
 export const coreAPI = urlCombine(
 	import.meta.env.VITE_SERVER_URL,
@@ -13,6 +10,7 @@ export const coreAPI = urlCombine(
 export const userAPI = urlCombine(coreAPI, 'User');
 export const ImageGalleryAPI = urlCombine(coreAPI, 'ImageGallery');
 export const ImageAPI = urlCombine(coreAPI, 'Image');
+export const configAPI = urlCombine(coreAPI, 'Config');
 
 export const headers = {
 	'Content-Type': 'application/json',
@@ -28,41 +26,68 @@ export const isURLSet = () => {
 	}
 };
 
-export const validateOkResponse = (response: Response) => {
+export const validateOkResponse = async (response: Response) => {
 	if (response.status === 200 || response.status === 201) return true;
+	const result = await response.clone().json();
+	let message = response.statusText;
+	if (Object.hasOwn(result, 'message')) {
+		message = result.message;
+	}
 	if (response.status === 401) {
 		dispatchSnackbar({
-			open: true,
-			message: 'Unauthorized.',
+			message: `Unauthorized - ${message}`,
 			severity: 'error',
 		});
-		HttpHelper.auth.logout(
-			() => {
-				setLocalStorageItem(userInfoKey, undefined);
-				window.location.pathname = RouteLogin();
-			},
-			err =>
-				dispatchSnackbar({
-					open: true,
-					message: err.message ? err.message : err,
-					severity: 'error',
-				})
-		);
-		throw new Error('Unauthorized');
+		// if (GetSessionUser()) {
+		// 	HttpHelper.auth.logout();
+		// }
+		return;
 	} else if (response.status === 403) {
 		dispatchSnackbar({
-			open: true,
 			message: 'You do not have permission to view this data.',
 			severity: 'error',
 		});
-		throw new Error('You do not have permission to view this data.');
+		// window.location.pathname = AppRoutes.Unauthorized();
+		return;
 	} else if (response.statusText) {
 		dispatchSnackbar({
-			open: true,
-			message: response.statusText,
+			message: message,
 			severity: 'error',
 		});
-		throw new Error(response.statusText);
 	}
-	return false;
+	throw new Error(message);
+};
+
+export const handleResponse = async (
+	response: Response,
+	request: string,
+	objectType: string,
+	options?: HttpOptions
+) => {
+	try {
+		const isOK = await validateOkResponse(response);
+		if (
+			isOK &&
+			(response.status === 200 || response.status === 201) &&
+			options &&
+			options.success
+		) {
+			const clone = response.clone();
+			if (clone.headers.get('Content-Type')?.includes('application/json')) {
+				const jsonRes = await response.clone().json();
+				options.success(jsonRes);
+				return;
+			}
+			options.success(response.clone().ok);
+			return;
+		}
+	} catch (err) {
+		dispatchSnackbar({
+			message: `Failed ${request} on ${objectType}.`,
+			severity: 'error',
+		});
+		if (options?.error) {
+			options.error(err);
+		}
+	}
 };

@@ -6,8 +6,9 @@ export default interface IconButtonWrapperProps {
 	label?: string;
 	ariaLabel?: string;
 	icon: IconSelector;
-	onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
-	size?: 'small' | 'medium' | 'large' | undefined;
-	sx?: SxProps<Theme> | undefined;
+	onClick?: React.MouseEventHandler<HTMLButtonElement>;
+	size?: 'small' | 'medium' | 'large';
+	sx?: SxProps<Theme>;
 	badgeIcon?: boolean;
+	disabled?: boolean;
 }

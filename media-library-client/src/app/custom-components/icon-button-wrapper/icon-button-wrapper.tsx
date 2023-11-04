@@ -14,6 +14,7 @@ export default function IconButtonWrapper({
 	ariaLabel,
 	sx,
 	badgeIcon,
+	disabled,
 }: IconButtonWrapperProps) {
 	const defaultTheme: SxProps<Theme> = {
 		color: theme => theme.palette.text.primary,
@@ -27,6 +28,7 @@ export default function IconButtonWrapper({
 			size={size}
 			onClick={onClick}
 			sx={sx ? { ...defaultTheme, ...sx } : defaultTheme}
+			disabled={disabled}
 		>
 			{badgeIcon ? (
 				<Badge badgeContent={4} color="secondary">

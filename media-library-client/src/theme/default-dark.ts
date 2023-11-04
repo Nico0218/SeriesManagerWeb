@@ -385,6 +385,13 @@ export const defaultDarkTheme = createTheme({
 						color: '#A0AAB4',
 						WebkitTextFillColor: '#A0AAB4',
 					},
+					'a.react-link': {
+						color: 'inherit',
+						textDecoration: 'none',
+					},
+					'a.react-link:hover': {
+						textDecoration: 'underline',
+					},
 				},
 			},
 		},

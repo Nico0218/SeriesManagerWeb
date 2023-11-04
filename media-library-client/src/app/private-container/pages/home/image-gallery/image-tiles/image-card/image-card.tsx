@@ -35,7 +35,7 @@ export default function ImageCard({ ImageID, DisplayName }: ImageCardProps) {
 
 	return (
 		<>
-			<Card sx={{ maxWidth: 345 }} onClick={handleOpen}>
+			<Card sx={{ maxWidth: 345, margin: 1 }} onClick={handleOpen}>
 				<CardMedia
 					sx={{ height: 140 }}
 					image={`data:image/png;base64,${image}`}

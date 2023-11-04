@@ -14,7 +14,7 @@ export const RouteHome = () => {
 	return '/Home'
 }
 
-export const RouteHomeImage = () => {
+export const RouteImageFolders = () => {
 	return '/Home/Folders'
 }
 

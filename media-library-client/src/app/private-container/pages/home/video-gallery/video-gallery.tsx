@@ -1,10 +1,19 @@
 import { useEffect } from 'react';
-import { AddBreadCrumbItem } from '../../../../functions/bread-crumb-functions';
-import { RouteHomeVideo } from '../../../../routes/app-routes';
+import { updateBreadcrumbLinks } from '../../../../functions/bread-crumb-functions';
+import { RouteHome, RouteHomeVideo } from '../../../../routes/app-routes';
 
 export default function VideoGallery() {
 	useEffect(() => {
-		AddBreadCrumbItem({ label: 'Video Gallery', route: RouteHomeVideo()});
+		updateBreadcrumbLinks([
+			{
+				label: `Home`,
+				route: RouteHome(),
+			},
+			{
+				label: 'Video Gallery',
+				route: RouteHomeVideo(),
+			},
+		]);
 	}, []);
-	return <div></div>;
-} 
+	return <div>Video Gallery</div>;
+}

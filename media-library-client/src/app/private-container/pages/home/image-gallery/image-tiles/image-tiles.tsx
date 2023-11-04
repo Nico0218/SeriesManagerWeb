@@ -1,10 +1,11 @@
+import { Box } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import httpHelper from '../../../../../classes/http-helper';
-import { AddBreadCrumbItem } from '../../../../../functions/bread-crumb-functions';
+import { updateBreadcrumbLinks } from '../../../../../functions/bread-crumb-functions';
 import GalleryData from '../../../../../interfaces/gallery-data';
 import GalleryImage from '../../../../../interfaces/gallery-images';
-import { RouteHomeImage } from '../../../../../routes/app-routes';
+import { RouteHome, RouteImageFolders, RouteImages } from '../../../../../routes/app-routes';
 import ImageCard from './image-card/image-card';
 
 export default function ImageTile() {
@@ -34,14 +35,29 @@ export default function ImageTile() {
 	}, [galleryID]);
 
 	useEffect(() => {
-		AddBreadCrumbItem({ label: 'Image Gallery', route: RouteHomeImage() });
+		updateBreadcrumbLinks([
+			{
+				label: `Home`,
+				route: RouteHome(),
+			},
+			{
+				label: 'Image Gallery',
+				route: RouteImageFolders(),
+			},
+			{
+				label: 'Images',
+				route: RouteImages(),
+			},
+		]);
 	}, []);
 
 	const render = useMemo(() => {
 		if (images) {
 			const components: React.JSX.Element[] = [];
 			for (const image of images) {
-				components.push(<ImageCard key={image.id} ImageID={image.id} DisplayName={image.displayName} />);
+				components.push(
+					<ImageCard key={image.id} ImageID={image.id} DisplayName={image.displayName} />
+				);
 			}
 			return components;
 		} else {
@@ -49,5 +65,5 @@ export default function ImageTile() {
 		}
 	}, [images]);
 
-	return render;
+	return <Box sx={{ display: 'flex' }}>{render}</Box>;
 }

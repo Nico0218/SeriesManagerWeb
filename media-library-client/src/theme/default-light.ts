@@ -374,6 +374,13 @@ export const defaultLightTheme = createTheme({
 					'&::-webkit-scrollbar-corner, & *::-webkit-scrollbar-corner': {
 						backgroundColor: '#2b2b2b',
 					},
+					'a.react-link': {
+						color: 'inherit',
+						textDecoration: 'none',
+					},
+					'a.react-link:hover': {
+						textDecoration: 'underline',
+					},
 				},
 			},
 		},

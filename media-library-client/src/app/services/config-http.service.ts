@@ -13,7 +13,7 @@ import HttpOptions from '../interfaces/http-options';
 import MainConfig from '../interfaces/main-config';
 import QueryClientWrapper from '../utils/create-query-client';
 
-export class ConfigHttpService {
+export default class ConfigHttpService {
 	private readonly isConfiguredPath = 'IsConfigured';
 	private readonly getConfigPath = 'GetConfig';
 	private readonly saveConfigPath = 'SaveConfig';

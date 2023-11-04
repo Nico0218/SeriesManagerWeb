@@ -2,7 +2,7 @@ import { ImageGalleryAPI, headers, isURLSet, requestMode } from '../classes/http
 import urlCombine from '../functions/url-combine';
 import GalleryData from '../interfaces/gallery-data';
  
-export class ImageGalleryService {
+export default class ImageGalleryService {
 
     async GetAll(): Promise<GalleryData[]> {
         isURLSet();

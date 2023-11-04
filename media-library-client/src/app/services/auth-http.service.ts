@@ -2,7 +2,7 @@ import { userAPI, headers, isURLSet, requestMode } from '../classes/http-helper-
 import urlCombine from '../functions/url-combine';
 import LoginRequest from '../interfaces/login-request';
 
-export class AuthHttpService {
+export default class AuthHttpService {
 	login(login: LoginRequest, success: () => void, error: (data: any) => void) {
 		isURLSet();
 		const url = urlCombine(userAPI, 'Login');

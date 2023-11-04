@@ -1,31 +1,35 @@
 export const RoutePublicRoot = () => {
-	return '/LandingPage'
-}
+	return '/LandingPage';
+};
 
 export const RouteLogin = () => {
-	return '/LandingPage/Login'
-}
+	return '/LandingPage/Login';
+};
 
 export const RouteRoot = () => {
-	return '/'
-}
+	return '/';
+};
 
 export const RouteHome = () => {
-	return '/Home'
-}
+	return '/Home';
+};
 
-export const RouteImageFolders = () => {
-	return '/Home/Folders'
-}
+export const RouteImageGallery = () => {
+	return '/Home/ImageGallery';
+};
 
-export const RouteImages = (FolderID?: string) => {
-	return `/Home/Folders/Images/${FolderID ?? ':FolderID'}`  
-}
+export const RouteImages = (imageGalleryID?: string) => {
+	return `/Home/ImageGallery/${imageGalleryID ?? ':imageGalleryID'}`;
+};
 
-export const RouteHomeVideo = () => {
-	return '/Home/Video'
-}
+export const RouteVideoGallery = () => {
+	return '/Home/VideoGallery';
+};
+
+export const RouteVideos = (videoGalleryID?: string) => {
+	return `/Home/VideoGallery/${videoGalleryID ?? ':videoGalleryID'}`;
+};
 
 export const RouteFolderLocation = () => {
-	return '/Settings/FolderLocations'
-}
+	return '/Settings/FolderLocations';
+};

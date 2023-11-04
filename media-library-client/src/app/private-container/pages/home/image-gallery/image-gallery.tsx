@@ -5,7 +5,7 @@ import httpHelper from '../../../../classes/http-helper';
 import CustomCard from '../../../../custom-components/custom-card/custom-card';
 import { updateBreadcrumbLinks } from '../../../../functions/bread-crumb-functions';
 import GalleryData from '../../../../interfaces/gallery-data';
-import { RouteHome, RouteImageFolders, RouteImages } from '../../../../routes/app-routes';
+import { RouteHome, RouteImageGallery, RouteImages } from '../../../../routes/app-routes';
 
 export default function ImageGallery() {
 	const navigate = useNavigate();
@@ -19,11 +19,11 @@ export default function ImageGallery() {
 			},
 			{
 				label: 'Image Gallery',
-				route: RouteImageFolders(),
+				route: RouteImageGallery(),
 			},
 		]);
 
-		httpHelper.ImageGallery.GetAll().then(data => {
+		httpHelper.imageGallery.GetAll().then(data => {
 			setGalleryDatas(data);
 		});
 	}, []);

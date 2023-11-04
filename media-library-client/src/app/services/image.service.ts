@@ -3,7 +3,7 @@ import urlCombine from '../functions/url-combine';
 import GalleryImage from '../interfaces/gallery-images';
 import ImageDataWrapper from '../interfaces/image-data-wrapper';
 
-export class ImageService {
+export default class ImageService {
 	async GetCountByGallery(GalleryID: string): Promise<{ data: number }> {
 		isURLSet();
 		const url = urlCombine(ImageAPI, `GetCountByGallery/${GalleryID}`);

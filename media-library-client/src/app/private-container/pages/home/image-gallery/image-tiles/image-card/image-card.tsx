@@ -9,7 +9,7 @@ export default function ImageCard({ ImageID, DisplayName }: Readonly<ImageCardPr
 
 	const [open, setOpen] = useState(false);
 	const handleOpen = () => {
-		HttpHelper.Image.GetDataByID(ImageID).then(res => {
+		HttpHelper.image.GetDataByID(ImageID).then(res => {
 			setDataImage(res.imageData);
 		});
 		setOpen(true);
@@ -19,7 +19,7 @@ export default function ImageCard({ ImageID, DisplayName }: Readonly<ImageCardPr
 	const [image, setImage] = useState<string>();
 
 	useEffect(() => {
-		HttpHelper.Image.GetThumbnailByID(ImageID, 200).then(res => {
+		HttpHelper.image.GetThumbnailByID(ImageID, 200).then(res => {
 			setImage(res.imageData);
 		});
 	}, []);

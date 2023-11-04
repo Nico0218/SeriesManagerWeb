@@ -8,9 +8,12 @@ export const coreAPI = urlCombine(
 );
 
 export const userAPI = urlCombine(coreAPI, 'User');
+export const configAPI = urlCombine(coreAPI, 'Config');
 export const ImageGalleryAPI = urlCombine(coreAPI, 'ImageGallery');
 export const ImageAPI = urlCombine(coreAPI, 'Image');
-export const configAPI = urlCombine(coreAPI, 'Config');
+export const videoGalleryAPI = urlCombine(coreAPI, 'VideoGallery');
+export const videoAPI = urlCombine(coreAPI, 'Video');
+export const videoStreamAPI = urlCombine(coreAPI, 'VideoStream');
 
 export const headers = {
 	'Content-Type': 'application/json',

@@ -1,4 +1,5 @@
-import { Box, Typography } from '@mui/material';
+import { ChevronRight } from '@mui/icons-material';
+import { Box, Typography, useTheme } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { breadcrumbLinkStorageID } from '../../../constants';
 import NavItem from '../../../custom-components/nav-items/nav-item';
@@ -7,6 +8,7 @@ import { addLocalStorageEventListener } from '../../../functions/local-storage';
 import BreadcrumbItem from './breadcrumb-item';
 
 export default function BreadCrumb() {
+	const theme = useTheme();
 	const [breadcrumbLinks, setBreadcrumbLinks] = useState<BreadcrumbItem[]>(
 		getBreadcrumbLinks() ?? []
 	);
@@ -18,10 +20,6 @@ export default function BreadCrumb() {
 			});
 		});
 	}, []);
-
-	const getString = (label: string) => {
-		return ` > ${label}`;
-	};
 
 	const generateBreadcrumb = useMemo(() => {
 		const linkComponents: JSX.Element[] = [];
@@ -38,9 +36,10 @@ export default function BreadCrumb() {
 					);
 				} else {
 					linkComponents.push(
-						<Box>
+						<Box key={'last-item'} sx={{ display: 'flex' }}>
+							<ChevronRight sx={{ color: theme.palette.common.white }} />
 							<Typography key={breadcrumbItem.route} color="text.primary">
-								{getString(breadcrumbItem.label)}
+								{breadcrumbItem.label}
 							</Typography>
 						</Box>
 					);

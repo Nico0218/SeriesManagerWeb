@@ -1,10 +1,16 @@
+import ChevronRight from '@mui/icons-material/ChevronRight';
 import { ListItemButton, ListItemText, Typography, useTheme } from '@mui/material';
 import { CSSProperties } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import NavItemProperties from './nav-item-properties';
-import ChevronRight from '@mui/icons-material/ChevronRight';
 
-export default function NavItem({ title, href, style, onClick, children }: NavItemProperties) {
+export default function NavItem({
+	title,
+	href,
+	style,
+	onClick,
+	children,
+}: Readonly<NavItemProperties>) {
 	const location = useLocation();
 	const theme = useTheme();
 	const active = location.pathname === href;

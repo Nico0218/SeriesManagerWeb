@@ -3,13 +3,13 @@ import { Navigate } from 'react-router-dom';
 import UserInfo from '../../classes/user-info';
 import { userInfoKey } from '../../constants';
 import { getLocalStorageItem } from '../../functions/local-storage';
-import AppRoutes from '../app-routes';
 import ProtectedRouteProps from './protected-route-props';
+import { RouteLogin } from '../app-routes';
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps): ReactJSXElement => {
 	const hasUser = getLocalStorageItem<UserInfo>(userInfoKey);
 	if (!hasUser) {
-		return <Navigate to={AppRoutes.Login} replace />;
+		return <Navigate to={RouteLogin()} replace />;
 	}
 
 	return children;

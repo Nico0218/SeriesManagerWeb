@@ -1,15 +1,15 @@
 import { Box, Typography } from '@mui/material';
 import React, { useEffect, useMemo, useState } from 'react';
-import FormValidation from 'src/app/custom-components/inputs/from-validation';
-import FolderType from 'src/enums/folder-type';
-import ObjectStatus from '../../../../enums/object-status';
+import FormValidation from '../../../custom-components/inputs/from-validation';
+import FolderType from '../../../enums/folder-type';
+import ObjectStatus from '../../../enums/object-status';
 import FolderLibrary from '../../../classes/folder-library';
 import IconButtonWrapper from '../../../custom-components/icon-button-wrapper/icon-button-wrapper';
 import IconSelector from '../../../custom-components/icon-loader/icon-selector';
 import FormValidator from '../../../custom-components/inputs/form-validator';
 import { AddBreadCrumbItem } from '../../../functions/bread-crumb-functions';
-import AppRoutes from '../../../routes/app-routes';
 import FolderLibraryComp from './folder-library/folder-library-comp';
+import { RouteFolderLocation } from '../../../routes/app-routes';
 
 export default function FolderLocations() {
 	const [folderLocations, setFolderLocations] = useState<FolderLibrary[]>([
@@ -25,7 +25,7 @@ export default function FolderLocations() {
 	const [formState, setFormState] = useState(new FormValidator([new FormValidation(formID, true)]));
 
 	useEffect(() => {
-		AddBreadCrumbItem({ label: 'Library Location', route: AppRoutes.FolderLocation });
+		AddBreadCrumbItem({ label: 'Library Location', route: RouteFolderLocation()});
 	}, []);
 
 	const onSave = () => {

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import ThemeSelector from '../../../custom-components/theme-selector/theme-selector';
 import { userInfoKey } from '../../../constants';
 import { setLocalStorageItem } from '../../../functions/local-storage';
-import AppRoutes from '../../../routes/app-routes';
+import { RouteFolderLocation, RouteLogin } from '../../../routes/app-routes';
 
 export function DropdownMenu() {
 	const navigate = useNavigate();
@@ -33,13 +33,13 @@ export function DropdownMenu() {
 	};
 
 	const onSettingsClick = (event: Event | SyntheticEvent) => {
-		navigate(AppRoutes.FolderLocation);
+		navigate(RouteFolderLocation());
 		handleClose(event);
 	};
 
 	const onLogoutClick = (event: Event | SyntheticEvent) => {
 		setLocalStorageItem(userInfoKey, undefined);
-		navigate(AppRoutes.Login);
+		navigate(RouteLogin());
 	};
 
 	return (

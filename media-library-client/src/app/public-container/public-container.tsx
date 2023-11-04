@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import UserInfo from '../classes/user-info';
 import { userInfoKey } from '../constants';
 import { setLocalStorageItem } from '../functions/local-storage';
-import AppRoutes from '../routes/app-routes';
 import HttpHelper from '../classes/http-helper';
 import dispatchSnackbar from '../functions/dispatch-snackbar';
+import { RouteHome } from '../routes/app-routes';
 
 export default function PublicContainer() {
 	const navigate = useNavigate();
@@ -19,7 +19,7 @@ export default function PublicContainer() {
 			() => {
 				const userInfo: UserInfo = { name: userName, token: '' };
 				setLocalStorageItem(userInfoKey, userInfo);
-				navigate(AppRoutes.Home);
+				navigate(RouteHome());
 			},
 			err => {
 				dispatchSnackbar({ severity: 'error', open: true, message: 'Failed to login' });

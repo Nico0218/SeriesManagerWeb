@@ -1,4 +1,4 @@
-import ObjectStatus from '../../enums/object-status';
+import ObjectStatus from '../enums/object-status';
 
 export default interface LogicModelBase {
 	id: string;

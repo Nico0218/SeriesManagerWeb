@@ -3,20 +3,20 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomCard from '../../../custom-components/custom-card/custom-card';
 import { AddBreadCrumbItem } from '../../../functions/bread-crumb-functions';
-import AppRoutes from '../../../routes/app-routes';
+import { RouteHome, RouteHomeImage, RouteHomeVideo } from '../../../routes/app-routes';
 
 export default function Home() {
 	const navigate = useNavigate();
 	useEffect(() => {
-		AddBreadCrumbItem({ label: 'Home', route: AppRoutes.Home });
+		AddBreadCrumbItem({ label: 'Home', route: RouteHome()});
 	}, []);
 
 	const onImageGalleryClick = () => {
-		navigate(AppRoutes.HomeImage);
+		navigate(RouteHomeImage());
 	};
 
 	const onVideoGalleryClick = () => {
-		navigate(AppRoutes.HomeVideo);
+		navigate(RouteHomeVideo());
 	};
 
 	return (

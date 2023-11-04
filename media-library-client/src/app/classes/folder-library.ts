@@ -1,5 +1,5 @@
-import FolderType from '../../enums/folder-type';
-import ObjectStatus from '../../enums/object-status';
+import FolderType from '../enums/folder-type';
+import ObjectStatus from '../enums/object-status';
 import Guid from '../functions/guid';
 import LogicModelBase from '../interfaces/logic-model-base';
 

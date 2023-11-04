@@ -2,7 +2,7 @@ import { userInfoKey } from '../constants';
 import dispatchSnackbar from '../functions/dispatch-snackbar';
 import { setLocalStorageItem } from '../functions/local-storage';
 import urlCombine from '../functions/url-combine';
-import AppRoutes from '../routes/app-routes';
+import { RouteLogin } from '../routes/app-routes';
 import HttpHelper from './http-helper';
 
 export const coreAPI = urlCombine(
@@ -11,6 +11,8 @@ export const coreAPI = urlCombine(
 );
 
 export const userAPI = urlCombine(coreAPI, 'User');
+export const ImageGalleryAPI = urlCombine(coreAPI, 'ImageGallery');
+export const ImageAPI = urlCombine(coreAPI, 'Image');
 
 export const headers = {
 	'Content-Type': 'application/json',
@@ -37,7 +39,7 @@ export const validateOkResponse = (response: Response) => {
 		HttpHelper.auth.logout(
 			() => {
 				setLocalStorageItem(userInfoKey, undefined);
-				window.location.pathname = AppRoutes.Login;
+				window.location.pathname = RouteLogin();
 			},
 			err =>
 				dispatchSnackbar({

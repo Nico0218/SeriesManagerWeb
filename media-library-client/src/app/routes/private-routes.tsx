@@ -5,24 +5,25 @@ import LazyHome from '../private-container/pages/home/lazy-home';
 import LazyVideoGallery from '../private-container/pages/home/video-gallery/lazy-video-gallery';
 import LazyFolderLocations from '../private-container/pages/settings/lazy-folder-locations';
 import PrivateContainer from '../private-container/private-container';
-import AppRoutes from './app-routes';
 import ProtectedRoute from './protected-route/protected-route';
+import { RouteFolderLocation, RouteHome, RouteHomeImage, RouteHomeVideo, RouteImages, RouteRoot } from './app-routes';
+import LazyImageTiles from '../private-container/pages/home/image-gallery/image-tiles/lazy-image-tiles';
 
 const privateRoutes: RouteObject[] = [
 	{
-		path: AppRoutes.Root,
+		path: RouteRoot(),
 		element: (
 			<ProtectedRoute>
 				<>
 					<PrivateContainer />
-					<Navigate to={AppRoutes.Home} />
+					<Navigate to={RouteHome()} />
 				</>
 			</ProtectedRoute>
 		),
 		errorElement: <LazyErrorPage />,
 		children: [
 			{
-				path: AppRoutes.Home,
+				path: RouteHome(),
 				element: (
 					<ProtectedRoute>
 						<LazyHome />
@@ -30,7 +31,7 @@ const privateRoutes: RouteObject[] = [
 				),
 			},
 			{
-				path: AppRoutes.FolderLocation,
+				path: RouteFolderLocation(),
 				element: (
 					<ProtectedRoute>
 						<LazyFolderLocations />
@@ -38,7 +39,7 @@ const privateRoutes: RouteObject[] = [
 				),
 			},
 			{
-				path: AppRoutes.HomeImage,
+				path: RouteHomeImage(),
 				element: (
 					<ProtectedRoute>
 						<LazyImageGallery />
@@ -46,10 +47,18 @@ const privateRoutes: RouteObject[] = [
 				),
 			},
 			{
-				path: AppRoutes.HomeVideo,
+				path: RouteHomeVideo(),
 				element: (
 					<ProtectedRoute>
 						<LazyVideoGallery />
+					</ProtectedRoute>
+				),
+			},
+			{
+				path: RouteImages(),
+				element: (
+					<ProtectedRoute>
+						<LazyImageTiles />
 					</ProtectedRoute>
 				),
 			},

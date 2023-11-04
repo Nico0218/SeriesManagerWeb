@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
-import FolderType from '../../../../../enums/folder-type';
-import ObjectStatus from '../../../../../enums/object-status';
+import FolderType from '../../../../enums/folder-type';
+import ObjectStatus from '../../../../enums/object-status';
 import IconButtonWrapper from '../../../../custom-components/icon-button-wrapper/icon-button-wrapper';
 import IconSelector from '../../../../custom-components/icon-loader/icon-selector';
 import ValidatedDropdown from '../../../../custom-components/inputs/validated-dropdown/validated-dropdown';

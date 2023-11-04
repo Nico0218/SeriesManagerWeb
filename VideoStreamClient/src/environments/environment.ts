@@ -6,7 +6,7 @@ import { AppConfig } from '../app/classes/app-config';
 
 export const environment: AppConfig = {
   production: false,
-  apiUrl: "http://STALKER-PC:5000"
+  apiUrl: "http://localhost:5000"
 };
 
 /*

@@ -20,20 +20,24 @@ using System;
 using VideoProcessorService.Interfaces;
 using VideoProcessorService.Services;
 
-namespace MediaLibraryServer {
-    public class Startup {
+namespace MediaLibraryServer
+{
+    public class Startup
+    {
         private const string msgDataStoreTypeError = "Not supported data store type";
         private readonly string AppSettingsKey = "AppSettings";
         private readonly string AllowAllCors = "AllowAllCors";
 
         public IConfiguration Configuration { get; }
 
-        public Startup(IConfiguration configuration) {
+        public Startup(IConfiguration configuration)
+        {
             Configuration = configuration;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services) {
+        public void ConfigureServices(IServiceCollection services)
+        {
             ConnectionSettings connectionSettings = new ConnectionSettings();
 
             services.Configure<ConnectionSettings>(Configuration.GetSection(typeof(ConnectionSettings).Name));
@@ -41,7 +45,8 @@ namespace MediaLibraryServer {
             DBProviderType dataStoreType = (DBProviderType)Enum.Parse(typeof(DBProviderType), Configuration.GetSection($"{typeof(ConnectionSettings).Name}:DataStoreType").Value.ToString());
 
             services.AddMvc();
-            switch (dataStoreType) {
+            switch (dataStoreType)
+            {
                 case DBProviderType.MySQLProvider:
                     services.AddSingleton<IDataService, MySqlDataClient>();
                     break;
@@ -71,22 +76,26 @@ namespace MediaLibraryServer {
 
             services.AddScoped<ILibraryManagerService, LibraryManagerService>();
 
-            services.AddControllers();
-
-            services.AddSwaggerGen(c => {
+            services.AddSwaggerGen(c =>
+            {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
             });
 
-            services.AddCors(options => {
-                options.AddPolicy(AllowAllCors, builder => {
-                    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(AllowAllCors, builder =>
+                {
+                    builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials().SetIsOriginAllowed(origin => true);
                 });
             });
+
+            services.AddControllers();
             services.AddApplicationInsightsTelemetry();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostApplicationLifetime applicationLifetime, IWebHostEnvironment env, ILoggerFactory loggerFactory) {
+        public void Configure(IApplicationBuilder app, IHostApplicationLifetime applicationLifetime, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        {
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
@@ -94,12 +103,14 @@ namespace MediaLibraryServer {
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c => {
+            app.UseSwaggerUI(c =>
+            {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
                 c.RoutePrefix = string.Empty;
             });
 
-            if (env.IsDevelopment()) {
+            if (env.IsDevelopment())
+            {
                 app.UseDeveloperExceptionPage();
             }
 
@@ -109,13 +120,16 @@ namespace MediaLibraryServer {
             loggerFactory.AddLog4Net();
             //app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => {
+            app.UseEndpoints(endpoints =>
+            {
                 endpoints.MapControllers();
             });
         }
 
-        private void OnShutdown() {
-            if (Program.videoConversionService != null) {
+        private void OnShutdown()
+        {
+            if (Program.videoConversionService != null)
+            {
                 Program.videoConversionService.CancelAllConversion();
             }
         }

@@ -42,7 +42,7 @@ export class AuthenticationService {
         //Password should be encrypted at this point
         let loginRequest: LoginRequest = { userName: username, password: password };
         console.log(Environment.apiUrl);
-        return this.http.post<any>(`${this.controllerURL}/authenticate`, loginRequest)
+        return this.http.post<any>(`${this.controllerURL}/login`, loginRequest)
             .pipe(map(user => {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
                 localStorage.setItem(this.userCacheKey, JSON.stringify(user));

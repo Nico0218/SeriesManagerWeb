@@ -8,7 +8,13 @@ export default defineConfig({
 
 	server: {
 		port: 4200,
-		host: 'localhost',
+		host: true,
+		strictPort: true,
+		hmr: true,
+		watch: {
+			usePolling: true,
+			interval: 1000,
+		},
 	},
 
 	preview: {
@@ -22,6 +28,11 @@ export default defineConfig({
 			root: './',
 		}),
 	],
+	build: {},
+	esbuild: {
+		minifyIdentifiers: false,
+		keepNames: true,
+	},
 
 	// Uncomment this if you are using workers.
 	// worker: {

@@ -22,7 +22,7 @@ export default function ErrorPage() {
 			<Typography>
 				<i>{(error as any).statusText || (error as any).message}</i>
 			</Typography>
-			<NavItem href={AppRoutes.Home} title="Return To Home" noIcon={true} />
+			<NavItem href={AppRoutes.Home} title="Return To Home" />
 		</Box>
 	);
 }

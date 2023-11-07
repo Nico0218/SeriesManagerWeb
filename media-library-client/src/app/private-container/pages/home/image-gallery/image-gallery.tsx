@@ -6,10 +6,20 @@ import CustomCard from '../../../../custom-components/custom-card/custom-card';
 import { updateBreadcrumbLinks } from '../../../../functions/bread-crumb-functions';
 import GalleryData from '../../../../interfaces/gallery-data';
 import { RouteHome, RouteImageGallery, RouteImages } from '../../../../routes/app-routes';
+import { useQuery } from '@tanstack/react-query';
 
 export default function ImageGallery() {
 	const navigate = useNavigate();
-	const [galleryDatas, setGalleryDatas] = useState<GalleryData[]>([]);
+	const [galleryDatas, setGalleryDatas] = useState<GalleryData[]>();
+
+	const imageGalleryGetAllQuery = useQuery({
+		...httpHelper.imageGallery.GetAll(),
+		enabled: true
+	});
+
+	useEffect(() => {
+		setGalleryDatas(imageGalleryGetAllQuery.data);
+	}, [imageGalleryGetAllQuery.status, imageGalleryGetAllQuery.data])
 
 	useEffect(() => {
 		updateBreadcrumbLinks([
@@ -22,10 +32,6 @@ export default function ImageGallery() {
 				route: RouteImageGallery(),
 			},
 		]);
-
-		httpHelper.imageGallery.GetAll().then(data => {
-			setGalleryDatas(data);
-		});
 	}, []);
 
 	const onImageGalleryClick = (id: string) => {
@@ -34,26 +40,29 @@ export default function ImageGallery() {
 
 	const render = useMemo(() => {
 		const components: React.JSX.Element[] = [];
-		for (const galleryData of galleryDatas) {
-			components.push(
-				<CustomCard
-					key={galleryData.id}
-					title={galleryData.displayName}
-					defaultAction={() => {
-						onImageGalleryClick(galleryData.id);
-					}}
-					actions={
-						<Button
-							onClick={() => {
-								onImageGalleryClick(galleryData.id);
-							}}
-						>
-							Open
-						</Button>
-					}
-				/>
-			);
+		if (galleryDatas) {
+			for (const galleryData of galleryDatas) {
+				components.push(
+					<CustomCard
+						key={galleryData.id}
+						title={galleryData.displayName}
+						defaultAction={() => {
+							onImageGalleryClick(galleryData.id);
+						}}
+						actions={
+							<Button
+								onClick={() => {
+									onImageGalleryClick(galleryData.id);
+								}}
+							>
+								Open
+							</Button>
+						}
+					/>
+				);
+			}
 		}
+
 		return components;
 	}, [galleryDatas]);
 

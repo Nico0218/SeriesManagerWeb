@@ -13,10 +13,10 @@ export default class ImageService {
 	private readonly getDataByIDPath = 'GetDataByID'
 	private readonly objName = 'Image';
 
-	GetCountByGallery(galleryID: string): UseQueryOptions<number, unknown> {
+	GetCountByGallery(galleryID: string): UseQueryOptions<{data:number}, Error> {
 		return {
 			queryKey: [`${this.objName}-${this.getCountByGalleryPath}`],
-			queryFn: async (): Promise<number> => {
+			queryFn: async (): Promise<{data:number}> => {
 				const url = urlCombine(ImageAPI, this.getCountByGalleryPath, galleryID);
 				const res = await fetch(url, {
 					headers: headers,
@@ -30,7 +30,7 @@ export default class ImageService {
 		}
 	}
 
-	GetByPage(galleryID: string, pageNo: string, pageSize: string): UseQueryOptions<GalleryImage[], unknown, GalleryImage[]> {
+	GetByPage(galleryID: string, pageNo: string, pageSize: string): UseQueryOptions<GalleryImage[], Error, GalleryImage[]> {
 		return {
 			queryKey: [`${this.objName}-${this.getByPagePath}`],
 			queryFn: async (): Promise<GalleryImage[]> => {
@@ -47,7 +47,7 @@ export default class ImageService {
 		}
 	}
 
-	GetByID(imageID: string): UseQueryOptions<GalleryImage, unknown, GalleryImage> {
+	GetByID(imageID: string): UseQueryOptions<GalleryImage, Error, GalleryImage> {
 		return {
 			queryKey: [`${this.objName}-${this.getByIDPath}`],
 			queryFn: async (): Promise<GalleryImage> => {
@@ -64,7 +64,7 @@ export default class ImageService {
 		}
 	}
 
-	GetThumbnailByID(imageID: string, thumbnailSize: string): UseQueryOptions<ImageDataWrapper, unknown, ImageDataWrapper> {
+	GetThumbnailByID(imageID: string, thumbnailSize: string): UseQueryOptions<ImageDataWrapper, Error, ImageDataWrapper> {
 		return {
 			queryKey: [`${this.objName}-${this.getThumbnailByIDPath}`,imageID],
 			queryFn: async (): Promise<ImageDataWrapper> => {
@@ -81,7 +81,7 @@ export default class ImageService {
 		}
 	}
 
-	GetDataByID(imageID: string): UseQueryOptions<ImageDataWrapper, unknown, ImageDataWrapper> {
+	GetDataByID(imageID: string): UseQueryOptions<ImageDataWrapper, Error, ImageDataWrapper> {
 		return {
 			queryKey: [`${this.objName}-${this.getDataByIDPath}`],
 			queryFn: async (): Promise<ImageDataWrapper> => {

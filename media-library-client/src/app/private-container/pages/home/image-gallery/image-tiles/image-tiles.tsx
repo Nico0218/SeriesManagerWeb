@@ -7,10 +7,11 @@ import { updateBreadcrumbLinks } from '../../../../../functions/bread-crumb-func
 import GalleryImage from '../../../../../interfaces/gallery-images';
 import { RouteHome, RouteImageGallery, RouteImages } from '../../../../../routes/app-routes';
 import ImageCard from './image-card/image-card';
+import GalleryData from 'src/app/interfaces/gallery-data';
 
 export default function ImageTile() {
 	const params = useParams();
-	const [galleryData, setGalleryData] = useState<GalleryImage>();
+	const [galleryData, setGalleryData] = useState<GalleryData>();
 	const [images, setImages] = useState<GalleryImage[]>();
 	const [totalImageCount, setTotalImageCount] = useState<number>();
 	const [pageSize, setPageSize] = useState(10);
@@ -18,43 +19,36 @@ export default function ImageTile() {
 	const [pageCount, setPageCount] = useState<number>();
 	const imageGalleryID = useMemo(() => params?.imageGalleryID ?? '', []);
 
-	const queryGetByID = useQuery({
+	const imageGetByIDQuery = useQuery({
 		...HttpHelper.image.GetByID(imageGalleryID),
 		enabled: !!imageGalleryID,
 	});
 
-	const queryGetCountByID = useQuery({
+	const imageGetCountByGalleryQuery = useQuery({
 		...HttpHelper.image.GetCountByGallery(imageGalleryID),
 		enabled: true,
 	})
-	const queryGetByPage = useQuery({
+	const imageGetByPageQuery = useQuery({
 		...HttpHelper.image.GetByPage(imageGalleryID, currentPage.toString(), pageSize.toString()),
 		enabled: true
 	})
 
-	const queryGetDataByID = useQuery({
-		...HttpHelper.image.GetByPage(imageGalleryID, currentPage.toString(), pageSize.toString()),
-		enabled: true,
-	});
-
 	const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
 		setCurrentPage(value);
 		if (imageGalleryID) {
-			if (queryGetDataByID.isSuccess && queryGetDataByID.data) {
-				console.log('Get BY Page Result ' + JSON.stringify(queryGetDataByID.data))
-				setImages(queryGetDataByID.data)
+			if (imageGetByPageQuery.isSuccess && imageGetByPageQuery.data) {
+				setImages(imageGetByPageQuery.data)
 			}
 		}
 	};
 
 	useEffect(() => {
 		if (imageGalleryID) {
-			if (queryGetByID.isSuccess && queryGetByID.data) {
-				console.log('Get BY ID Result ' + JSON.stringify(queryGetByID.data))
-				setGalleryData(queryGetByID.data);
+			if (imageGetByIDQuery.isSuccess && imageGetByIDQuery.data) {
+				setGalleryData(imageGetByIDQuery.data);
 			}
 		}
-	}, [imageGalleryID, queryGetByID.isSuccess, queryGetByID.data]);
+	}, [imageGalleryID, imageGetByIDQuery.isSuccess, imageGetByIDQuery.data]);
 
 	useEffect(() => {
 		if (totalImageCount) {
@@ -64,22 +58,20 @@ export default function ImageTile() {
 
 	useEffect(() => {
 		if (imageGalleryID) {
-			if (queryGetCountByID.isSuccess && queryGetCountByID.data) {
-				console.log('Get count Result ' + JSON.stringify(queryGetCountByID.data))
-				setTotalImageCount(queryGetCountByID.data.data)
+			if (imageGetCountByGalleryQuery.isSuccess && imageGetCountByGalleryQuery.data) {
+				setTotalImageCount(imageGetCountByGalleryQuery.data.data)
 			}
-			if (queryGetByPage.isSuccess && queryGetByPage.data) {
-				console.log('Get by page Result ' + JSON.stringify(queryGetByPage.data))
-				setImages(queryGetByPage.data)
+			if (imageGetByPageQuery.isSuccess && imageGetByPageQuery.data) {
+				setImages(imageGetByPageQuery.data)
 			}
 		}
 	}, [imageGalleryID,
 		currentPage,
 		pageSize,
-		queryGetCountByID.isSuccess,
-		queryGetCountByID.data,
-		queryGetByPage.isSuccess,
-		queryGetByPage.data]);
+		imageGetCountByGalleryQuery.isSuccess,
+		imageGetCountByGalleryQuery.data,
+		imageGetByPageQuery.isSuccess,
+		imageGetByPageQuery.data]);
 
 	useEffect(() => {
 		updateBreadcrumbLinks([

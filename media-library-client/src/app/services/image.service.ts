@@ -4,6 +4,7 @@ import { cacheStaleTime } from '../constants';
 import urlCombine from '../functions/url-combine';
 import GalleryImage from '../interfaces/gallery-images';
 import ImageDataWrapper from '../interfaces/image-data-wrapper';
+import GalleryData from '../interfaces/gallery-data';
 
 export default class ImageService {
 	private readonly getCountByGalleryPath = 'GetCountByGallery';
@@ -15,7 +16,7 @@ export default class ImageService {
 
 	GetCountByGallery(galleryID: string): UseQueryOptions<{data:number}, Error> {
 		return {
-			queryKey: [`${this.objName}-${this.getCountByGalleryPath}`],
+			queryKey: [`${this.objName}-${this.getCountByGalleryPath}`, galleryID],
 			queryFn: async (): Promise<{data:number}> => {
 				const url = urlCombine(ImageAPI, this.getCountByGalleryPath, galleryID);
 				const res = await fetch(url, {
@@ -32,7 +33,7 @@ export default class ImageService {
 
 	GetByPage(galleryID: string, pageNo: string, pageSize: string): UseQueryOptions<GalleryImage[], Error, GalleryImage[]> {
 		return {
-			queryKey: [`${this.objName}-${this.getByPagePath}`],
+			queryKey: [`${this.objName}-${this.getByPagePath}`, galleryID, pageNo, pageSize],
 			queryFn: async (): Promise<GalleryImage[]> => {
 				const url = urlCombine(ImageAPI, this.getByPagePath, galleryID, pageNo, pageSize);
 				const res = await fetch(url, {
@@ -47,10 +48,10 @@ export default class ImageService {
 		}
 	}
 
-	GetByID(imageID: string): UseQueryOptions<GalleryImage, Error, GalleryImage> {
+	GetByID(imageID: string): UseQueryOptions<GalleryData, Error, GalleryData> {
 		return {
-			queryKey: [`${this.objName}-${this.getByIDPath}`],
-			queryFn: async (): Promise<GalleryImage> => {
+			queryKey: [`${this.objName}-${this.getByIDPath}`, imageID],
+			queryFn: async (): Promise<GalleryData> => {
 				const url = urlCombine(ImageAPI, this.getByIDPath, imageID);
 				const res = await fetch(url, {
 					headers: headers,
@@ -66,7 +67,7 @@ export default class ImageService {
 
 	GetThumbnailByID(imageID: string, thumbnailSize: string): UseQueryOptions<ImageDataWrapper, Error, ImageDataWrapper> {
 		return {
-			queryKey: [`${this.objName}-${this.getThumbnailByIDPath}`,imageID],
+			queryKey: [`${this.objName}-${this.getThumbnailByIDPath}`,imageID, thumbnailSize],
 			queryFn: async (): Promise<ImageDataWrapper> => {
 				const url = urlCombine(ImageAPI, this.getThumbnailByIDPath, imageID, thumbnailSize);
 				const res = await fetch(url, {
@@ -83,7 +84,7 @@ export default class ImageService {
 
 	GetDataByID(imageID: string): UseQueryOptions<ImageDataWrapper, Error, ImageDataWrapper> {
 		return {
-			queryKey: [`${this.objName}-${this.getDataByIDPath}`],
+			queryKey: [`${this.objName}-${this.getDataByIDPath}`, imageID],
 			queryFn: async (): Promise<ImageDataWrapper> => {
 				const url = urlCombine(ImageAPI, this.getDataByIDPath, imageID);
 				const res = await fetch(url, {

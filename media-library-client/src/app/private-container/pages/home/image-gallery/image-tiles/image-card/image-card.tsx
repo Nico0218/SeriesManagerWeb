@@ -4,33 +4,32 @@ import HttpHelper from '../../../../../../classes/http-helper';
 import CustomCard from '../../../../../../custom-components/custom-card/custom-card';
 import ImageCardProps from './image-card-props';
 import { useQuery } from '@tanstack/react-query';
-import ImageDataWrapper from 'src/app/interfaces/image-data-wrapper';
+import ImageDataWrapper from '../../../../../../interfaces/image-data-wrapper';
 
 export default function ImageCard({ ImageID, DisplayName }: Readonly<ImageCardProps>) {
 	const [dataImage, setDataImage] = useState<ImageDataWrapper>();
 	const [open, setOpen] = useState(false);
 	const [image, setImage] = useState<string>();
 
-	const queryGetThumbnail = useQuery({
+	const imageGetThumbnailByIDQuery = useQuery({
 		...HttpHelper.image.GetThumbnailByID(ImageID, '200'),
 		enabled: !!ImageID,
 	});
 
 
-	const queryGetData = useQuery({
+	const imageGetDataByIDQuery = useQuery({
 		...HttpHelper.image.GetDataByID(ImageID),
-		enabled: false
+		enabled: open
 	}
 	);
 
 	useEffect(() => {
-		if (queryGetThumbnail.isSuccess && queryGetThumbnail.data) {
-			setImage(queryGetThumbnail.data.imageData);
+		if (imageGetThumbnailByIDQuery.isSuccess && imageGetThumbnailByIDQuery.data) {
+			setImage(imageGetThumbnailByIDQuery.data.imageData);
 		}
-	}, [queryGetThumbnail.isSuccess, queryGetThumbnail.data]);
+	}, [imageGetThumbnailByIDQuery.isSuccess, imageGetThumbnailByIDQuery.data]);
 
 	const handleOpen = () => {
-		queryGetData.refetch(); // Manually trigger the data query
 		setOpen(true);
 	};
 
@@ -39,11 +38,10 @@ export default function ImageCard({ ImageID, DisplayName }: Readonly<ImageCardPr
 
 
 	useEffect(() => {
-		if (queryGetData.isSuccess && queryGetData.data) {
-			console.log('Get data by ID Result ' + JSON.stringify(queryGetData.data));
-			setDataImage(queryGetData.data);
+		if (imageGetDataByIDQuery.isSuccess && imageGetDataByIDQuery.data) {
+			setDataImage(imageGetDataByIDQuery.data);
 		}
-	}, [queryGetData.isSuccess, queryGetData.data]);
+	}, [imageGetDataByIDQuery.isSuccess, imageGetDataByIDQuery.data]);
 
 	return (
 		<>
@@ -80,7 +78,7 @@ export default function ImageCard({ ImageID, DisplayName }: Readonly<ImageCardPr
 				<Fade in={open}>
 					<img
 						height="100%"
-						src={`data:image/png;base64,${dataImage}`}
+						src={`data:image/png;base64,${dataImage?.imageData}`}
 						onClick={handleClose}
 						onKeyUp={handleClose}
 					/>

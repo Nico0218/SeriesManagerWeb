@@ -3,26 +3,45 @@ import { useEffect, useState } from 'react';
 import HttpHelper from '../../../../../../classes/http-helper';
 import CustomCard from '../../../../../../custom-components/custom-card/custom-card';
 import ImageCardProps from './image-card-props';
+import { useQuery } from '@tanstack/react-query';
+import ImageDataWrapper from '../../../../../../interfaces/image-data-wrapper';
 
 export default function ImageCard({ ImageID, DisplayName }: Readonly<ImageCardProps>) {
-	const [dataImage, setDataImage] = useState<string>();
-
+	const [dataImage, setDataImage] = useState<ImageDataWrapper>();
 	const [open, setOpen] = useState(false);
-	const handleOpen = () => {
-		HttpHelper.image.GetDataByID(ImageID).then(res => {
-			setDataImage(res.imageData);
-		});
-		setOpen(true);
-	};
-	const handleClose = () => setOpen(false);
-
 	const [image, setImage] = useState<string>();
 
+	const imageGetThumbnailByIDQuery = useQuery({
+		...HttpHelper.image.GetThumbnailByID(ImageID, '200'),
+		enabled: !!ImageID,
+	});
+
+
+	const imageGetDataByIDQuery = useQuery({
+		...HttpHelper.image.GetDataByID(ImageID),
+		enabled: open
+	}
+	);
+
 	useEffect(() => {
-		HttpHelper.image.GetThumbnailByID(ImageID, 200).then(res => {
-			setImage(res.imageData);
-		});
-	}, []);
+		if (imageGetThumbnailByIDQuery.isSuccess && imageGetThumbnailByIDQuery.data) {
+			setImage(imageGetThumbnailByIDQuery.data.imageData);
+		}
+	}, [imageGetThumbnailByIDQuery.isSuccess, imageGetThumbnailByIDQuery.data]);
+
+	const handleOpen = () => {
+		setOpen(true);
+	};
+
+	const handleClose = () => setOpen(false);
+
+
+
+	useEffect(() => {
+		if (imageGetDataByIDQuery.isSuccess && imageGetDataByIDQuery.data) {
+			setDataImage(imageGetDataByIDQuery.data);
+		}
+	}, [imageGetDataByIDQuery.isSuccess, imageGetDataByIDQuery.data]);
 
 	return (
 		<>
@@ -59,13 +78,9 @@ export default function ImageCard({ ImageID, DisplayName }: Readonly<ImageCardPr
 				<Fade in={open}>
 					<img
 						height="100%"
-						src={`data:image/png;base64,${dataImage}`}
-						onClick={() => {
-							setOpen(false);
-						}}
-						onKeyUp={() => {
-							setOpen(false);
-						}}
+						src={`data:image/png;base64,${dataImage?.imageData}`}
+						onClick={handleClose}
+						onKeyUp={handleClose}
 					/>
 				</Fade>
 			</Dialog>

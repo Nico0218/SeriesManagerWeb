@@ -1,12 +1,13 @@
 import { Box, Grid, Pagination } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import HttpHelper from '../../../../../classes/http-helper';
 import { updateBreadcrumbLinks } from '../../../../../functions/bread-crumb-functions';
-import GalleryData from '../../../../../interfaces/gallery-data';
 import GalleryImage from '../../../../../interfaces/gallery-images';
 import { RouteHome, RouteImageGallery, RouteImages } from '../../../../../routes/app-routes';
 import ImageCard from './image-card/image-card';
+import GalleryData from 'src/app/interfaces/gallery-data';
 
 export default function ImageTile() {
 	const params = useParams();
@@ -18,22 +19,36 @@ export default function ImageTile() {
 	const [pageCount, setPageCount] = useState<number>();
 	const imageGalleryID = useMemo(() => params?.imageGalleryID ?? '', []);
 
+	const imageGetByIDQuery = useQuery({
+		...HttpHelper.image.GetByID(imageGalleryID),
+		enabled: !!imageGalleryID,
+	});
+
+	const imageGetCountByGalleryQuery = useQuery({
+		...HttpHelper.image.GetCountByGallery(imageGalleryID),
+		enabled: true,
+	})
+	const imageGetByPageQuery = useQuery({
+		...HttpHelper.image.GetByPage(imageGalleryID, currentPage.toString(), pageSize.toString()),
+		enabled: true
+	})
+
 	const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
 		setCurrentPage(value);
-		if (galleryData) {
-			HttpHelper.image.GetByPage(galleryData.id, value, pageSize).then(pages => {
-				setImages(pages);
-			});
+		if (imageGalleryID) {
+			if (imageGetByPageQuery.isSuccess && imageGetByPageQuery.data) {
+				setImages(imageGetByPageQuery.data)
+			}
 		}
 	};
 
 	useEffect(() => {
 		if (imageGalleryID) {
-			HttpHelper.imageGallery.GetByID(imageGalleryID).then(galleryData => {
-				setGalleryData(galleryData);
-			});
+			if (imageGetByIDQuery.isSuccess && imageGetByIDQuery.data) {
+				setGalleryData(imageGetByIDQuery.data);
+			}
 		}
-	}, [imageGalleryID]);
+	}, [imageGalleryID, imageGetByIDQuery.isSuccess, imageGetByIDQuery.data]);
 
 	useEffect(() => {
 		if (totalImageCount) {
@@ -42,15 +57,21 @@ export default function ImageTile() {
 	}, [totalImageCount, pageSize]);
 
 	useEffect(() => {
-		if (galleryData) {
-			HttpHelper.image.GetCountByGallery(galleryData.id).then(count => {
-				setTotalImageCount(count.data);
-			});
-			HttpHelper.image.GetByPage(galleryData.id, currentPage, pageSize).then(pages => {
-				setImages(pages);
-			});
+		if (imageGalleryID) {
+			if (imageGetCountByGalleryQuery.isSuccess && imageGetCountByGalleryQuery.data) {
+				setTotalImageCount(imageGetCountByGalleryQuery.data.data)
+			}
+			if (imageGetByPageQuery.isSuccess && imageGetByPageQuery.data) {
+				setImages(imageGetByPageQuery.data)
+			}
 		}
-	}, [galleryData, currentPage, pageSize]);
+	}, [imageGalleryID,
+		currentPage,
+		pageSize,
+		imageGetCountByGalleryQuery.isSuccess,
+		imageGetCountByGalleryQuery.data,
+		imageGetByPageQuery.isSuccess,
+		imageGetByPageQuery.data]);
 
 	useEffect(() => {
 		updateBreadcrumbLinks([

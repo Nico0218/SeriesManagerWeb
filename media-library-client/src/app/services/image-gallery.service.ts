@@ -1,49 +1,47 @@
-import { ImageGalleryAPI, headers, isURLSet, requestMode } from '../classes/http-helper-const';
+import { UseQueryOptions } from '@tanstack/react-query';
+import { ImageGalleryAPI, headers, isURLSet, requestMode, validateOkResponse } from '../classes/http-helper-const';
 import urlCombine from '../functions/url-combine';
 import GalleryData from '../interfaces/gallery-data';
+import { cacheStaleTime } from '../constants';
  
 export default class ImageGalleryService {
-
-    async GetAll(): Promise<GalleryData[]> {
-        isURLSet();
-        const url = urlCombine(ImageGalleryAPI, 'GetAll');
-        const result = await fetch(url, {
-            method: 'GET',
-            headers: headers,
-            body: null,
-            mode: requestMode,
-            credentials: 'include'
-        })
-
-        return result.clone().json()
-    }
+    private readonly getAllPath = 'GetAll';
+	private readonly getByIDPath = 'GetByID';
+	private readonly objName = 'ImageGallery';
 
 
-    async GetByID(imageID: string) : Promise<GalleryData> {
-        isURLSet();
-        const url = urlCombine(ImageGalleryAPI, `GetByID/${imageID}`);
-        const result = await fetch(url, {
-            method: 'GET',
-            headers: headers,
-            body: null,
-            mode: requestMode,
-            credentials: 'include'
-        })
+    GetAll(): UseQueryOptions<GalleryData[], unknown, GalleryData[]> {
+		return {
+			queryKey: [`${this.objName}-${this.getAllPath}`],
+			queryFn: async (): Promise<GalleryData[]> => {
+				const url = urlCombine(ImageGalleryAPI, this.getAllPath);
+				const res = await fetch(url, {
+					headers: headers,
+					mode: requestMode,
+					credentials: 'include',
+				});
+				await validateOkResponse(res);
+				return await res.clone().json();
+			},
+			staleTime: cacheStaleTime
+		}
+	}
 
-        return result.clone().json()
-    }
-
-    GetByName(imageName: string) {
-        isURLSet();
-        const url = urlCombine(ImageGalleryAPI, 'GetByName');
-        fetch(url, {
-            method: 'GET',
-            headers: headers,
-            body: imageName,
-            mode: requestMode,
-            credentials: 'include'
-        })
-            .catch(err => console.error(err));
-    }
+    GetByID(imageID: string): UseQueryOptions<GalleryData, unknown, GalleryData> {
+		return {
+			queryKey: [`${this.objName}-${this.getByIDPath}`],
+			queryFn: async (): Promise<GalleryData> => {
+				const url = urlCombine(ImageGalleryAPI, this.getByIDPath, imageID);
+				const res = await fetch(url, {
+					headers: headers,
+					mode: requestMode,
+					credentials: 'include',
+				});
+				await validateOkResponse(res);
+				return await res.clone().json();
+			},
+			staleTime: cacheStaleTime
+		}
+	}
 
 }

@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import { useRouteError } from 'react-router-dom';
 import NavItem from '../../../app/custom-components/nav-items/nav-item';
-import { RouteHome } from '../../../app/routes/app-routes';
+import { RoutePrivateRoot } from '../../../app/routes/app-routes';
 
 export default function ErrorPage() {
 	const error = useRouteError();
@@ -22,7 +22,7 @@ export default function ErrorPage() {
 			<Typography>
 				<i>{(error as any).statusText || (error as any).message}</i>
 			</Typography>
-			<NavItem href={RouteHome()} title="Return To Home" />
+			<NavItem href={RoutePrivateRoot()} title="Return To Home" />
 		</Box>
 	);
 }

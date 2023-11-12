@@ -12,7 +12,7 @@ import FolderType from '../../../enums/folder-type';
 import ObjectStatus from '../../../enums/object-status';
 import { updateBreadcrumbLinks } from '../../../functions/bread-crumb-functions';
 import dispatchSnackbar from '../../../functions/dispatch-snackbar';
-import { RouteFolderLocation, RouteHome } from '../../../routes/app-routes';
+import { RouteFolderLocation, RoutePrivateRoot } from '../../../routes/app-routes';
 import FolderLibraryComp from './folder-library/folder-library-comp';
 
 export default function FolderLocations() {
@@ -112,7 +112,7 @@ export default function FolderLocations() {
 		updateBreadcrumbLinks([
 			{
 				label: `Home`,
-				route: RouteHome(),
+				route: RoutePrivateRoot(),
 			},
 			{
 				label: 'Library Location',

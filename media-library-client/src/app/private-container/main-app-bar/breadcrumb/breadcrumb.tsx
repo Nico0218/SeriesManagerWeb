@@ -12,6 +12,7 @@ export default function BreadCrumb() {
 	const [breadcrumbLinks, setBreadcrumbLinks] = useState<BreadcrumbItem[]>(
 		getBreadcrumbLinks() ?? []
 	);
+	
 	useEffect(() => {
 		addLocalStorageEventListener(breadcrumbLinkStorageID, () => {
 			const localBreadcrumbLinks = getBreadcrumbLinks() ?? [];

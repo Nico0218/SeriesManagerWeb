@@ -10,6 +10,7 @@ import LoadingComponent from './custom-components/loading-component/loading-comp
 import SnackbarWrapper from './custom-components/snackbar-wrapper/snackbar-wrapper';
 import AvailableThemes from './custom-components/theme-selector/available-themes-type';
 import GlobalAppContext from './global-app-context';
+import GlobalAppContextProps from './global-app-context-props';
 import privateRoutes from './routes/private-routes';
 import publicRoutes from './routes/public-routes';
 import createEmotionCache from './utils/create-emotion-cache';
@@ -17,10 +18,13 @@ import QueryClientWrapper from './utils/create-query-client';
 
 export default function App() {
 	const themeKey = 'Theme';
+
 	const [theme, setTheme] = useState<AvailableThemes>(
 		(localStorage.getItem(themeKey) ?? 'defaultDarkTheme') as AvailableThemes
 	);
+
 	const emotionCache = createEmotionCache();
+
 	useMemo(() => {
 		if (theme) {
 			localStorage.setItem(themeKey, theme);
@@ -34,14 +38,16 @@ export default function App() {
 		return createTheme(availableThemes['defaultDarkTheme']);
 	}, [theme]);
 
+	const appContext = useMemo((): GlobalAppContextProps => {
+		return {
+			theme,
+			setTheme,
+		};
+	}, [theme]);
+
 	const router = createBrowserRouter([...privateRoutes, ...publicRoutes]);
 	return (
-		<GlobalAppContext.Provider
-			value={{
-				theme: theme,
-				setTheme: setTheme,
-			}}
-		>
+		<GlobalAppContext.Provider value={appContext}>
 			<QueryClientProvider client={QueryClientWrapper.queryClient}>
 				<ThemeProvider theme={muiTheme}>
 					<CacheProvider value={emotionCache}>

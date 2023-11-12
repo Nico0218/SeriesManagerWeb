@@ -2,53 +2,55 @@ import { Box, Grid, Pagination } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import GalleryData from 'src/app/interfaces/gallery-data';
 import HttpHelper from '../../../../../classes/http-helper';
 import { updateBreadcrumbLinks } from '../../../../../functions/bread-crumb-functions';
 import GalleryImage from '../../../../../interfaces/gallery-images';
-import { RouteHome, RouteImageGallery, RouteImages } from '../../../../../routes/app-routes';
+import { RoutePrivateRoot, RouteImageGallery, RouteImages } from '../../../../../routes/app-routes';
 import ImageCard from './image-card/image-card';
-import GalleryData from 'src/app/interfaces/gallery-data';
 
 export default function ImageTile() {
 	const params = useParams();
+	const [imageGalleryID] = useState<string | undefined>(params.imageGalleryID);
 	const [galleryData, setGalleryData] = useState<GalleryData>();
 	const [images, setImages] = useState<GalleryImage[]>();
 	const [totalImageCount, setTotalImageCount] = useState<number>();
 	const [pageSize, setPageSize] = useState(10);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [pageCount, setPageCount] = useState<number>();
-	const imageGalleryID = useMemo(() => params?.imageGalleryID ?? '', []);
 
-	const imageGetByIDQuery = useQuery({
-		...HttpHelper.image.GetByID(imageGalleryID),
+	const imageGalleryGetByIDQuery = useQuery({
+		...HttpHelper.imageGallery.GetByID(imageGalleryID ?? ''),
 		enabled: !!imageGalleryID,
 	});
 
 	const imageGetCountByGalleryQuery = useQuery({
-		...HttpHelper.image.GetCountByGallery(imageGalleryID),
-		enabled: true,
-	})
+		...HttpHelper.image.GetCountByGallery(imageGalleryID ?? ''),
+		enabled: !!imageGalleryID,
+	});
 	const imageGetByPageQuery = useQuery({
-		...HttpHelper.image.GetByPage(imageGalleryID, currentPage.toString(), pageSize.toString()),
-		enabled: true
-	})
+		...HttpHelper.image.GetByPage(
+			imageGalleryID ?? '',
+			currentPage.toString(),
+			pageSize.toString()
+		),
+		enabled: !!imageGalleryID,
+	});
 
 	const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
 		setCurrentPage(value);
 		if (imageGalleryID) {
 			if (imageGetByPageQuery.isSuccess && imageGetByPageQuery.data) {
-				setImages(imageGetByPageQuery.data)
+				setImages(imageGetByPageQuery.data);
 			}
 		}
 	};
 
 	useEffect(() => {
-		if (imageGalleryID) {
-			if (imageGetByIDQuery.isSuccess && imageGetByIDQuery.data) {
-				setGalleryData(imageGetByIDQuery.data);
-			}
+		if (imageGalleryGetByIDQuery.isSuccess && imageGalleryGetByIDQuery.data) {
+			setGalleryData(imageGalleryGetByIDQuery.data);
 		}
-	}, [imageGalleryID, imageGetByIDQuery.isSuccess, imageGetByIDQuery.data]);
+	}, [imageGalleryGetByIDQuery.isSuccess, imageGalleryGetByIDQuery.data]);
 
 	useEffect(() => {
 		if (totalImageCount) {
@@ -59,35 +61,39 @@ export default function ImageTile() {
 	useEffect(() => {
 		if (imageGalleryID) {
 			if (imageGetCountByGalleryQuery.isSuccess && imageGetCountByGalleryQuery.data) {
-				setTotalImageCount(imageGetCountByGalleryQuery.data.data)
+				setTotalImageCount(imageGetCountByGalleryQuery.data.data);
 			}
 			if (imageGetByPageQuery.isSuccess && imageGetByPageQuery.data) {
-				setImages(imageGetByPageQuery.data)
+				setImages(imageGetByPageQuery.data);
 			}
 		}
-	}, [imageGalleryID,
+	}, [
+		imageGalleryID,
 		currentPage,
 		pageSize,
 		imageGetCountByGalleryQuery.isSuccess,
 		imageGetCountByGalleryQuery.data,
 		imageGetByPageQuery.isSuccess,
-		imageGetByPageQuery.data]);
+		imageGetByPageQuery.data,
+	]);
 
 	useEffect(() => {
-		updateBreadcrumbLinks([
-			{
-				label: `Home`,
-				route: RouteHome(),
-			},
-			{
-				label: 'image Gallery',
-				route: RouteImageGallery(),
-			},
-			{
-				label: galleryData?.name ?? '',
-				route: RouteImages(),
-			},
-		]);
+		if (galleryData) {
+			updateBreadcrumbLinks([
+				{
+					label: `Home`,
+					route: RoutePrivateRoot(),
+				},
+				{
+					label: 'image Gallery',
+					route: RouteImageGallery(),
+				},
+				{
+					label: galleryData.name,
+					route: RouteImages(galleryData.id),
+				},
+			]);
+		}
 	}, [galleryData]);
 
 	const render = useMemo(() => {

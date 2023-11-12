@@ -5,7 +5,7 @@ import httpHelper from '../../../../classes/http-helper';
 import CustomCard from '../../../../custom-components/custom-card/custom-card';
 import { updateBreadcrumbLinks } from '../../../../functions/bread-crumb-functions';
 import GalleryData from '../../../../interfaces/gallery-data';
-import { RouteHome, RouteImageGallery, RouteImages } from '../../../../routes/app-routes';
+import { RoutePrivateRoot, RouteImageGallery, RouteImages } from '../../../../routes/app-routes';
 import { useQuery } from '@tanstack/react-query';
 
 export default function ImageGallery() {
@@ -25,7 +25,7 @@ export default function ImageGallery() {
 		updateBreadcrumbLinks([
 			{
 				label: `Home`,
-				route: RouteHome(),
+				route: RoutePrivateRoot(),
 			},
 			{
 				label: 'Image Gallery',

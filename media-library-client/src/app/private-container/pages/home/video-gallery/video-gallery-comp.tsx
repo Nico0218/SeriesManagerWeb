@@ -6,7 +6,7 @@ import HttpHelper from '../../../../classes/http-helper';
 import CustomCard from '../../../../custom-components/custom-card/custom-card';
 import { updateBreadcrumbLinks } from '../../../../functions/bread-crumb-functions';
 import VideoGallery from '../../../../interfaces/video-gallery';
-import { RouteHome, RouteVideoGallery, RouteVideos } from '../../../../routes/app-routes';
+import { RoutePrivateRoot, RouteVideoGallery, RouteVideos } from '../../../../routes/app-routes';
 
 export default function VideoGalleryComp() {
 	const navigate = useNavigate();
@@ -21,7 +21,7 @@ export default function VideoGalleryComp() {
 		updateBreadcrumbLinks([
 			{
 				label: `Home`,
-				route: RouteHome(),
+				route: RoutePrivateRoot(),
 			},
 			{
 				label: 'Video Gallery',

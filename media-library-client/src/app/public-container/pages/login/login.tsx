@@ -9,7 +9,7 @@ import FormValidation from '../../../custom-components/inputs/from-validation';
 import ValidatedTextField from '../../../custom-components/inputs/validated-text/validated-text';
 import dispatchSnackbar from '../../../functions/dispatch-snackbar';
 import { setLocalStorageItem } from '../../../functions/local-storage';
-import { RouteHome } from '../../../routes/app-routes';
+import { RoutePrivateRoot } from '../../../routes/app-routes';
 
 export default function Login() {
 	const navigate = useNavigate();
@@ -31,7 +31,7 @@ export default function Login() {
 			() => {
 				const userInfo: UserInfo = { name: userName, token: '' };
 				setLocalStorageItem(userInfoKey, userInfo);
-				navigate(RouteHome());
+				navigate(RoutePrivateRoot());
 			},
 			err => {
 				dispatchSnackbar({ severity: 'error', message: 'Failed to login' });

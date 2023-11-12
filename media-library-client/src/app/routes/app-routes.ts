@@ -6,12 +6,8 @@ export const RouteLogin = () => {
 	return '/LandingPage/Login';
 };
 
-export const RouteRoot = () => {
+export const RoutePrivateRoot = () => {
 	return '/';
-};
-
-export const RouteHome = () => {
-	return '/Home';
 };
 
 export const RouteImageGallery = () => {

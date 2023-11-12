@@ -1,4 +1,4 @@
-import { Navigate, RouteObject } from 'react-router-dom';
+import { RouteObject } from 'react-router-dom';
 import LazyErrorPage from '../common-pages/error-page/lazy-error-page';
 import LazyImageTiles from '../private-container/pages/home/image-gallery/image-tiles/lazy-image-tiles';
 import LazyImageGallery from '../private-container/pages/home/image-gallery/lazy-image-gallery';
@@ -9,10 +9,9 @@ import LazyFolderLocations from '../private-container/pages/settings/lazy-folder
 import PrivateContainer from '../private-container/private-container';
 import {
 	RouteFolderLocation,
-	RouteHome,
 	RouteImageGallery,
 	RouteImages,
-	RouteRoot,
+	RoutePrivateRoot,
 	RouteVideoGallery,
 	RouteVideos,
 } from './app-routes';
@@ -20,19 +19,16 @@ import ProtectedRoute from './protected-route/protected-route';
 
 const privateRoutes: RouteObject[] = [
 	{
-		path: RouteRoot(),
+		path: RoutePrivateRoot(),
 		element: (
 			<ProtectedRoute>
-				<>
-					<PrivateContainer />
-					<Navigate to={RouteHome()} />
-				</>
+				<PrivateContainer />
 			</ProtectedRoute>
 		),
 		errorElement: <LazyErrorPage />,
 		children: [
 			{
-				path: RouteHome(),
+				path: RoutePrivateRoot(),
 				element: (
 					<ProtectedRoute>
 						<LazyHome />

@@ -6,7 +6,7 @@ import HttpHelper from '../../../../../classes/http-helper';
 import { updateBreadcrumbLinks } from '../../../../../functions/bread-crumb-functions';
 import Video from '../../../../../interfaces/video';
 import VideoGallery from '../../../../../interfaces/video-gallery';
-import { RouteHome, RouteVideoGallery, RouteVideos } from '../../../../../routes/app-routes';
+import { RoutePrivateRoot, RouteVideoGallery, RouteVideos } from '../../../../../routes/app-routes';
 
 export default function VideoTiles() {
 	const params = useParams();
@@ -28,7 +28,7 @@ export default function VideoTiles() {
 		updateBreadcrumbLinks([
 			{
 				label: `Home`,
-				route: RouteHome(),
+				route: RoutePrivateRoot(),
 			},
 			{
 				label: 'Video Gallery',

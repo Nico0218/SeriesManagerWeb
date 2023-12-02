@@ -101,7 +101,6 @@ export default function VideoPlayer({URL}: Readonly<VideoPlayerProps>) {
         if (playerRef.current) {
           playerRef.current.seekTo(parsedValue / 100);
         }
-        // console.log(played)
       };
 
     const handlePlayerMouseSeekDown = () => {
@@ -157,7 +156,6 @@ export default function VideoPlayer({URL}: Readonly<VideoPlayerProps>) {
                         onSeekMouseDown={handlePlayerMouseSeekDown}
                         playedTime={playedTime}
                         fullMovieTime={fullMovieTime}
-                        // seeking={seeking}
                     />
                 </div>
             </Container>

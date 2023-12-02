@@ -1,36 +1,18 @@
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import Popover from '@mui/material/Popover';
-import Slider from '@mui/material/Slider';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import { styled } from '@mui/material/styles';
-import { SliderProps } from '@mui/material/Slider';
+import {
+	Button,
+	Grid,
+	Popover,
+	Slider,
+	SliderProps,
+	Tooltip,
+	Typography,
+	styled,
+} from '@mui/material';
 import React, { SyntheticEvent, useState } from 'react';
 import './video-player.scss';
 import IconButtonWrapper from '../../../../../../custom-components/icon-button-wrapper/icon-button-wrapper';
 import IconSelector from '../../../../../../custom-components/icon-loader/icon-selector';
-
-interface ControlIconsProps {
-	playandpause: () => void;
-	playing: boolean;
-	rewind: () => void;
-	fastForward: () => void;
-	muting: () => void;
-	muted: boolean;
-	volumeChange: (newValue: number) => void;
-	volumeSeek: (newValue: number) => void;
-	volume: number;
-	playRate: (rate: number) => void;
-	playerbackRate: number;
-	fullScreenMode: () => void;
-	onSeek: (event: Event, value: number | number[], activeThumb: number) => void;
-	played: number;
-	onSeekMouseUp: (event: Event | SyntheticEvent<Element, Event>, value: number | number[]) => void;
-	onSeekMouseDown: () => void;
-	fullMovieTime: string;
-	playedTime: string;
-}
+import ControlIconsProps from '../../../../../../interfaces/control-icons';
 
 const ControlIcons = ({
 	playandpause,
@@ -58,8 +40,7 @@ const ControlIcons = ({
 		setAnchorEl(undefined);
 	};
 
-	const open = Boolean(anchorEl);
-	const id = open ? 'playbackrate-popover' : undefined;
+	const id = anchorEl ? 'playbackrate-popover' : undefined;
 
 	function ValueLabelComponent(props: SliderProps) {
 		const { children, value } = props;
@@ -135,7 +116,6 @@ const ControlIcons = ({
 						onMouseDown={onSeekMouseDown}
 						onChangeCommitted={onSeekMouseUp}
 						valueLabelDisplay="auto"
-						// aria-label="custom thumb label"
 						components={{
 							ValueLabel: ValueLabelComponent,
 						}}
@@ -149,30 +129,38 @@ const ControlIcons = ({
 				<Grid item xs={12}>
 					<Grid container alignItems="center" direction="row">
 						<IconButtonWrapper id={'rewind'} icon={IconSelector.FastRewind} onClick={rewind} />
-                        <div>
-                        {playing ? (
+						<div>
+							{playing ? (
 								<IconButtonWrapper id={'play'} icon={IconSelector.Pause} onClick={playandpause} />
 							) : (
-								<IconButtonWrapper id={'pause'} icon={IconSelector.PlayArrow} onClick={playandpause} />
+								<IconButtonWrapper
+									id={'pause'}
+									icon={IconSelector.PlayArrow}
+									onClick={playandpause}
+								/>
 							)}
-                        </div>
-                        
-                        <IconButtonWrapper id={'forward'} icon={IconSelector.FastForward} onClick={fastForward} />
-                        <div>
-                        {muted ? (
-								<IconButtonWrapper id={'volume-off'} icon={IconSelector.VolumeUp} onClick={muting} />
-							) : (
-								<IconButtonWrapper id={'volume-up'} icon={IconSelector.VolumeOff} onClick={muting} />
-							)}
-                        </div>
+						</div>
 
-						{/* <IconButton className="controls__icons" aria-label="reqind" onClick={playandpause}>
-							{playing ? (
-								<PauseSharp fontSize="large" style={{ color: 'white' }} />
+						<IconButtonWrapper
+							id={'forward'}
+							icon={IconSelector.FastForward}
+							onClick={fastForward}
+						/>
+						<div>
+							{muted ? (
+								<IconButtonWrapper
+									id={'volume-off'}
+									icon={IconSelector.VolumeUp}
+									onClick={muting}
+								/>
 							) : (
-								<PlayArrowSharp fontSize="large" style={{ color: 'white' }} />
+								<IconButtonWrapper
+									id={'volume-up'}
+									icon={IconSelector.VolumeOff}
+									onClick={muting}
+								/>
 							)}
-						</IconButton> */}
+						</div>
 
 						<Typography style={{ color: '#fff', paddingTop: '5px' }}>
 							{Math.ceil(volume * 100)}
@@ -180,7 +168,7 @@ const ControlIcons = ({
 						<Slider
 							min={0}
 							max={100}
-							value={volume * 100} // Assuming volume is between 0 and 1
+							value={volume * 100}
 							onChange={(event: Event | SyntheticEvent<Element, Event>, value: number | number[]) =>
 								volumeChange(value as number)
 							}
@@ -197,7 +185,7 @@ const ControlIcons = ({
 
 						<Popover
 							id={id}
-							open={open}
+							open={!!anchorEl}
 							anchorEl={anchorEl}
 							onClose={handleClose}
 							anchorOrigin={{
@@ -220,7 +208,11 @@ const ControlIcons = ({
 							</Grid>
 						</Popover>
 
-                        <IconButtonWrapper id={'full-screen'} icon={IconSelector.Fullsccreen} onClick={fullScreenMode} />
+						<IconButtonWrapper
+							id={'full-screen'}
+							icon={IconSelector.Fullsccreen}
+							onClick={fullScreenMode}
+						/>
 					</Grid>
 				</Grid>
 			</Grid>

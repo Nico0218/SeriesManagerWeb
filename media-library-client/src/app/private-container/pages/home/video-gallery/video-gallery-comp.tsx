@@ -34,7 +34,7 @@ export default function VideoGalleryComp() {
 		if (videoGalleryGetAllQuery.isSuccess && videoGalleryGetAllQuery.data) {
 			setVideoGallerys(videoGalleryGetAllQuery.data);
 		}
-	}, [videoGalleryGetAllQuery.status, videoGalleryGetAllQuery.data]);
+	}, [videoGalleryGetAllQuery.status, videoGalleryGetAllQuery.data, videoGalleryGetAllQuery.isSuccess]);
 
 	const onVideoGalleryClick = (id: string) => {
 		navigate(RouteVideos(id));

@@ -15,7 +15,7 @@ export default function ImageTile() {
 	const [galleryData, setGalleryData] = useState<GalleryData>();
 	const [images, setImages] = useState<GalleryImage[]>();
 	const [totalImageCount, setTotalImageCount] = useState<number>();
-	const [pageSize, setPageSize] = useState(10);
+	const [pageSize] = useState(10);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [pageCount, setPageCount] = useState<number>();
 

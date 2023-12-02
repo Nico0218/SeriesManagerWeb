@@ -81,6 +81,7 @@ export default function ImageCard({ ImageID, DisplayName }: Readonly<ImageCardPr
 						src={`data:image/png;base64,${dataImage?.imageData}`}
 						onClick={handleClose}
 						onKeyUp={handleClose}
+						alt='Nothing to display!'
 					/>
 				</Fade>
 			</Dialog>

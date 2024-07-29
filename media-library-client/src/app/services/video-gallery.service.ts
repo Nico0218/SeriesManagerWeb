@@ -21,7 +21,7 @@ export default class VideoGalleryService {
 
 	private readonly objName = 'VideoGallery';
 
-	GetAll(): UseQueryOptions<IVideoGallery[], unknown, IVideoGallery[]> {
+	GetAll(): UseQueryOptions<IVideoGallery[], Error, IVideoGallery[]> {
 		return {
 			queryKey: [`${this.objName}-${this.getAllPath}`],
 			queryFn: async (): Promise<IVideoGallery[]> => {
@@ -38,7 +38,7 @@ export default class VideoGalleryService {
 		};
 	}
 
-	GetByID(galleryID: string): UseQueryOptions<IVideoGallery, unknown, IVideoGallery> {
+	GetByID(galleryID: string): UseQueryOptions<IVideoGallery, Error, IVideoGallery> {
 		return {
 			queryKey: [`${this.objName}-${this.getByIDPath}`, galleryID],
 			queryFn: async (): Promise<IVideoGallery> => {
@@ -55,7 +55,7 @@ export default class VideoGalleryService {
 		};
 	}
 
-	GetByName(galleryName: string): UseQueryOptions<IVideoGallery, unknown, IVideoGallery> {
+	GetByName(galleryName: string): UseQueryOptions<IVideoGallery, Error, IVideoGallery> {
 		return {
 			queryKey: [`${this.objName}-${this.getByNamePath}`, galleryName],
 			queryFn: async (): Promise<IVideoGallery> => {

@@ -53,7 +53,7 @@ export default class VideoService {
 		pageSize: number
 	): UseQueryOptions<Video[], unknown, Video[]> {
 		return {
-			queryKey: [`${this.objName}-${this.getByPagePath}`, galleryID],
+			queryKey: [`${this.objName}-${this.getByPagePath}`, galleryID, pageNo, pageSize],
 			queryFn: async (): Promise<Video[]> => {
 				const url = urlCombine(
 					videoAPI,

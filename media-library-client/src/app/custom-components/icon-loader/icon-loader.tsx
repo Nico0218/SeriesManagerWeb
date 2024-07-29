@@ -48,6 +48,15 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import InfoIcon from '@mui/icons-material/Info';
 import MergeIcon from '@mui/icons-material/Merge';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import FastRewindIcon from '@mui/icons-material/FastRewind';
+import FastForwardIcon from '@mui/icons-material/FastForward';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import PauseIcon from '@mui/icons-material/Pause';
+import FullsccreenIcon from '@mui/icons-material/Fullscreen';
+import EditIcon from '@mui/icons-material/Edit';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 //Add icons as needed. DO NOT import * from '@mui/icons-material' since it will include 6.5Mb of icons in the bundle
 //Icon list can be found here https://mui.com/material-ui/material-icons/
@@ -148,6 +157,24 @@ export default function IconLoader({ id, icon, sx }: IconLoaderProperties) {
 				return <MergeIcon id={id} key={id} sx={sx} />;
 			case IconSelector.ContentCopyIcon:
 				return <ContentCopyIcon id={id} key={id} sx={sx} />;
+			case IconSelector.FastRewind:
+				return <FastRewindIcon id={id} key={id} sx={sx} />;
+			case IconSelector.FastForward:
+				return <FastForwardIcon id={id} key={id} sx={sx} />;
+			case IconSelector.PlayArrow:
+				return <PlayArrowIcon id={id} key={id} sx={sx} />;
+			case IconSelector.VolumeUp:
+				return <VolumeOffIcon id={id} key={id} sx={sx} />;
+			case IconSelector.VolumeOff:
+				return <VolumeUpIcon id={id} key={id} sx={sx} />;
+			case IconSelector.Pause:
+				return <PauseIcon id={id} key={id} sx={sx} />;
+			case IconSelector.Fullsccreen:
+				return <FullsccreenIcon id={id} key={id} sx={sx} />;
+			case IconSelector.Edit:
+				return <EditIcon id={id} key={id} sx={sx} />;
+			case IconSelector.Cancel:
+				return <CancelIcon id={id} key={id} sx={sx} />;
 			default:
 				return <QuestionMark id={id} key={id} sx={sx} />;
 		}

@@ -13,9 +13,9 @@ export default function ImageTile() {
 	const params = useParams();
 	const [imageGalleryID] = useState<string | undefined>(params.imageGalleryID);
 	const [galleryData, setGalleryData] = useState<GalleryData>();
-	const [images, setImages] = useState<GalleryImage[]>();
+	const [galleryImages, setGalleryImages] = useState<GalleryImage[]>();
 	const [totalImageCount, setTotalImageCount] = useState<number>();
-	const [pageSize, setPageSize] = useState(10);
+	const [pageSize] = useState(10);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [pageCount, setPageCount] = useState<number>();
 
@@ -41,7 +41,7 @@ export default function ImageTile() {
 		setCurrentPage(value);
 		if (imageGalleryID) {
 			if (imageGetByPageQuery.isSuccess && imageGetByPageQuery.data) {
-				setImages(imageGetByPageQuery.data);
+				setGalleryImages(imageGetByPageQuery.data);
 			}
 		}
 	};
@@ -64,7 +64,7 @@ export default function ImageTile() {
 				setTotalImageCount(imageGetCountByGalleryQuery.data.data);
 			}
 			if (imageGetByPageQuery.isSuccess && imageGetByPageQuery.data) {
-				setImages(imageGetByPageQuery.data);
+				setGalleryImages(imageGetByPageQuery.data);
 			}
 		}
 	}, [
@@ -97,18 +97,22 @@ export default function ImageTile() {
 	}, [galleryData]);
 
 	const render = useMemo(() => {
-		if (images) {
+		if (galleryImages) {
 			const components: React.JSX.Element[] = [];
-			for (const image of images) {
+			for (const galleryImage of galleryImages) {
 				components.push(
-					<ImageCard key={image.id} ImageID={image.id} DisplayName={image.displayName} />
+					<ImageCard
+						key={galleryImage.id}
+						galleryImage={galleryImage}
+						setGalleryImages={setGalleryImages}
+					/>
 				);
 			}
 			return components;
 		} else {
 			return <div>an error occurred</div>;
 		}
-	}, [images]);
+	}, [galleryImages]);
 
 	return (
 		<>

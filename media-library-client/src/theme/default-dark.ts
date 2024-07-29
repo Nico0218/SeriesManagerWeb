@@ -389,6 +389,9 @@ export const defaultDarkTheme = createTheme({
 						color: 'inherit',
 						textDecoration: 'none',
 					},
+					'a.react-link:visited' : {
+						color : 'orange'
+					},
 					'a.react-link:hover': {
 						textDecoration: 'underline',
 					},

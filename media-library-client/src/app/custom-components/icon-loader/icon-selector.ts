@@ -47,5 +47,14 @@ enum IconSelector {
 	InfoIcon,
 	MergeIcon,
 	ContentCopyIcon,
+	FastRewind,
+	FastForward,
+	PlayArrow,
+	VolumeOff,
+	VolumeUp,
+	Pause,
+	Fullsccreen,
+	Edit,
+	Cancel
 }
 export default IconSelector;

@@ -8,16 +8,20 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 
-namespace MediaLibraryServer.Services {
-    public class ImageService : AbstractLibraryService<GalleryImage, ImageData>, IImageService {
-        public ImageService(ILogger<ImageService> logger, IDataService dataService, IMemoryCache memoryCache) : base(logger, dataService, memoryCache) {
+namespace MediaLibraryServer.Services
+{
+    public class ImageService : AbstractLibraryService<GalleryImage, ImageData>, IImageService
+    {
+        public ImageService(ILogger<ImageService> logger, IDataService dataService, IMemoryCache memoryCache) : base(logger, dataService, memoryCache)
+        {
         }
 
-        public int GetCountByGallery(string GalleryID) {
-            if (GalleryID is null) {
+        public int GetCountByGallery(string GalleryID)
+        {
+            if (GalleryID is null)
+            {
                 throw new ArgumentNullException(nameof(GalleryID));
             }
             List<IParameter> parameters = new List<IParameter>();
@@ -25,14 +29,17 @@ namespace MediaLibraryServer.Services {
             return dataService.GetObjectData<ImageData>(parameters).Count;
         }
 
-        public List<GalleryImage> GetByPage(string GalleryID, int pageNo, int pageSize = 10) {
-            if (GalleryID is null) {
+        public List<GalleryImage> GetByPage(string GalleryID, int pageNo, int pageSize = 10)
+        {
+            if (GalleryID is null)
+            {
                 throw new ArgumentNullException(nameof(GalleryID));
             }
 
             List<GalleryImage> images;
             string key = GalleryID + pageNo + pageSize;
-            if (!memoryCache.TryGetValue(key, out images)) {
+            if (!memoryCache.TryGetValue(key, out images))
+            {
                 logger.LogInformation($"Getting images for gallery {GalleryID}");
                 List<IParameter> parameters = new List<IParameter>();
                 parameters.Add(new Parameter() { ColumnName = "GalleryID", DataType = "System.String", Operator = DBProviderBase.Enums.ParamOperator.Equals, Value = GalleryID });
@@ -40,17 +47,22 @@ namespace MediaLibraryServer.Services {
                 List<ImageData> imageDatas = dataService.GetObjectData<ImageData>(parameters);
                 images = new List<GalleryImage>();
                 pageNo--;
-                if (imageDatas.Count > pageSize) {
+                if (imageDatas.Count > pageSize)
+                {
                     int startIndex = pageSize * pageNo;
                     int range = imageDatas.Count - startIndex;
-                    if (range > pageSize) {
+                    if (range > pageSize)
+                    {
                         range = pageSize;
                     }
-                    foreach (var item in imageDatas.GetRange(startIndex, range)) {
+                    foreach (var item in imageDatas.GetRange(startIndex, range))
+                    {
                         images.Add((GalleryImage)item);
                     }
-                } else {
-                    foreach (var item in imageDatas) {
+                } else
+                {
+                    foreach (var item in imageDatas)
+                    {
                         images.Add((GalleryImage)item);
                     }
                 }
@@ -60,8 +72,10 @@ namespace MediaLibraryServer.Services {
             return images;
         }
 
-        public ImageDataWrapper GetDataByID(string imageID) {
-            if (imageID is null) {
+        public ImageDataWrapper GetDataByID(string imageID)
+        {
+            if (imageID is null)
+            {
                 throw new ArgumentNullException(nameof(imageID));
             }
             logger.LogInformation($"Getting image data for ID {imageID}");
@@ -72,18 +86,24 @@ namespace MediaLibraryServer.Services {
             return imageDataWrapper;
         }
 
-        public ImageDataWrapper GetThumbnailByID(string imageID, int ThumbnailSize = 256) {
-            if (imageID is null) {
+        public ImageDataWrapper GetThumbnailByID(string imageID, int ThumbnailSize = 256)
+        {
+            if (imageID is null)
+            {
                 throw new ArgumentNullException(nameof(imageID));
             }
-            try {
+            try
+            {
                 ImageDataWrapper imageDataWrapper;
-                if (!memoryCache.TryGetValue(imageID, out imageDataWrapper)) {
+                if (!memoryCache.TryGetValue(imageID, out imageDataWrapper))
+                {
                     GalleryImage galleryImage = GetByID(imageID);
-                    using (Stream imageData = new MemoryStream(getImageDataByID(galleryImage))) {
-                        Image image = Image.FromStream(imageData);
-                        Image thumb = image.GetThumbnailImage(ThumbnailSize, ThumbnailSize, () => false, IntPtr.Zero);
-                        using (MemoryStream m = new MemoryStream()) {
+                    using (Stream imageData = new MemoryStream(getImageDataByID(galleryImage)))
+                    {
+                        System.Drawing.Image image = System.Drawing.Image.FromStream(imageData);
+                        System.Drawing.Image thumb = image.GetThumbnailImage(ThumbnailSize, ThumbnailSize, () => false, IntPtr.Zero);
+                        using (MemoryStream m = new MemoryStream())
+                        {
                             thumb.Save(m, image.RawFormat);
                             byte[] imageBytes = m.ToArray();
 
@@ -95,23 +115,49 @@ namespace MediaLibraryServer.Services {
                     AddItemToCache(imageID, imageDataWrapper);
                 }
                 return imageDataWrapper;
-            } catch (IOException ex) {
+            } catch (IOException ex)
+            {
                 throw ex;
             }
         }
 
-        private byte[] getImageDataByID(GalleryImage image) {
-            if (image is null) {
+        private byte[] getImageDataByID(GalleryImage image)
+        {
+            if (image is null)
+            {
                 throw new ArgumentNullException(nameof(image));
             }
 
-            if (!File.Exists(image.FilePath)) {
+            if (!File.Exists(image.FilePath))
+            {
                 string message = $"Could not find file data for {image.DisplayName}";
                 logger.LogError(message);
                 throw new IOException(message);
             }
 
             return File.ReadAllBytes(image.FilePath);
+        }
+
+        public bool DeleteByID(string imageID)
+        {
+            if (imageID is null)
+            {
+                throw new ArgumentNullException(nameof(imageID));
+            }
+            try
+            {
+                ImageData imageData = (ImageData)GetByID(imageID);
+                dataService.DeleteObjectData(imageData);
+                if (File.Exists(imageData.FilePath))
+                {
+                    File.Delete(imageData.FilePath);
+                }                
+                return true;
+            } catch (Exception)
+            {
+                throw;
+            }
+
         }
     }
 }

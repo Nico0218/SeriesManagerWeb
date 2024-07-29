@@ -4,7 +4,9 @@ export default class QueryClientWrapper {
 	public static queryClient = new QueryClient();
 
 	public static InvalidateKey = async (key: QueryKey) => {
-		await QueryClientWrapper.queryClient.invalidateQueries({ queryKey: key });
+		await QueryClientWrapper.queryClient.invalidateQueries(
+			{ queryKey: key },
+		);
 	};
 
 	public static async GetData<T>(options: UseQueryOptions<T>) {

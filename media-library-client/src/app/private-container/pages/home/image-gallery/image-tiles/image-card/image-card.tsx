@@ -1,27 +1,26 @@
 import { Backdrop, Button, Dialog, Fade } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import HttpHelper from '../../../../../../classes/http-helper';
 import CustomCard from '../../../../../../custom-components/custom-card/custom-card';
-import ImageCardProps from './image-card-props';
-import { useQuery } from '@tanstack/react-query';
+import ObjectStatus from '../../../../../../enums/object-status';
 import ImageDataWrapper from '../../../../../../interfaces/image-data-wrapper';
+import ImageCardProps from './image-card-props';
 
-export default function ImageCard({ ImageID, DisplayName }: Readonly<ImageCardProps>) {
+export default function ImageCard({ galleryImage, setGalleryImages }: Readonly<ImageCardProps>) {
 	const [dataImage, setDataImage] = useState<ImageDataWrapper>();
 	const [open, setOpen] = useState(false);
 	const [image, setImage] = useState<string>();
 
 	const imageGetThumbnailByIDQuery = useQuery({
-		...HttpHelper.image.GetThumbnailByID(ImageID, '200'),
-		enabled: !!ImageID,
+		...HttpHelper.image.GetThumbnailByID(galleryImage.id, '200'),
+		enabled: !!galleryImage && galleryImage.status !== ObjectStatus.Deleted,
 	});
 
-
 	const imageGetDataByIDQuery = useQuery({
-		...HttpHelper.image.GetDataByID(ImageID),
-		enabled: open
-	}
-	);
+		...HttpHelper.image.GetDataByID(galleryImage.id),
+		enabled: open && !!galleryImage && galleryImage.status !== ObjectStatus.Deleted,
+	});
 
 	useEffect(() => {
 		if (imageGetThumbnailByIDQuery.isSuccess && imageGetThumbnailByIDQuery.data) {
@@ -35,18 +34,24 @@ export default function ImageCard({ ImageID, DisplayName }: Readonly<ImageCardPr
 
 	const handleClose = () => setOpen(false);
 
-
-
 	useEffect(() => {
 		if (imageGetDataByIDQuery.isSuccess && imageGetDataByIDQuery.data) {
 			setDataImage(imageGetDataByIDQuery.data);
 		}
 	}, [imageGetDataByIDQuery.isSuccess, imageGetDataByIDQuery.data]);
 
+	const onDelete = () => {
+		HttpHelper.image.DeleteByID(galleryImage.id, {
+			success: () => {
+				setGalleryImages(prevState => prevState?.filter(x => x.id !== galleryImage.id));
+			},
+		});
+	};
+
 	return (
 		<>
 			<CustomCard
-				title={DisplayName}
+				title={galleryImage.displayName}
 				imgSrc={`data:image/png;base64,${image}`}
 				defaultAction={handleOpen}
 				actions={[
@@ -56,7 +61,7 @@ export default function ImageCard({ ImageID, DisplayName }: Readonly<ImageCardPr
 					<Button key="Download" size="small">
 						Download
 					</Button>,
-					<Button key="Delete" size="small">
+					<Button key="Delete" size="small" onClick={onDelete}>
 						Delete
 					</Button>,
 				]}

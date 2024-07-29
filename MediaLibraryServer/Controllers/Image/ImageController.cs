@@ -43,5 +43,12 @@ namespace MediaLibraryServer.Controllers.Image {
             logger.LogInformation($"Getting image data by image ID: {ImageID}");
             return new ObjectResult(imageService.GetDataByID(ImageID));
         }
+
+        [HttpDelete("DeleteByID/{ImageID}")]
+        public ObjectResult DeleteByID(string ImageID)
+        {
+            logger.LogInformation($"Getting image data by image ID: {ImageID}");
+            return new ObjectResult(imageService.DeleteByID(ImageID));
+        }
     }
 }
